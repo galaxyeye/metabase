@@ -11,7 +11,7 @@
             [metabase.util.honeysql-extensions :as hx]
             [toucan.db :as db]))
 
-(def ^:private ^:const column->base-type
+(def ^:const h2-column->base-type
   {:ARRAY                       :type/*
    :BIGINT                      :type/BigInteger
    :BINARY                      :type/*
@@ -76,9 +76,9 @@
    (keyword "DOUBLE PRECISION") :type/Float})
 
 
-;; These functions for exploding / imploding the options in the connection strings are here so we can override shady
-;; options users might try to put in their connection string. e.g. if someone sets `ACCESS_MODE_DATA` to `rws` we can
-;; replace that and make the connection read-only.
+;; These functions for exploding / imploding the options in the connection strings are here so we can override shady options
+;; users might try to put in their connection string. e.g. if someone sets `ACCESS_MODE_DATA` to `rws` we can replace that
+;; and make the connection read-only.
 
 (defn- connection-string->file+options
   "Explode a CONNECTION-STRING like `file:my-db;OPTION=100;OPTION_2=TRUE` to a pair of file and an options map.
@@ -111,7 +111,7 @@
                (update details :db connection-string-set-safe-options))))
 
 
-(defn- unix-timestamp->timestamp [expr seconds-or-milliseconds]
+(defn h2-unix-timestamp->timestamp [expr seconds-or-milliseconds]
   (hsql/call :timestampadd
              (hx/literal (case seconds-or-milliseconds
                            :seconds      "second"
@@ -123,9 +123,8 @@
 (defn- check-native-query-not-using-default-user [{query-type :type, database-id :database, :as query}]
   {:pre [(integer? database-id)]}
   (u/prog1 query
-    ;; For :native queries check to make sure the DB in question has a (non-default) NAME property specified in the
-    ;; connection string. We don't allow SQL execution on H2 databases for the default admin account for security
-    ;; reasons
+    ;; For :native queries check to make sure the DB in question has a (non-default) NAME property specified in the connection string.
+    ;; We don't allow SQL execution on H2 databases for the default admin account for security reasons
     (when (= (keyword query-type) :native)
       (let [{:keys [db]}   (db/select-one-field :details Database :id database-id)
             _              (assert db)
@@ -146,7 +145,7 @@
 (defn- parse-datetime    [format-str expr] (hsql/call :parsedatetime expr  (hx/literal format-str)))
 (defn- trunc-with-format [format-str expr] (parse-datetime format-str (format-datetime format-str expr)))
 
-(defn- date [unit expr]
+(defn h2-date [unit expr]
   (case unit
     :default         expr
     :minute          (trunc-with-format "yyyyMMddHHmm" expr)
@@ -178,7 +177,7 @@
     :year            (hx/year expr)))
 
 ;; TODO - maybe rename this relative-date ?
-(defn- date-interval [unit amount]
+(defn h2-date-interval [unit amount]
   (if (= unit :quarter)
     (recur :month (hx/* amount 3))
     (hsql/call :dateadd (hx/literal unit) amount :%now)))
@@ -198,12 +197,12 @@
     #".*" ; default
     message))
 
-(defn- string-length-fn [field-key]
+(defn h2-string-length-fn [field-key]
   (hsql/call :length field-key))
 
-(def ^:private date-format-str "yyyy-MM-dd HH:mm:ss.SSS zzz")
-(def ^:private h2-date-formatter (driver/create-db-time-formatter date-format-str))
-(def ^:private h2-db-time-query (format "select formatdatetime(current_timestamp(),'%s') AS VARCHAR" date-format-str))
+(def h2-date-format-str "yyyy-MM-dd HH:mm:ss.SSS zzz")
+(def h2-date-formatter (driver/create-db-time-formatter h2-date-format-str))
+(def h2-db-time-query (format "select formatdatetime(current_timestamp(),'%s') AS VARCHAR" h2-date-format-str))
 
 (defrecord H2Driver []
   clojure.lang.Named
@@ -212,10 +211,10 @@
 (u/strict-extend H2Driver
   driver/IDriver
   (merge (sql/IDriverSQLDefaultsMixin)
-         {:date-interval                     (u/drop-first-arg date-interval)
+         {:date-interval                     (u/drop-first-arg h2-date-interval)
           :details-fields                    (constantly [{:name         "db"
                                                            :display-name "Connection String"
-                                                           :placeholder  "file:/Users/camsaul/bird_sightings/toucans"
+                                                           :placeholder  "/tmp/metabase"
                                                            :required     true}])
           :humanize-connection-error-message (u/drop-first-arg humanize-connection-error-message)
           :process-query-in-context          (u/drop-first-arg process-query-in-context)
@@ -224,11 +223,11 @@
   sql/ISQLDriver
   (merge (sql/ISQLDriverDefaultsMixin)
          {:active-tables             sql/post-filtered-active-tables
-          :column->base-type         (u/drop-first-arg column->base-type)
+          :column->base-type         (u/drop-first-arg h2-column->base-type)
           :connection-details->spec  (u/drop-first-arg connection-details->spec)
-          :date                      (u/drop-first-arg date)
-          :string-length-fn          (u/drop-first-arg string-length-fn)
-          :unix-timestamp->timestamp (u/drop-first-arg unix-timestamp->timestamp)}))
+          :date                      (u/drop-first-arg h2-date)
+          :string-length-fn          (u/drop-first-arg h2-string-length-fn)
+          :unix-timestamp->timestamp (u/drop-first-arg h2-unix-timestamp->timestamp)}))
 
 (defn -init-driver
   "Register the H2 driver"

@@ -2,6 +2,7 @@
   "Preprocessor that does simple transformations to all incoming queries, simplifing the driver-specific
   implementations."
   (:require [clojure.tools.logging :as log]
+            [clojure.string :as str]
             [metabase
              [driver :as driver]
              [util :as u]]
@@ -127,7 +128,11 @@
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
-  ((qp-pipeline execute-query) query))
+  (last (for [rawSql (-> query :native :query (str/split #";+"))
+              :let [sql (str/trim rawSql)]
+              :when (and (not (re-matches #"^\s*--.+" sql)) (> (count sql) 5)) ]
+          ((qp-pipeline execute-query) (assoc-in query [:native :query] sql))))
+  )
 
 (def ^{:arglists '([query])} expand
   "Expand a QUERY the same way it would normally be done as part of query processing.
