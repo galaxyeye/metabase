@@ -10,7 +10,8 @@
             [metabase.driver.generic-sql :as sql]
             [metabase.models.database :refer [Database]]
             [metabase.util.honeysql-extensions :as hx]
-            [toucan.db :as db]))
+            [toucan.db :as db])
+  (:import (org.warps.pulsar.ql H2Config)))
 
 (defn- connection-details->spec
   "Create a database specification for a h2 database."
@@ -78,8 +79,9 @@
           :string-length-fn          (u/drop-first-arg h2/h2-string-length-fn)
           :unix-timestamp->timestamp (u/drop-first-arg h2/h2-unix-timestamp->timestamp)}))
 
-; TODO: -init-driver already defined in metabase.driver.h2
 (defn -init-driver
   "Register the H2tcp driver"
   []
-  (driver/register-driver! :h2tcp (H2TcpDriver.)))
+  (. H2Config config)
+  (driver/register-driver! :h2tcp (H2TcpDriver.))
+  )

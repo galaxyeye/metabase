@@ -1,62 +1,60 @@
-# #-#-#-#-#  metabase-backend.pot (metabase)  #-#-#-#-#
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Metabase <docs@metabase.com>
+# #-#-#-#-#  zh_cn.pot (metabase)  #-#-#-#-#
+# German translations for metabase package.
+# Copyright (C) 2017 Metabase <docs@metabase.com>
 # This file is distributed under the same license as the metabase package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Tom Robinson <tom@metabase.com>, 2017.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  metabase-frontend.pot  #-#-#-#-#\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"#-#-#-#-#  metabase-backend.pot (metabase)  #-#-#-#-#\n"
 "Project-Id-Version: metabase\n"
 "Report-Msgid-Bugs-To: docs@metabase.com\n"
 "POT-Creation-Date: 2017-08-21 21:54+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2017-08-21 21:17+0200\n"
+"Last-Translator: Tom Robinson <tom@metabase.com>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  metabase-frontend.pot  #-#-#-#-#\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"#-#-#-#-#  zh_cn.pot (metabase)  #-#-#-#-#\n"
 
 #: frontend/src/metabase/home/components/Activity.jsx:131
 msgid "Hello World!"
-msgstr ""
+msgstr "欢迎使用 Metabase！"
 
 #: frontend/src/metabase/home/components/Activity.jsx:132
 msgid "Metabase is up and running."
-msgstr ""
+msgstr "Metabase 已准备就绪。"
 
 #: frontend/src/metabase/home/components/Activity.jsx:176
 msgid "removed the filter {item.details.name}"
-msgstr ""
+msgstr "entfernen sie den filter {item.details.name}"
 
 #: frontend/src/metabase/home/components/Activity.jsx:179
 msgid "joined!"
-msgstr ""
+msgstr "已加入！"
 
 #: frontend/src/metabase/home/components/NextStep.jsx:31
 msgid "Setup Tip"
-msgstr ""
+msgstr "安装提示"
 
 #: frontend/src/metabase/home/components/NextStep.jsx:32
 msgid "View all"
-msgstr ""
+msgstr "显示所有"
 
 #: frontend/src/metabase/home/components/RecentViews.jsx:38
 msgid "Recently Viewed"
-msgstr ""
+msgstr "最近查看 ..."
 
 #: frontend/src/metabase/home/components/RecentViews.jsx:60
 msgid "You haven't looked at any dashboards or questions recently"
-msgstr ""
+msgstr "您最近没有访问面板或者问题"
 
 #: frontend/src/metabase/home/containers/HomepageApp.jsx:93
 msgid "Activity"
-msgstr ""
+msgstr "事件"
 
 #: frontend/src/metabase/lib/greeting.js:2
 msgid "Hey there"
@@ -81,54 +79,54 @@ msgstr ""
 
 #: frontend/src/metabase/lib/greeting.js:10
 msgid "What do you want to know?"
-msgstr ""
+msgstr "您希望了解 ..."
 
 #: frontend/src/metabase/lib/greeting.js:11
 msgid "What's on your mind?"
-msgstr ""
+msgstr "您正在思考 ..."
 
 #: frontend/src/metabase/lib/greeting.js:12
 msgid "What do you want to find out?"
-msgstr ""
+msgstr "您希望了解什么问题？"
 
 #: frontend/src/metabase/nav/containers/Navbar.jsx:129
 msgid "Dashboards"
-msgstr ""
+msgstr "面板"
 
 #: frontend/src/metabase/nav/containers/Navbar.jsx:132
 msgid "Questions"
-msgstr ""
+msgstr "问题"
 
 #: frontend/src/metabase/nav/containers/Navbar.jsx:135
 msgid "Pulses"
-msgstr ""
+msgstr "通知"
 
 #: frontend/src/metabase/nav/containers/Navbar.jsx:138
 msgid "Data Reference"
-msgstr ""
+msgstr "数据"
 
 #: frontend/src/metabase/nav/containers/Navbar.jsx:142
 msgid "New Question"
-msgstr ""
+msgstr "提问"
 
 #: src/metabase/api/setup.clj
 msgid "Add a database"
-msgstr ""
+msgstr "添加数据库"
 
 #: src/metabase/api/setup.clj
 msgid "Get connected"
-msgstr ""
+msgstr "已连接上"
 
 #: src/metabase/api/setup.clj
 msgid "Connect to your data so your whole team can start to explore."
-msgstr ""
+msgstr "连接数据库以便您的团队可以探索数据"
 
 #. This is the very first log message that will get printed.
 #. It's here because this is one of the very first namespaces that gets loaded, and the first that has access to the logger
 #. It shows up a solid 10-15 seconds before the "Starting Metabase in STANDALONE mode" message because so many other namespaces need to get loaded
 #: src/metabase/util.clj
 msgid "Loading {0}..."
-msgstr ""
+msgstr "加载中 {0}..."
 
 #. This is the very first log message that will get printed.
 #. It's here because this is one of the very first namespaces that gets loaded, and the first that has access to the logger
@@ -137,102 +135,138 @@ msgstr ""
 msgid "Metabase"
 msgstr ""
 
-
+#: src/metabase/util.clj
 msgid "saved a question about "
-msgstr ""
+msgstr "保存问题"
 
+#: src/metabase/util.clj
 msgid "saved a question"
-msgstr ""
+msgstr "保存问题"
 
+#: src/metabase/util.clj
 msgid "deleted a question"
-msgstr ""
+msgstr "删除问题"
 
+#: src/metabase/util.clj
 msgid "created a dashboard"
-msgstr ""
+msgstr "创建面板"
 
+#: src/metabase/util.clj
 msgid "deleted a dashboard"
-msgstr ""
+msgstr "删除面板"
 
+#: src/metabase/util.clj
 msgid "Metrics"
-msgstr ""
+msgstr "量度"
 
+#: src/metabase/util.clj
 msgid "Create collections for your saved questions"
-msgstr ""
+msgstr "为问题创建一个组"
 
-msgid "Collections help you organize your questions and allow you to decide who gets to see what."
-msgstr ""
+#: src/metabase/util.clj
+msgid "Collections help you organize your questions and allow you to decide who "
+"gets to see what."
+msgstr "问题组帮助您组织问题，您可以为问题组设置查看权限。"
 
+#: src/metabase/util.clj
 msgid "Set permissions for collections"
-msgstr ""
+msgstr "为问题组设置权限"
 
+#: src/metabase/util.clj
 msgid "Explore your data, create charts or maps, and save what you find."
-msgstr ""
+msgstr "探索您的数据，创建图表，并保存您的结果。"
 
+#: src/metabase/util.clj
 msgid "Ask a question\""
-msgstr ""
+msgstr "创建问题"
 
+#: src/metabase/util.clj
 msgid "View the archive"
-msgstr ""
+msgstr "查看存档"
 
+#: src/metabase/util.clj
 msgid "Learn more"
-msgstr ""
+msgstr "更多"
 
+#: src/metabase/util.clj
 msgid "Search results"
-msgstr ""
+msgstr "搜索结果"
 
+#: src/metabase/util.clj
 msgid "No matching questions found"
-msgstr ""
+msgstr "没有符合要求的问题"
 
+#: src/metabase/util.clj
 msgid "Which collection should this be in?"
-msgstr ""
+msgstr "您想将该问题加入哪个组？"
 
+#: src/metabase/util.clj
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
+#: src/metabase/util.clj
 msgid "Move"
-msgstr ""
+msgstr "移动"
 
+#: src/metabase/util.clj
 msgid "Archive collection"
-msgstr ""
+msgstr "存档"
 
+#: src/metabase/util.clj
 msgid "Archive this collection?"
-msgstr ""
+msgstr "存档？"
 
+#: src/metabase/util.clj
 msgid "Archive"
-msgstr ""
+msgstr "存档"
 
+#: src/metabase/util.clj
 msgid "The saved questions in this collection will also be archived."
-msgstr ""
+msgstr "该组内的问题将同样会被存档。"
 
+#: src/metabase/util.clj
 msgid "All questions"
-msgstr ""
+msgstr "所有问题"
 
+#: src/metabase/util.clj
 msgid "No questions have been saved yet."
-msgstr ""
+msgstr "您还没有保存任何问题。"
 
+#: src/metabase/util.clj
 msgid "Favorites"
-msgstr ""
+msgstr "收藏"
 
+#: src/metabase/util.clj
 msgid "You haven't favorited any questions yet."
-msgstr ""
+msgstr "您还没有收藏任何问题。"
 
+#: src/metabase/util.clj
 msgid "Recently viewed"
-msgstr ""
+msgstr "最近查看"
 
+#: src/metabase/util.clj
 msgid "You haven't viewed any questions recently."
-msgstr ""
+msgstr "您最近没有查看任何问题。"
 
+#: src/metabase/util.clj
 msgid "Saved by me"
-msgstr ""
+msgstr "我保存的"
 
+#: src/metabase/util.clj
 msgid "You haven't saved any questions yet."
-msgstr ""
+msgstr "您还没有保存任何问题。"
 
+#: src/metabase/util.clj
 msgid "Most popular"
-msgstr ""
+msgstr "查看最多的"
 
+#: src/metabase/util.clj
 msgid "The most-viewed questions across your company will show up here."
-msgstr ""
+msgstr "显示查看最多的问题。"
 
+#: src/metabase/util.clj
 msgid "If you no longer need a question, you can archive it."
-msgstr ""
+msgstr "如果您不需要查看一个问题，您可以将其存档。"
+
+#~ msgid "Select a database"
+#~ msgstr "选择数据库"
