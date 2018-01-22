@@ -7,6 +7,9 @@
              [core :as hsql]
              [format :as hformat]
              [helpers :as h]]
+            [metabase.models
+             [database :refer [Database]]
+             [table :refer [Table]]]
             [metabase
              [driver :as driver]
              [util :as u]]
@@ -15,7 +18,9 @@
              [annotate :as annotate]
              [interface :as i]
              [util :as qputil]]
-            [metabase.util.honeysql-extensions :as hx])
+            [metabase.util.honeysql-extensions :as hx]
+            [metabase.sync :as sync]
+            [metabase.sync.sync-metadata.fields :as sync-fields])
   (:import clojure.lang.Keyword
            [java.sql PreparedStatement ResultSet ResultSetMetaData SQLException]
            [java.util Calendar Date TimeZone]
@@ -419,21 +424,51 @@
               (jdbc/set-parameter value stmt i)))
           (rest (range)) params)))
 
+(defn- removeComments
+  [sql]
+  (str/replace sql #"('(''|[^'])*')|[\t\r\n]|(--[^\r\n]*)|(/\*[\w\W]*?(?=\*/)\*/)" ""))
+
+(defn-
+  is-query?
+  "Whether the statement do not modify the database. This is a temporary solution"
+  [stat]
+  (re-matches #"(?i)^\s*(select|show|explain|with).+" (removeComments stat)))
+
+(defn- jdbc-query
+  "Run the query"
+  [sql timezone db]
+  (jdbc/query db sql {:identifiers    identity, :as-arrays? true
+                              :read-columns   (read-columns-with-date-handling timezone)
+                              :set-parameters (set-parameters-with-timezone timezone)}))
+
+(defn- jdbc-execute!
+  "Run the execution"
+  [sql timezone db]
+    [[:affectedRows]
+     (try (jdbc/execute! db sql {:set-parameters (set-parameters-with-timezone timezone)})
+          (catch SQLException e
+            (log/debug (u/format-color 'red "EXECUTE FAILED: \n%s\n" sql))
+            (jdbc/print-sql-exception-chain e))
+          )])
+
 (defn- run-query
   "Run the query itself."
-  [{sql :query, params :params, remark :remark} timezone connection]
-  (let [sql              (str "-- " remark "\n" (hx/unescape-dots sql))
-        statement        (into [sql] params)
-        [columns & rows] (jdbc/query connection statement {:identifiers    identity, :as-arrays? true
-                                                           :read-columns   (read-columns-with-date-handling timezone)
-                                                           :set-parameters (set-parameters-with-timezone timezone)})]
+  [{rawSql :query, params :params, remark :remark} timezone db]
+  (let [
+        sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
+        statement (into [sql] params)
+        [columns & rows] (if (is-query? rawSql)
+                           (jdbc-query sql timezone db)
+                           (jdbc-execute! sql timezone db))
+        ]
     {:rows    (or rows [])
-     :columns columns}))
+     :columns columns}
+    ))
 
 (defn- exception->nice-error-message ^String [^SQLException e]
-  (or (->> (.getMessage e)     ; error message comes back like 'Column "ZID" not found; SQL statement: ... [error-code]' sometimes
-           (re-find #"^(.*);") ; the user already knows the SQL, and error code is meaningless
-           second)             ; so just return the part of the exception that is relevant
+  (or (->> (.getMessage e)                                ; error message comes back like 'Column "ZID" not found; SQL statement: ... [error-code]' sometimes
+           (re-find #"^(.*);")                            ; the user already knows the SQL, and error code is meaningless
+           second)                                        ; so just return the part of the exception that is relevant
       (.getMessage e)))
 
 (defn- do-with-try-catch {:style/indent 0} [f]
@@ -442,49 +477,61 @@
          (log/error (jdbc/print-sql-exception-chain e))
          (throw (Exception. (exception->nice-error-message e))))))
 
+(defn- do-with-auto-commit-enabled
+  {:style/indent 1}
+  [conn f]
+  (try (f)
+       (catch Throwable e
+         (.rollback (jdbc/get-connection conn))
+         (log/error (jdbc/print-sql-exception-chain e))
+         (throw (Exception. (exception->nice-error-message e))))))
+
 (defn- do-with-auto-commit-disabled
-  "Disable auto-commit for this transaction, and make the transaction `rollback-only`, which means when the
-  transaction finishes `.rollback` will be called instead of `.commit`. Furthermore, execute F in a try-finally block;
-  in the `finally`, manually call `.rollback` just to be extra-double-sure JDBC any changes made by the transaction
-  aren't committed."
+  "Disable auto-commit for this transaction, and make the transaction `rollback-only`, which means when the transaction finishes `.rollback` will be called instead of `.commit`.
+   Furthermore, execute F in a try-finally block; in the `finally`, manually call `.rollback` just to be extra-double-sure JDBC any changes made by the transaction aren't committed."
   {:style/indent 1}
   [conn f]
   (jdbc/db-set-rollback-only! conn)
   (.setAutoCommit (jdbc/get-connection conn) false)
-  ;; TODO - it would be nice if we could also `.setReadOnly` on the transaction as well, but that breaks setting the
-  ;; timezone. Is there some way we can have our cake and eat it too?
+  ;; TODO - it would be nice if we could also `.setReadOnly` on the transaction as well, but that breaks setting the timezone. Is there some way we can have our cake and eat it too?
   (try (f)
        (finally (.rollback (jdbc/get-connection conn)))))
 
-(defn- do-in-transaction [connection f]
+(defn- do-in-transaction [connection f is-db-read-only?]
   (jdbc/with-db-transaction [transaction-connection connection]
-    (do-with-auto-commit-disabled transaction-connection (partial f transaction-connection))))
+                            (if is-db-read-only?
+                              (do-with-auto-commit-disabled transaction-connection (partial f transaction-connection))
+                              (do-with-auto-commit-enabled transaction-connection (partial f transaction-connection)))))
 
 (defn- set-timezone!
   "Set the timezone for the current connection."
   [driver settings connection]
-  (let [timezone      (u/prog1 (:report-timezone settings)
-                        (assert (re-matches #"[A-Za-z\/_]+" <>)))
+  (let [timezone (u/prog1 (:report-timezone settings)
+                          (assert (re-matches #"[A-Za-z\/_]+" <>)))
         format-string (sql/set-timezone-sql driver)
-        sql           (format format-string (str \' timezone \'))]
+        sql (format format-string (str \' timezone \'))]
     (log/debug (u/format-color 'green "Setting timezone with statement: %s" sql))
     (jdbc/db-do-prepared connection [sql])))
 
 (defn- run-query-without-timezone [driver settings connection query]
-  (do-in-transaction connection (partial run-query query nil)))
+  (do-in-transaction
+    connection
+    (partial run-query query nil)
+    (:read-only settings)))
 
 (defn- run-query-with-timezone [driver {:keys [^String report-timezone] :as settings} connection query]
   (try
-    (do-in-transaction connection (fn [transaction-connection]
+    (do-in-transaction connection
+                       (fn [transaction-connection]
                                     (set-timezone! driver settings transaction-connection)
-                                    (run-query query (some-> report-timezone TimeZone/getTimeZone) transaction-connection)))
+                                    (run-query query (some-> report-timezone TimeZone/getTimeZone) transaction-connection))
+                       (:read-only settings))
     (catch SQLException e
       (log/error "Failed to set timezone:\n" (with-out-str (jdbc/print-sql-exception-chain e)))
       (run-query-without-timezone driver settings connection query))
     (catch Throwable e
       (log/error "Failed to set timezone:\n" (.getMessage e))
       (run-query-without-timezone driver settings connection query))))
-
 
 (defn execute-query
   "Process and run a native (raw SQL) QUERY."
@@ -493,6 +540,8 @@
     (do-with-try-catch
       (fn []
         (let [db-connection (sql/db->jdbc-connection-spec database)]
+          ; TODO: set read only option somewhere else
+          (assoc settings :read-only false)
           ((if (seq (:report-timezone settings))
              run-query-with-timezone
              run-query-without-timezone) driver settings db-connection query))))))
