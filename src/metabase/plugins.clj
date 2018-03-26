@@ -16,7 +16,6 @@
                (.canRead dir))
       dir)))
 
-
 (defn- add-jar-to-classpath!
   "Dynamically add a JAR file to the classpath.
    See also [this SO post](http://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime/60766#60766)"

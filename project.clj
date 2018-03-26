@@ -37,8 +37,6 @@
                  [clj-time "0.13.0"]                                  ; library for dealing with date/time
                  [clojurewerkz/quartzite "2.0.0"]                     ; scheduling library
                  [colorize "0.1.1" :exclusions [org.clojure/clojure]] ; string output with ANSI color codes (for logging)
-                 [com.amazon.redshift/redshift-jdbc41-no-awssdk       ; Redshift JDBC driver without embedded Amazon SDK
-                  "1.2.8.1005"]
                  [com.cemerick/friend "0.2.3"                         ; auth library
                   :exclusions [commons-codec
                                org.apache.httpcomponents/httpclient
@@ -46,15 +44,10 @@
                                ring/ring-core]]
                  [com.draines/postal "2.0.2"]                         ; SMTP library
                  [com.github.brandtg/stl-java "0.1.1"]                ; STL decomposition
-                 [com.google.apis/google-api-services-analytics       ; Google Analytics Java Client Library
-                  "v3-rev142-1.23.0"]
-                 [com.google.apis/google-api-services-bigquery        ; Google BigQuery Java Client Library
-                   "v2-rev368-1.23.0"]
                  [com.jcraft/jsch "0.1.54"]                           ; SSH client for tunnels
                  [fun.platonic.nebula/nebula-ql-common "0.3.7"]       ; Nebula database
                  [com.mattbertolini/liquibase-slf4j "2.0.0"]          ; Java Migrations lib
                  [com.mchange/c3p0 "0.9.5.2"]                         ; connection pooling library
-                 [com.microsoft.sqlserver/mssql-jdbc "6.2.1.jre7"]    ; SQLServer JDBC driver. TODO - Switch this to `.jre8` once we officially switch to Java 8
                  [com.novemberain/monger "3.1.0"]                     ; MongoDB Driver
                  [com.taoensso/nippy "2.13.0"]                        ; Fast serialization (i.e., GZIP) library for Clojure
                  [compojure "1.5.2"]                                  ; HTTP Routing library built on Ring

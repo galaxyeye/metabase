@@ -527,7 +527,7 @@
         sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
         statement (into [sql] params)
         [columns & rows] (if (is-query? rawSql)
-                           (do-run-query {rawSql :query, params :params, remark :remark} timezone connection)
+                           (do-run-query {sql :query, params :params, remark :remark} timezone connection)
                            (jdbc-execute! sql timezone connection))
         ]
     {:rows    (or rows [])
