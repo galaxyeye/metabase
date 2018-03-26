@@ -481,7 +481,6 @@
           (.cancel stmt)
           (throw e))))))
 
-
 (defn- removeComments
   [sql]
   (str/replace sql #"('(''|[^'])*')|[\t\r\n]|(--[^\r\n]*)|(/\*[\w\W]*?(?=\*/)\*/)" ""))
@@ -511,14 +510,27 @@
 
 (defn- do-run-query
   "Run the query itself."
-  [{sql :query, params :params, remark :remark} timezone connection]
+  [sql {params :params, remark :remark} timezone connection]
   (let [sql              (str "-- " remark "\n" (hx/unescape-dots sql))
-        statement        (into [sql] params)
         [columns & rows] (cancellable-run-query connection sql params {:identifiers    identity, :as-arrays? true
                                                                        :read-columns   (read-columns-with-date-handling timezone)
                                                                        :set-parameters (set-parameters-with-timezone timezone)})]
     {:rows    (or rows [])
      :columns columns}))
+
+(defn- run-query-test
+  "Run the query itself."
+  [{rawSql :query, params :params, remark :remark} timezone connection]
+  (prn (keys {rawSql :query, params :params, remark :remark} )  )
+  (prn (vals {rawSql :query, params :params, remark :remark} )  )
+  (let [
+        sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
+        statement (into [sql] params)
+        [columns & rows] ({:id "id"} [1])
+        ]
+    {:rows    (or rows [])
+     :columns columns}
+    ))
 
 (defn- run-query
   "Run the query itself."
@@ -527,7 +539,7 @@
         sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
         statement (into [sql] params)
         [columns & rows] (if (is-query? rawSql)
-                           (do-run-query {sql :query, params :params, remark :remark} timezone connection)
+                           (do-run-query sql {params :params, remark :remark} timezone connection)
                            (jdbc-execute! sql timezone connection))
         ]
     {:rows    (or rows [])
@@ -588,7 +600,6 @@
     (catch Throwable e
       (log/error "Failed to set timezone:\n" (.getMessage e))
       (run-query-without-timezone driver settings connection query))))
-
 
 (defn execute-query
   "Process and run a native (raw SQL) QUERY."
