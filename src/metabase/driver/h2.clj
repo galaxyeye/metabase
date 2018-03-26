@@ -201,7 +201,7 @@
   (hsql/call :length field-key))
 
 (def h2-date-format-str "yyyy-MM-dd HH:mm:ss.SSS zzz")
-(def h2-date-formatter (driver/create-db-time-formatter h2-date-format-str))
+(def h2-date-formatter (driver/create-db-time-formatters h2-date-format-str))
 (def h2-db-time-query (format "select formatdatetime(current_timestamp(),'%s') AS VARCHAR" h2-date-format-str))
 
 (defrecord H2Driver []
