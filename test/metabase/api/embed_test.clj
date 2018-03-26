@@ -67,7 +67,7 @@
                             :source "aggregation", :extra_info {}, :id nil, :target nil, :display_name "count",
                             :base_type "type/Integer", :remapped_from nil, :remapped_to nil}]
                  :rows    [[100]]}
-    :json_query {:parameters []}
+    :json_query {:parameters nil}
     :status     "completed"})
   ([results-format]
    (case results-format
@@ -139,10 +139,12 @@
   [{:id nil, :type "date/single", :target ["variable" ["template-tag" "d"]], :name "d", :slug "d", :default nil}]
   (with-embedding-enabled-and-new-secret-key
     (with-temp-card [card {:enable_embedding true
-                           :dataset_query    {:native {:template_tags {:a {:type "date", :name "a", :display_name "a"}
-                                                                       :b {:type "date", :name "b", :display_name "b"}
-                                                                       :c {:type "date", :name "c", :display_name "c"}
-                                                                       :d {:type "date", :name "d", :display_name "d"}}}}
+                           :dataset_query    {:database (data/id)
+                                              :type     :native
+                                              :native   {:template_tags {:a {:type "date", :name "a", :display_name "a"}
+                                                                         :b {:type "date", :name "b", :display_name "b"}
+                                                                         :c {:type "date", :name "c", :display_name "c"}
+                                                                         :d {:type "date", :name "d", :display_name "d"}}}}
                            :embedding_params {:a "locked", :b "disabled", :c "enabled", :d "enabled"}}]
       (:parameters (http/client :get 200 (card-url card {:params {:c 100}}))))))
 
