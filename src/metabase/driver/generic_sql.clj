@@ -24,7 +24,6 @@
            com.mchange.v2.c3p0.ComboPooledDataSource
            [java.sql DatabaseMetaData ResultSet]
            java.util.Map
-           metabase.models.field.FieldInstance
            [metabase.query_processor.interface Field Value]))
 
 (defprotocol ISQLDriver

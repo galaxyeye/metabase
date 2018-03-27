@@ -510,19 +510,15 @@
 
 (defn- do-run-query
   "Run the query itself."
-  [sql {params :params, remark :remark} timezone connection]
-  (let [sql              (str "-- " remark "\n" (hx/unescape-dots sql))
-        [columns & rows] (cancellable-run-query connection sql params {:identifiers    identity, :as-arrays? true
-                                                                       :read-columns   (read-columns-with-date-handling timezone)
-                                                                       :set-parameters (set-parameters-with-timezone timezone)})]
-    {:rows    (or rows [])
-     :columns columns}))
+  [sql params timezone connection]
+  (let [opts {:identifiers    identity, :as-arrays? true
+              :read-columns   (read-columns-with-date-handling timezone)
+              :set-parameters (set-parameters-with-timezone timezone)}]
+    (cancellable-run-query connection sql params opts)))
 
-(defn- run-query-test
+(defn- run-query-
   "Run the query itself."
   [{rawSql :query, params :params, remark :remark} timezone connection]
-  (prn (keys {rawSql :query, params :params, remark :remark} )  )
-  (prn (vals {rawSql :query, params :params, remark :remark} )  )
   (let [
         sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
         statement (into [sql] params)
@@ -539,12 +535,11 @@
         sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
         statement (into [sql] params)
         [columns & rows] (if (is-query? rawSql)
-                           (do-run-query sql {params :params, remark :remark} timezone connection)
+                           (do-run-query sql params timezone connection)
                            (jdbc-execute! sql timezone connection))
         ]
     {:rows    (or rows [])
-     :columns columns}
-    ))
+     :columns columns}))
 
 (defn- exception->nice-error-message ^String [^SQLException e]
   (or (->> (.getMessage e)     ; error message comes back like 'Column "ZID" not found; SQL statement: ... [error-code]' sometimes

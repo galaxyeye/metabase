@@ -56,7 +56,6 @@
                  [environ "1.1.0"]                                    ; easy environment management
                  [hiccup "1.0.5"]                                     ; HTML templating
                  [honeysql "0.8.2"]                                   ; Transform Clojure data structures to SQL
-                 [io.crate/crate-jdbc "2.1.6"]                        ; Crate JDBC driver
                  [instaparse "1.4.0"]                                 ; Insaparse parser generator
                  [kixi/stats "0.3.10"                                 ; Various statistic measures implemented as transducers
                   :exclusions [org.clojure/test.check                 ; test.check and AVL trees are used in kixi.stats.random. Remove exlusion if using.
@@ -94,8 +93,8 @@
                  [stencil "0.5.0"]                                    ; Mustache templates for Clojure
                  [toucan "1.1.4"                                      ; Model layer, hydration, and DB utilities
                   :exclusions [honeysql]]]
-  :repositories [["bintray" "https://dl.bintray.com/crate/crate"]     ; Repo for Crate JDBC driver
-                 ["redshift" "https://s3.amazonaws.com/redshift-driver-downloads"]]
+  ;:repositories [["bintray" "https://dl.bintray.com/crate/crate"]     ; Repo for Crate JDBC driver
+  ;               ["redshift" "https://s3.amazonaws.com/redshift-driver-downloads"]]
   :plugins [[lein-environ "1.1.0"]                                    ; easy access to environment variables
             [lein-ring "0.12.3"                                       ; start the HTTP server with 'lein ring server'
              :exclusions [org.clojure/clojure]]                       ; TODO - should this be a dev dependency ?
