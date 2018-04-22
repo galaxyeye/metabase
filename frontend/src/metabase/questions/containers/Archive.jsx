@@ -58,7 +58,7 @@ export default class Archive extends Component {
     return (
       <div className="px4 pt3">
         <div className="flex align-center mb2">
-          <HeaderWithBack name={t`Archive`} />
+          <HeaderWithBack name={t`归档`} />
         </div>
         <SearchHeader
           searchText={this.props.searchText}

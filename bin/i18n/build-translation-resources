@@ -35,9 +35,10 @@ for LOCALE in $LOCALES; do
 
   # backend
   msgfmt                            \
+    --verbose                       \
     --java2                         \
     -d "resources"                  \
-    -r "metabase.Messages" \
+    -r "metabase.Messages"          \
     -l "$LOCALE"                    \
     "$LOCALE_FILE"
 done

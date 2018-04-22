@@ -290,7 +290,7 @@ export default class NativeQueryEditor extends Component {
             key="db_selector"
             className="GuiBuilder-section GuiBuilder-data flex align-center"
           >
-            <span className="GuiBuilder-section-label Query-label">{t`Database`}</span>
+            <span className="GuiBuilder-section-label Query-label">{t`数据库`}</span>
             <DatabaseDataSelector
               databases={databases}
               selectedDatabaseId={database && database.id}
@@ -315,7 +315,7 @@ export default class NativeQueryEditor extends Component {
             key="table_selector"
             className="GuiBuilder-section GuiBuilder-data flex align-center"
           >
-            <span className="GuiBuilder-section-label Query-label">{t`Table`}</span>
+            <span className="GuiBuilder-section-label Query-label">{t`表`}</span>
             <SchemaAndTableDataSelector
               selectedTableId={selectedTable ? selectedTable.id : null}
               selectedDatabaseId={database && database.id}
@@ -329,7 +329,7 @@ export default class NativeQueryEditor extends Component {
       }
     } else {
       dataSelectors = (
-        <span className="p2 text-grey-4">{t`This question is written in ${query.nativeQueryLanguage()}.`}</span>
+        <span className="p2 text-grey-4">{t`该查询由 ${query.nativeQueryLanguage()} 编写。`}</span>
       );
     }
 
@@ -337,14 +337,14 @@ export default class NativeQueryEditor extends Component {
     if (this.state.showEditor) {
       editorClasses = "";
       toggleEditorText = query.hasWritePermission()
-        ? t`Hide Editor`
-        : t`Hide Query`;
+        ? t`隐藏编辑器`
+        : t`隐藏查询`;
       toggleEditorIcon = "contract";
     } else {
       editorClasses = "hide";
       toggleEditorText = query.hasWritePermission()
-        ? t`Open Editor`
-        : t`Show Query`;
+        ? t`打开编辑器`
+        : t`打开查询`;
       toggleEditorIcon = "expand";
     }
 

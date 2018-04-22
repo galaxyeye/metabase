@@ -18,7 +18,7 @@ const SearchHeader = ({
     <input
       className={cx("input bg-transparent", S.searchBox)}
       type="text"
-      placeholder={t`Filter this list...`}
+      placeholder={t`筛选...`}
       value={searchText}
       onChange={e => setSearchText(e.target.value)}
       autoFocus={!!autoFocus}

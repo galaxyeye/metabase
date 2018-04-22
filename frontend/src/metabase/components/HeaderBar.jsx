@@ -42,7 +42,7 @@ export default class Header extends Component {
             onChange={e =>
               this.props.setItemAttributeFn("description", e.target.value)
             }
-            placeholder={t`No description yet`}
+            placeholder={t`没有描述`}
           />
         </div>
       );

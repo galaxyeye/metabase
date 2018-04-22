@@ -80,7 +80,7 @@ export default class ExpressionWidget extends Component {
             <button
               className="Button"
               onClick={() => this.props.onCancel()}
-            >{t`Cancel`}</button>
+            >{t`取消`}</button>
             <button
               className={cx("Button ml2", {
                 "Button--primary": this.isValid(),
@@ -93,7 +93,7 @@ export default class ExpressionWidget extends Component {
               }
               disabled={!this.isValid()}
             >
-              {this.props.expression ? t`Update` : t`Done`}
+              {this.props.expression ? t`Update` : t`完成`}
             </button>
           </div>
           <div>

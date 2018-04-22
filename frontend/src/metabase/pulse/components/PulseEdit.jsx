@@ -196,7 +196,7 @@ export default class PulseEdit extends Component {
             failedText={t`Save failed`}
             successText={t`Saved`}
           />
-          <Link to="/pulse" className="Button ml2">{t`Cancel`}</Link>
+          <Link to="/pulse" className="Button ml2">{t`取消`}</Link>
         </div>
       </div>
     );

@@ -34,7 +34,7 @@ const ListItem = ({ index, name, description, placeholder, url, icon }) => (
           mt1: true,
         })}
       >
-        {description || placeholder || t`No description yet`}
+        {description || placeholder || t`没有描述`}
       </div>
     </div>
   </div>

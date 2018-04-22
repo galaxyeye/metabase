@@ -31,7 +31,7 @@ const FieldSidebar = ({
             [field.name],
           ]}
           inSidebar={true}
-          placeholder={t`Data Reference`}
+          placeholder={t`数据源`}
         />
       </div>
       <SidebarItem

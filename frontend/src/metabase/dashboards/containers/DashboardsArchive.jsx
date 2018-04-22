@@ -75,7 +75,7 @@ export class Dashboards extends Component {
 
     const headerWithBackContainer = (
       <div className="flex align-center pt4 pb1">
-        <HeaderWithBack name={t`Archive`} />
+        <HeaderWithBack name={t`归档`} />
       </div>
     );
 
@@ -93,9 +93,7 @@ export class Dashboards extends Component {
             >
               <EmptyState
                 message={
-                  <span>{jt`No dashboards have been ${(
-                    <br />
-                  )} archived yet`}</span>
+                  <span>{jt`没有归档`}</span>
                 }
                 icon="viewArchive"
               />
@@ -115,8 +113,8 @@ export class Dashboards extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`No results found`}</h3>
-                      <p className="text-grey-4">{t`Try adjusting your filter to find what you’re looking for.`}</p>
+                      <h3 className="text-grey-5">{t`没有结果`}</h3>
+                      <p className="text-grey-4">{t`改变筛选条件试试看？`}</p>
                     </div>
                   }
                   image="/app/img/empty_dashboard"

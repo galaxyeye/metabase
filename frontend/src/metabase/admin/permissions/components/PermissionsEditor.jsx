@@ -46,10 +46,10 @@ const PermissionsEditor = ({
       content={t`No changes to permissions will be made.`}
       key="discard"
     >
-      <Button small={!modal}>{t`Cancel`}</Button>
+      <Button small={!modal}>{t`取消`}</Button>
     </Confirm>
   ) : (
-    <Button small={!modal} onClick={onCancel} key="cancel">{t`Cancel`}</Button>
+    <Button small={!modal} onClick={onCancel} key="cancel">{t`取消`}</Button>
   );
 
   return (

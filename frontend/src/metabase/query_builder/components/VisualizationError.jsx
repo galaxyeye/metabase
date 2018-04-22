@@ -42,7 +42,7 @@ class VisualizationError extends Component {
         return (
           <VisualizationErrorMessage
             type="timeout"
-            title={t`Your question took too long`}
+            title={t`耗时太久`}
             message={t`We didn't get an answer back from your database in time, so we had to stop. You can try again in a minute, or if the problem persists, you can email an admin to let them know.`}
             action={<EmailAdmin />}
           />
@@ -51,7 +51,7 @@ class VisualizationError extends Component {
         return (
           <VisualizationErrorMessage
             type="serverError"
-            title={t`We're experiencing server issues`}
+            title={t`服务器端发生错误`}
             message={t`Try refreshing the page after waiting a minute or two. If the problem persists we'd recommend you contact an admin.`}
             action={<EmailAdmin />}
           />
@@ -84,19 +84,19 @@ class VisualizationError extends Component {
         <div className="QueryError2 flex full justify-center">
           <div className="QueryError-image QueryError-image--queryError mr4" />
           <div className="QueryError2-details">
-            <h1 className="text-bold">{t`There was a problem with your question`}</h1>
+            <h1 className="text-bold">{t`该问题出现一点问题...`}</h1>
             <p className="QueryError-messageText">{t`Most of the time this is caused by an invalid selection or bad input value. Double check your inputs and retry your query.`}</p>
             <div className="pt2">
               <a
                 onClick={() => this.setState({ showError: true })}
                 className="link cursor-pointer"
-              >{t`Show error details`}</a>
+              >{t`显示错误详情`}</a>
             </div>
             <div
               style={{ display: this.state.showError ? "inherit" : "none" }}
               className="pt3 text-left"
             >
-              <h2>{t`Here's the full error message`}</h2>
+              <h2>{t`错误详情`}</h2>
               <div
                 style={{ fontFamily: "monospace" }}
                 className="QueryError2-detailBody bordered rounded bg-grey-0 text-bold p2 mt1"

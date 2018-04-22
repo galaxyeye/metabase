@@ -110,7 +110,7 @@ export class AlertListPopoverContent extends Component {
               onClick={this.onAdd}
             >
               <Icon name="add" className={ownAlertClasses} />{" "}
-              {t`Set up your own alert`}
+              {t`设置警报`}
             </a>
           </div>
         )}
@@ -202,14 +202,14 @@ export class AlertListItem extends Component {
               className={`${unsubscribeButtonClasses} ml-auto text-bold text-small`}
             >
               {(isAdmin || isCurrentUser) && (
-                <a className="link" onClick={this.onEdit}>{jt`Edit`}</a>
+                <a className="link" onClick={this.onEdit}>{jt`编辑`}</a>
               )}
               {!isAdmin &&
                 !unsubscribingProgress && (
                   <a
                     className="link ml2"
                     onClick={this.onUnsubscribe}
-                  >{jt`Unsubscribe`}</a>
+                  >{jt`退订`}</a>
                 )}
               {!isAdmin &&
                 unsubscribingProgress && <span> {unsubscribingProgress}</span>}

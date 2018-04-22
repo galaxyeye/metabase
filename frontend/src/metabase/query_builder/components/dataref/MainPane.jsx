@@ -9,7 +9,7 @@ import cx from "classnames";
 
 const MainPane = ({ databases, show }) => (
   <div>
-    <h1>{t`Data Reference`}</h1>
+    <h1>{t`数据源`}</h1>
     <p>
       {t`Learn more about your data structure to ask more useful questions`}.
     </p>

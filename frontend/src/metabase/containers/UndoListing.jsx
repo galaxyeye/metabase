@@ -55,7 +55,7 @@ export default class UndoListing extends Component {
                   <a
                     className={S.undoButton}
                     onClick={() => performUndo(undo.id)}
-                  >{t`Undo`}</a>
+                  >{t`回退`}</a>
                   <Icon
                     className={S.dismissButton}
                     name="close"

@@ -33,7 +33,7 @@ export default class LoadingAndErrorWrapper extends Component {
     noBackground: false,
     noWrapper: false,
     showSpinner: true,
-    loadingMessages: [t`Loading...`],
+    loadingMessages: [t`加载中...`],
     messageInterval: 6000,
   };
 
@@ -44,7 +44,7 @@ export default class LoadingAndErrorWrapper extends Component {
       (error.data && (error.data.message ? error.data.message : error.data)) ||
       error.statusText ||
       error.message ||
-      t`An error occured`
+      t`有错误发生`
     );
   }
 

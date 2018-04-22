@@ -24,7 +24,7 @@ const AddRow = ({
       onChange={onChange}
     />
     <span className="link no-decoration cursor-pointer" onClick={onCancel}>
-      {t`Cancel`}
+      {t`取消`}
     </span>
     <button
       className={cx("Button ml2", { "Button--primary": !!isValid })}

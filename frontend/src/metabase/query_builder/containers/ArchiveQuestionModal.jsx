@@ -45,7 +45,7 @@ class ArchiveQuestionModal extends Component {
         }
         title={t`Archive this question?`}
         footer={[
-          <Button key="cancel" onClick={this.onClose}>{t`Cancel`}</Button>,
+          <Button key="cancel" onClick={this.onClose}>{t`取消`}</Button>,
           <Button
             key="archive"
             warning

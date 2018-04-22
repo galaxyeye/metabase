@@ -132,7 +132,7 @@ function EditingGroupRow({
           disabled={!textIsValid || !textHasChanged}
           onClick={onDoneClicked}
         >
-          {t`Done`}
+          {t`完成`}
         </button>
       </td>
     </tr>

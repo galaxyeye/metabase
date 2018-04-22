@@ -43,19 +43,19 @@ const SECTION_ID_FAVORITES = "fav";
 const SECTIONS: ListFilterWidgetItem[] = [
   {
     id: SECTION_ID_ALL,
-    name: t`All dashboards`,
+    name: t`我的面板`,
     icon: "dashboard",
     // empty: 'No questions have been saved yet.',
   },
   {
     id: SECTION_ID_FAVORITES,
-    name: t`Favorites`,
+    name: t`我的收藏`,
     icon: "star",
     // empty: 'You haven\'t favorited any questions yet.',
   },
   {
     id: SECTION_ID_MINE,
-    name: t`Saved by me`,
+    name: t`我的提问`,
     icon: "mine",
     // empty:  'You haven\'t saved any questions yet.'
   },
@@ -160,14 +160,14 @@ export class Dashboards extends Component {
       >
         {modalOpen ? this.renderCreateDashboardModal() : null}
         <div className="flex align-center pt4 pb1">
-          <TitleAndDescription title={t`Dashboards`} />
+          <TitleAndDescription title={t`面板`} />
 
           <div className="flex-align-right cursor-pointer text-grey-5">
             <Link to="/dashboards/archive">
               <Icon
                 name="viewArchive"
                 className="mr2 text-brand-hover"
-                tooltip={t`View the archive`}
+                tooltip={t`查看存档`}
                 size={20}
               />
             </Link>
@@ -176,7 +176,7 @@ export class Dashboards extends Component {
               <Icon
                 name="add"
                 className="text-brand-hover"
-                tooltip={t`Add new dashboard`}
+                tooltip={t`创建面板`}
                 size={20}
                 onClick={this.showCreateDashboard}
               />
@@ -187,12 +187,10 @@ export class Dashboards extends Component {
           <div className="mt2 flex-full flex align-center justify-center">
             <EmptyState
               message={
-                <span>{jt`Put the charts and graphs you look at ${(
-                  <br />
-                )}frequently in a single, handy place.`}</span>
+                <span>{jt`将您经常查看的图表保存到方便查看的地方`}</span>
               }
               image="/app/img/dashboard_illustration"
-              action={t`Create a dashboard`}
+              action={t`创建面板`}
               onActionClick={this.showCreateDashboard}
               className="mt2"
               imageClassName="mln2"
@@ -218,14 +216,13 @@ export class Dashboards extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`No results found`}</h3>
-                      <p className="text-grey-4">{t`Try adjusting your filter to find what you’re
-                                                looking for.`}</p>
+                      <h3 className="text-grey-5">{t`没有结果`}</h3>
+                      <p className="text-grey-4">{t`改变筛选条件试试看？`}</p>
                     </div>
                   }
                   image="/app/img/empty_dashboard"
                   imageHeight="210px"
-                  action={t`Create a dashboard`}
+                  action={t`创建面板`}
                   imageClassName="mln2"
                   smallDescription
                 />

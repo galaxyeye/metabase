@@ -29,7 +29,7 @@ export default class ChannelSetupMessage extends Component {
               className="Button Button--primary mr1"
               target={window.OSX ? null : "_blank"}
             >
-              {t`Configure`} {c}
+              {t`设置`} {c}
             </Link>
           ))}
         </div>

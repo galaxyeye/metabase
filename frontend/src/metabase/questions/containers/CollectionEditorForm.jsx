@@ -34,9 +34,9 @@ const formConfig = {
 };
 
 export const getFormTitle = ({ id, name }) =>
-  id.value ? name.value : t`New collection`;
+  id.value ? name.value : t`新建问题集`;
 
-export const getActionText = ({ id }) => (id.value ? t`Update` : t`Create`);
+export const getActionText = ({ id }) => (id.value ? t`更新` : t`创建`);
 
 export const CollectionEditorFormActions = ({
   handleSubmit,
@@ -46,7 +46,7 @@ export const CollectionEditorFormActions = ({
 }) => (
   <div>
     <Button className="mr1" onClick={onClose}>
-      {t`Cancel`}
+      {t`取消`}
     </Button>
     <Button primary disabled={invalid} onClick={handleSubmit}>
       {getActionText(fields)}
@@ -73,22 +73,22 @@ export class CollectionEditorForm extends Component {
         onClose={onClose}
       >
         <div className="NewForm ml-auto mr-auto mt4 pt2" style={{ width: 540 }}>
-          <FormField displayName={t`Name`} {...fields.name}>
+          <FormField displayName={t`名称`} {...fields.name}>
             <Input
               className="Form-input full"
-              placeholder={t`My new fantastic collection`}
+              placeholder={t`新问题集`}
               autoFocus
               {...fields.name}
             />
           </FormField>
-          <FormField displayName={t`Description`} {...fields.description}>
+          <FormField displayName={t`描述`} {...fields.description}>
             <textarea
               className="Form-input full"
-              placeholder={t`It's optional but oh, so helpful`}
+              placeholder={t`可选，但建议填写`}
               {...fields.description}
             />
           </FormField>
-          <FormField displayName={t`Color`} {...fields.color}>
+          <FormField displayName={t`颜色`} {...fields.color}>
             <ColorPicker {...fields.color} />
           </FormField>
         </div>

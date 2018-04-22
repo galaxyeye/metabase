@@ -37,7 +37,7 @@ export class DashboardListItem extends Component {
     const { id, name, created_at, archived, favorite } = dashboard;
 
     const archivalButton = (
-      <Tooltip tooltip={archived ? t`Unarchive` : t`Archive`}>
+      <Tooltip tooltip={archived ? t`取消存档` : t`存档`}>
         <Icon
           className="flex cursor-pointer text-light-blue text-brand-hover ml2 archival-button"
           name={archived ? "unarchive" : "archive"}
@@ -54,7 +54,7 @@ export class DashboardListItem extends Component {
     );
 
     const favoritingButton = (
-      <Tooltip tooltip={favorite ? t`Unfavorite` : t`Favorite`}>
+      <Tooltip tooltip={favorite ? t`取消收藏` : t`收藏`}>
         <Icon
           className={cx(
             "flex cursor-pointer ml2 favoriting-button",

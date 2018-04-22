@@ -14,7 +14,7 @@ export default class QuestionSavedModal extends Component {
     return (
       <ModalContent
         id="QuestionSavedModal"
-        title={t`Saved! Add this to a dashboard?`}
+        title={t`已保存！是否加入面板？`}
         onClose={this.props.onClose}
         className="Modal-content Modal-content--small NewForm"
       >
@@ -22,11 +22,11 @@ export default class QuestionSavedModal extends Component {
           <button
             className="Button Button--primary"
             onClick={this.props.addToDashboardFn}
-          >{t`Yes please!`}</button>
+          >{t`立即加入`}</button>
           <button
             className="Button ml3"
             onClick={this.props.onClose}
-          >{t`Not now`}</button>
+          >{t`暂不加入`}</button>
         </div>
       </ModalContent>
     );

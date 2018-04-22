@@ -21,16 +21,16 @@ export default class RunButton extends Component {
       buttonText = (
         <div className="flex align-center">
           <Icon className="mr1" name="close" />
-          {t`Cancel`}
+          {t`取消`}
         </div>
       );
     } else if (isRunnable && isDirty) {
-      buttonText = t`Get Answer`;
+      buttonText = t`获取结果`;
     } else if (isRunnable && !isDirty) {
       buttonText = (
         <div className="flex align-center">
           <Icon className="mr1" name="refresh" />
-          {t`Refresh`}
+          {t`更新`}
         </div>
       );
     }

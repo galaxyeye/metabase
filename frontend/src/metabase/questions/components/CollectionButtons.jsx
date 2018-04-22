@@ -101,7 +101,7 @@ const NewCollectionButton = ({ push }) => (
         <Icon name="add" width="32" height="32" />
       </div>
     </div>
-    <h3>{t`New collection`}</h3>
+    <h3>{t`新建问题集`}</h3>
   </div>
 );
 

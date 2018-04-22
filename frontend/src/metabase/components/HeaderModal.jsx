@@ -40,13 +40,13 @@ export default class HeaderModal extends Component {
           <button
             className="Button Button--borderless text-brand bg-white text-bold"
             onClick={onDone}
-          >{t`Done`}</button>
+          >{t`完成。`}</button>
           {onCancel && <span className="text-white mx1">or</span>}
           {onCancel && (
             <a
               className="cursor-pointer text-white text-bold"
               onClick={onCancel}
-            >{t`Cancel`}</a>
+            >{t`取消`}</a>
           )}
         </div>
       </div>

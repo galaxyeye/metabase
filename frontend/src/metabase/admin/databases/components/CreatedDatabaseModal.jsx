@@ -38,7 +38,7 @@ export default class CreatedDatabaseModal extends Component {
           <button
             className="Button Button--primary px3"
             onClick={onDone}
-          >{t`Done`}</button>
+          >{t`完成`}</button>
         </div>
       </ModalContent>
     );

@@ -85,7 +85,7 @@ export default class ParameterFieldWidget extends Component<*, Props, State> {
 
     const defaultPlaceholder = isFocused
       ? ""
-      : this.props.placeholder || t`Enter a value...`;
+      : this.props.placeholder || t`输入一个值...`;
 
     const focusChanged = isFocused => {
       if (parentFocusChanged) parentFocusChanged(isFocused);
@@ -93,7 +93,7 @@ export default class ParameterFieldWidget extends Component<*, Props, State> {
     };
 
     const placeholder = isEditing
-      ? "Enter a default value..."
+      ? "输入一个默认值..."
       : defaultPlaceholder;
 
     if (!isFocused) {

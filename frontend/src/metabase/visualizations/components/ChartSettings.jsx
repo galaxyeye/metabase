@@ -197,12 +197,12 @@ class ChartSettings extends Component {
               className="Button Button--primary ml2"
               onClick={() => this.onDone()}
               data-metabase-event="Chart Settings;Done"
-            >{t`Done`}</a>
+            >{t`完成`}</a>
             <a
               className="Button ml2"
               onClick={onClose}
               data-metabase-event="Chart Settings;Cancel"
-            >{t`Cancel`}</a>
+            >{t`取消`}</a>
           </div>
         </div>
       </div>

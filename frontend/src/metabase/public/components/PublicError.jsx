@@ -15,7 +15,7 @@ type Props = {
   message?: string,
 };
 
-const PublicError = ({ message = t`An error occurred` }: Props) => (
+const PublicError = ({ message = t`出现错误` }: Props) => (
   <EmbedFrame className="spread">
     <div className="flex layout-centered flex-full flex-column">
       <div className="QueryError-image QueryError-image--noRows" />

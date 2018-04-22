@@ -14,7 +14,7 @@ import cx from "classnames";
 const LabelPicker = ({ labels, count, item, setLabeled }) => (
   <div className={S.picker}>
     <div className={S.heading}>
-      {count > 1 ? t`Apply labels to ${count} questions` : t`Label as`}
+      {count > 1 ? t`为 ${count} 提问应用标签` : t`Label as`}
     </div>
     <ul className={S.options}>
       {labels.map(label => {
@@ -48,7 +48,7 @@ const LabelPicker = ({ labels, count, item, setLabeled }) => (
       })}
     </ul>
     <div className={S.footer}>
-      <Link className="link" to="/labels">{t`Add and edit labels`}</Link>
+      <Link className="link" to="/labels">{t`增加或者修改标签`}</Link>
       <Tooltip
         tooltip={t`In an upcoming release, Labels will be removed in favor of Collections.`}
       >

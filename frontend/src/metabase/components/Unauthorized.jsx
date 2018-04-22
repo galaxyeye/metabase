@@ -7,7 +7,7 @@ export default class Unauthorized extends Component {
     return (
       <div className="flex layout-centered flex-full flex-column text-grey-2">
         <Icon name="key" size={100} />
-        <h1 className="mt4">{t`Sorry, you don’t have permission to see that.`}</h1>
+        <h1 className="mt4">{t`抱歉，您没有权限访问该页面。`}</h1>
       </div>
     );
   }

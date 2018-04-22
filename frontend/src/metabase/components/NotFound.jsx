@@ -8,17 +8,17 @@ export default class NotFound extends Component {
     return (
       <div className="layout-centered flex full">
         <div className="p4 text-bold">
-          <h1 className="text-brand text-light mb3">{t`We're a little lost...`}</h1>
+          <h1 className="text-brand text-light mb3">{t`我们有点迷失...`}</h1>
           <p className="h4 mb1">
-            {t`The page you asked for couldn't be found`}.
+            {t`您访问的页面可能被外星人虏走了。`}.
           </p>
-          <p className="h4">{t`You might've been tricked by a ninja, but in all likelihood, you were just given a bad link.`}</p>
-          <p className="h4 my4">{t`You can always:`}</p>
+          <p className="h4">{t`您可能输入了一个错误的链接。`}</p>
+          <p className="h4 my4">{t`您可以:`}</p>
           <div className="flex align-center">
             <Link to={Urls.question()} className="Button Button--primary">
-              <div className="p1">{t`Ask a new question.`}</div>
+              <div className="p1">{t`提出一个新问题`}</div>
             </Link>
-            <span className="mx2">{t`or`}</span>
+            <span className="mx2">{t`或者`}</span>
             <a
               className="Button Button--withIcon"
               target="_blank"
@@ -26,7 +26,7 @@ export default class NotFound extends Component {
             >
               <div className="p1 flex align-center relative">
                 <span className="h2">😸</span>
-                <span className="ml1">{t`Take a kitten break.`}</span>
+                <span className="ml1">{t`休息一小会儿.`}</span>
               </div>
             </a>
           </div>

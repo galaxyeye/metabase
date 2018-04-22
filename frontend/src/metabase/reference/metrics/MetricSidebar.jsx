@@ -17,7 +17,7 @@ const MetricSidebar = ({ metric, user, style, className }) => (
           className="py4"
           crumbs={[[t`Metrics`, "/reference/metrics"], [metric.name]]}
           inSidebar={true}
-          placeholder={t`Data Reference`}
+          placeholder={t`数据源`}
         />
       </div>
       <SidebarItem

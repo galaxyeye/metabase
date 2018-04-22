@@ -32,7 +32,7 @@ export default class CopyWidget extends Component {
   render() {
     const { value, className, ...props } = this.props;
     return (
-      <Tooltip tooltip={t`Copied!`} isOpen={this.state.copied}>
+      <Tooltip tooltip={t`复制完成！`} isOpen={this.state.copied}>
         <CopyToClipboard text={value} onCopy={this.onCopy}>
           <div className={className}>
             <Icon name="copy" {...props} />

@@ -97,16 +97,16 @@ export default class TimeseriesFilterWidget extends Component {
         currentFilter,
       ).join(" - ");
       if (currentFilter[0] === ">") {
-        currentDescription = t`After ${currentDescription}`;
+        currentDescription = t`${currentDescription} 之后`;
       } else if (currentFilter[0] === "<") {
-        currentDescription = t`Before ${currentDescription}`;
+        currentDescription = t`${currentDescription} 之前`;
       } else if (currentFilter[0] === "IS_NULL") {
-        currentDescription = t`Is Empty`;
+        currentDescription = t`空`;
       } else if (currentFilter[0] === "NOT_NULL") {
-        currentDescription = t`Not Empty`;
+        currentDescription = t`非空`;
       }
     } else {
-      currentDescription = t`All Time`;
+      currentDescription = t`所有时间`;
     }
 
     return (

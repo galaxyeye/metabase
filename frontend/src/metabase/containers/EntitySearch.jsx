@@ -21,7 +21,7 @@ const PAGE_SIZE = 10;
 const SEARCH_GROUPINGS = [
   {
     id: "name",
-    name: t`Name`,
+    name: t`名字`,
     icon: null,
     // Name grouping is a no-op grouping so always put all results to same group with identifier `0`
     groupBy: () => 0,
@@ -30,21 +30,21 @@ const SEARCH_GROUPINGS = [
   },
   {
     id: "table",
-    name: t`Table`,
+    name: t`表`,
     icon: "table2",
     groupBy: entity => entity.table.id,
     getGroupName: entity => entity.table.display_name,
   },
   {
     id: "database",
-    name: t`Database`,
+    name: t`数据库`,
     icon: "database",
     groupBy: entity => entity.table.db.id,
     getGroupName: entity => entity.table.db.name,
   },
   {
     id: "creator",
-    name: t`Creator`,
+    name: t`创建者`,
     icon: "mine",
     groupBy: entity => entity.creator.id,
     getGroupName: entity => entity.creator.common_name,
@@ -233,8 +233,8 @@ export default class EntitySearch extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`No results found`}</h3>
-                      <p className="text-grey-4">{t`Try adjusting your filter to find what you’re looking for.`}</p>
+                      <h3 className="text-grey-5">{t`没有结果`}</h3>
+                      <p className="text-grey-4">{t`调整过滤条件试试看？`}</p>
                     </div>
                   }
                   image="/app/img/empty_question"
@@ -253,7 +253,7 @@ export default class EntitySearch extends Component {
 
 export const SearchGroupingOptions = ({ currentGrouping, setGrouping }) => (
   <div className="Entity-search-grouping-options">
-    <h3 className="mb3">{t`View by`}</h3>
+    <h3 className="mb3">{t`查看`}</h3>
     <ul>
       {SEARCH_GROUPINGS.map(groupingOption => (
         <SearchGroupingOption

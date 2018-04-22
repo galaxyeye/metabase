@@ -68,7 +68,7 @@ export default class DeleteModalWithConfirm extends Component {
           <button
             className="Button"
             onClick={this.props.onClose}
-          >{t`Cancel`}</button>
+          >{t`取消`}</button>
           <button
             className={cx("Button ml2", {
               disabled: !confirmed,
@@ -76,7 +76,7 @@ export default class DeleteModalWithConfirm extends Component {
             })}
             onClick={this.onDelete}
           >
-            {t`Delete this ${objectType}`}
+            {t`确认删除 ${objectType} ？`}
           </button>
         </div>
       </ModalContent>

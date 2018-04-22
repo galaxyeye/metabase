@@ -62,7 +62,7 @@ export default class AddToDashboard extends Component {
                   className="text-brand-hover flex align-center border-bottom cursor-pointer py1 md-py2"
                   onClick={() =>
                     this.setState({
-                      collection: { name: t`Everything else` },
+                      collection: { name: t`其他` },
                       query: { collection: "" },
                     })
                   }
@@ -110,8 +110,8 @@ export default class AddToDashboard extends Component {
             {query && (
               <div className="ml-auto flex align-center">
                 <h5>Sort by</h5>
-                <Button borderless>{t`Last modified`}</Button>
-                <Button borderless>{t`Alphabetical order`}</Button>
+                <Button borderless>{t`上一修改`}</Button>
+                <Button borderless>{t`字符序`}</Button>
               </div>
             )}
           </div>

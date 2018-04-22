@@ -81,7 +81,7 @@ export default class HomepageApp extends Component {
         <div className="flex">
           <div className="wrapper">
             <div className="Layout-mainColumn pl2">
-              <div className="md-pt4 h3 md-h2">{t`Activity`}</div>
+              <div className="md-pt4 h3 md-h2">{t`活动`}</div>
               <Activity {...this.props} />
             </div>
           </div>

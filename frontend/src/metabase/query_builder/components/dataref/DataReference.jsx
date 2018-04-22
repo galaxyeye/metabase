@@ -83,7 +83,7 @@ export default class DataReference extends Component {
           onClick={this.back}
         >
           <Icon name="chevronleft" size={18} />
-          <span className="text-uppercase">{t`Back`}</span>
+          <span className="text-uppercase">{t`返回`}</span>
         </a>
       );
     }

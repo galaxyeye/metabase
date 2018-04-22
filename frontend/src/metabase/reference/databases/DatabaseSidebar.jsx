@@ -17,7 +17,7 @@ const DatabaseSidebar = ({ database, style, className }) => (
           className="py4"
           crumbs={[[t`Databases`, "/reference/databases"], [database.name]]}
           inSidebar={true}
-          placeholder={t`Data Reference`}
+          placeholder={t`数据源`}
         />
       </div>
       <SidebarItem

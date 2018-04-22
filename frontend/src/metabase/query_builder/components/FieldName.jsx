@@ -73,10 +73,10 @@ export default class FieldName extends Component {
           </span>,
         );
       } else {
-        parts.push(<span key="field">{t`Unknown Field`}</span>);
+        parts.push(<span key="field">{t`未知字段`}</span>);
       }
     } else {
-      parts.push(<span key="field" className={"text-grey-2"}>{t`field`}</span>);
+      parts.push(<span key="field" className={"text-grey-2"}>{t`字段`}</span>);
     }
 
     return (

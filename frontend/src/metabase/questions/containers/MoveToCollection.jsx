@@ -58,7 +58,7 @@ export default class MoveToCollection extends Component {
               </span>
             )}
             <Button className="mr1" onClick={onClose}>
-              {t`Cancel`}
+              {t`取消`}
             </Button>
             <Button
               primary

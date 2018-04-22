@@ -190,7 +190,7 @@ export const getRoutes = store => (
       <Route path="/auth">
         <IndexRedirect to="/auth/login" />
         <Route component={IsNotAuthenticated}>
-          <Route path="login" title={t`Login`} component={LoginApp} />
+          <Route path="login" title={t`登录`} component={LoginApp} />
         </Route>
         <Route path="logout" component={LogoutApp} />
         <Route path="forgot_password" component={ForgotPasswordApp} />
@@ -206,19 +206,19 @@ export const getRoutes = store => (
         {/* DASHBOARD LIST */}
         <Route
           path="/dashboards"
-          title={t`Dashboards`}
+          title={t`面板`}
           component={Dashboards}
         />
         <Route
           path="/dashboards/archive"
-          title={t`Dashboards`}
+          title={t`面板`}
           component={DashboardsArchive}
         />
 
         {/* INDIVIDUAL DASHBOARDS */}
         <Route
           path="/dashboard/:dashboardId"
-          title={t`Dashboard`}
+          title={t`面板`}
           component={DashboardApp}
         >
           <ModalRoute path="history" modal={DashboardHistoryModal} />
@@ -228,11 +228,11 @@ export const getRoutes = store => (
         <Route path="/question">
           <IndexRoute component={QueryBuilder} />
           {/* NEW QUESTION FLOW */}
-          <Route path="new" title={t`New Question`}>
+          <Route path="new" title={t`提问`}>
             <IndexRoute component={NewQuestionStart} />
             <Route
               path="metric"
-              title={t`Metrics`}
+              title={t`指标`}
               component={NewQuestionMetricSearch}
             />
           </Route>
@@ -240,14 +240,14 @@ export const getRoutes = store => (
         <Route path="/question/:cardId" component={QueryBuilder} />
 
         {/* QUESTIONS */}
-        <Route path="/questions" title={t`Questions`}>
+        <Route path="/questions" title={t`问题`}>
           <IndexRoute component={QuestionIndex} />
           <Route
             path="search"
-            title={({ location: { query: { q } } }) => t`Search` + ": " + q}
+            title={({ location: { query: { q } } }) => t`搜索` + ": " + q}
             component={SearchResults}
           />
-          <Route path="archive" title={t`Archive`} component={Archive} />
+          <Route path="archive" title={t`归档`} component={Archive} />
           <Route
             path="collections/:collectionSlug"
             component={CollectionPage}
@@ -342,28 +342,28 @@ export const getRoutes = store => (
           />
         </Route>
 
-        {/* XRAY */}
-        <Route path="/xray" title={t`XRay`}>
-          <Route path="segment/:segmentId/:cost" component={SegmentXRay} />
-          <Route path="table/:tableId/:cost" component={TableXRay} />
-          <Route path="field/:fieldId/:cost" component={FieldXRay} />
-          <Route path="card/:cardId/:cost" component={CardXRay} />
-          <Route
-            path="compare/:modelTypePlural/:modelId1/:modelId2/:cost"
-            component={SharedTypeComparisonXRay}
-          />
-          <Route
-            path="compare/:modelType1/:modelId1/:modelType2/:modelId2/:cost"
-            component={TwoTypesComparisonXRay}
-          />
-        </Route>
+        {/*/!* XRAY *!/*/}
+        {/*<Route path="/xray" title={t`XRay`}>*/}
+          {/*<Route path="segment/:segmentId/:cost" component={SegmentXRay} />*/}
+          {/*<Route path="table/:tableId/:cost" component={TableXRay} />*/}
+          {/*<Route path="field/:fieldId/:cost" component={FieldXRay} />*/}
+          {/*<Route path="card/:cardId/:cost" component={CardXRay} />*/}
+          {/*<Route*/}
+            {/*path="compare/:modelTypePlural/:modelId1/:modelId2/:cost"*/}
+            {/*component={SharedTypeComparisonXRay}*/}
+          {/*/>*/}
+          {/*<Route*/}
+            {/*path="compare/:modelType1/:modelId1/:modelType2/:modelId2/:cost"*/}
+            {/*component={TwoTypesComparisonXRay}*/}
+          {/*/>*/}
+        {/*</Route>*/}
 
-        {/* PULSE */}
-        <Route path="/pulse" title={t`Pulses`}>
-          <IndexRoute component={PulseListApp} />
-          <Route path="create" component={PulseEditApp} />
-          <Route path=":pulseId" component={PulseEditApp} />
-        </Route>
+        {/*/!* PULSE *!/*/}
+        {/*<Route path="/pulse" title={t`Pulses`}>*/}
+          {/*<IndexRoute component={PulseListApp} />*/}
+          {/*<Route path="create" component={PulseEditApp} />*/}
+          {/*<Route path=":pulseId" component={PulseEditApp} />*/}
+        {/*</Route>*/}
 
         {/* USER */}
         <Route path="/user/edit_current" component={UserSettingsApp} />

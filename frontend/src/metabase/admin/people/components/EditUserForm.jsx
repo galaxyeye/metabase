@@ -231,7 +231,7 @@ export default class EditUserForm extends Component {
 
         <ModalFooter>
           <Button type="button" onClick={this.cancel.bind(this)}>
-            {t`Cancel`}
+            {t`取消`}
           </Button>
           <Button primary disabled={!valid}>
             {buttonText ? buttonText : t`Save changes`}

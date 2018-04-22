@@ -103,7 +103,7 @@ export default class CategoryWidget extends Component {
             className="Button Button--purple full"
             onClick={() => this.commitValues(this.state.selectedValues)}
           >
-            {t`Done`}
+            {t`完成`}
           </button>
         </div>
       </div>

@@ -107,7 +107,7 @@ export default class EditLabels extends Component {
                           <a
                             className={" text-grey-1 text-grey-4-hover ml2"}
                             onClick={() => editLabel(null)}
-                          >{t`Cancel`}</a>
+                          >{t`取消`}</a>
                         </li>
                       ) : (
                         <li key={label.id} className={S.label}>

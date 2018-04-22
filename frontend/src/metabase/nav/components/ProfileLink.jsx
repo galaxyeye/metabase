@@ -103,7 +103,7 @@ export default class ProfileLink extends Component {
                       onClick={this.closeDropdown}
                       className="Dropdown-item block text-white no-decoration"
                     >
-                      {t`Account Settings`}
+                      {t`帐户设置`}
                     </Link>
                   </li>
                 ) : null}
@@ -118,7 +118,7 @@ export default class ProfileLink extends Component {
                       onClick={this.closeDropdown}
                       className="Dropdown-item block text-white no-decoration"
                     >
-                      {t`Admin Panel`}
+                      {t`管理员面板`}
                     </Link>
                   </li>
                 ) : null}
@@ -131,7 +131,7 @@ export default class ProfileLink extends Component {
                       onClick={this.closeDropdown}
                       className="Dropdown-item block text-white no-decoration"
                     >
-                      {t`Exit Admin`}
+                      {t`退出管理员面板`}
                     </Link>
                   </li>
                 ) : null}
@@ -143,7 +143,7 @@ export default class ProfileLink extends Component {
                     href={"http://www.metabase.com/docs/" + tag}
                     target="_blank"
                   >
-                    {t`Help`}
+                    {t`帮助`}
                   </a>
                 </li>
 
@@ -156,7 +156,7 @@ export default class ProfileLink extends Component {
                       onClick={this.openModal.bind(this, "logs")}
                       className="Dropdown-item block text-white no-decoration"
                     >
-                      {t`Logs`}
+                      {t`日志`}
                     </a>
                   </li>
                 )}
@@ -167,7 +167,7 @@ export default class ProfileLink extends Component {
                     onClick={this.openModal.bind(this, "about")}
                     className="Dropdown-item block text-white no-decoration"
                   >
-                    {t`About Metabase`}
+                    {t`关于`}
                   </a>
                 </li>
 
@@ -177,7 +177,7 @@ export default class ProfileLink extends Component {
                     data-metabase-event={"Navbar;Profile Dropdown;Logout"}
                     className="Dropdown-item block text-white no-decoration"
                   >
-                    {t`Sign out`}
+                    {t`退出`}
                   </Link>
                 </li>
               </ul>
@@ -198,14 +198,14 @@ export default class ProfileLink extends Component {
                 <LogoIcon width={48} height={48} />
               </div>
               <h2 style={{ fontSize: "1.75em" }} className="text-dark">
-                {t`Thanks for using`} Metabase!
+                {t`感谢使用！`}
               </h2>
               <div className="pt2">
                 <h3 className="text-dark mb1">
-                  {t`You're on version`} {tag}
+                  {t`当前版本：`} {tag}
                 </h3>
                 <p className="text-grey-3 text-bold">
-                  {t`Built on`} {date}
+                  {t`日期：`} {date}
                 </p>
                 {!/^v\d+\.\d+\.\d+$/.test(tag) && (
                   <div>
@@ -224,7 +224,7 @@ export default class ProfileLink extends Component {
             >
               <span className="block">
                 <span className="text-bold">Metabase</span>{" "}
-                {t`is a Trademark of`} Metabase, Inc
+                {t`商标：`} Metabase, Inc
               </span>
               <span>{t`and is built with care in San Francisco, CA`}</span>
             </div>

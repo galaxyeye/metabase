@@ -31,13 +31,13 @@ export default class NextStep extends Component {
     if (next) {
       return (
         <SidebarSection
-          title={t`Setup Tip`}
+          title={t`提示`}
           icon="info"
           extra={
             <Link
               to="/admin/settings"
               className="text-brand no-decoration"
-            >{t`View all`}</Link>
+            >{t`查看所有`}</Link>
           }
         >
           <Link to={next.link} className="block p3 no-decoration">

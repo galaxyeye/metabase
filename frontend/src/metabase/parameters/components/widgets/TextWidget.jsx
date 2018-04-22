@@ -51,7 +51,7 @@ export default class TextWidget extends Component {
     } = this.props;
     const defaultPlaceholder = this.state.isFocused
       ? ""
-      : this.props.placeholder || t`Enter a value...`;
+      : this.props.placeholder || t`输入一个值...`;
 
     const focusChanged = isFocused => {
       if (parentFocusChanged) parentFocusChanged(isFocused);
@@ -85,7 +85,7 @@ export default class TextWidget extends Component {
           this.setState({ value: this.props.value });
         }}
         placeholder={
-          isEditing ? t`Enter a default value...` : defaultPlaceholder
+          isEditing ? t`输入一个默认值...` : defaultPlaceholder
         }
       />
     );

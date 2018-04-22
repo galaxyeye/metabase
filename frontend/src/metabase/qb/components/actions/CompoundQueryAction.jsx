@@ -11,7 +11,7 @@ export default ({ question }: ClickActionProps): ClickAction[] => {
     return [
       {
         name: "nest-query",
-        title: t`Analyze the results of this Query`,
+        title: t`分析该查询的结果`,
         icon: "table",
         question: () => question.composeThisQuery(),
       },

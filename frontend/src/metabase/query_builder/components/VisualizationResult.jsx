@@ -58,7 +58,7 @@ export default class VisualizationResult extends Component {
           <VisualizationErrorMessage
             type="noRows"
             title="No results!"
-            message={t`This may be the answer you’re looking for. If not, try removing or changing your filters to make them less specific.`}
+            message={t`你的查询结果可能是空，如果这不符合预期，试试调整筛选条件。`}
             action={
               <div>
                 {supportsRowsPresentAlert &&
@@ -75,7 +75,7 @@ export default class VisualizationResult extends Component {
                   className="Button"
                   onClick={() => window.history.back()}
                 >
-                  {t`Back to last run`}
+                  {t`返回到上一查询`}
                 </button>
               </div>
             }

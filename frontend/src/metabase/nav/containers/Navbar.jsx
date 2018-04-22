@@ -160,7 +160,7 @@ export default class Navbar extends Component {
           <li className="md-pl3 hide xs-show">
             <MainNavLink
               to="/dashboards"
-              name={t`Dashboards`}
+              name={t`面板`}
               eventName="Dashboards"
               icon="dashboard"
             />
@@ -168,23 +168,23 @@ export default class Navbar extends Component {
           <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/questions"
-              name={t`Questions`}
+              name={t`问题`}
               eventName="Questions"
               icon="all"
             />
           </li>
-          <li className="md-pl1 hide xs-show">
-            <MainNavLink
-              to="/pulse"
-              name={t`Pulses`}
-              eventName="Pulses"
-              icon="pulse"
-            />
-          </li>
+          {/*<li className="md-pl1 hide xs-show">*/}
+            {/*<MainNavLink*/}
+              {/*to="/pulse"*/}
+              {/*name={t`Pulses`}*/}
+              {/*eventName="Pulses"*/}
+              {/*icon="pulse"*/}
+            {/*/>*/}
+          {/*</li>*/}
           <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/reference/guide"
-              name={t`Data Reference`}
+              name={t`数据源`}
               eventName="DataReference"
               icon="reference"
             />
@@ -196,7 +196,7 @@ export default class Navbar extends Component {
               style={BUTTON_PADDING_STYLES.newQuestion}
               className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all"
             >
-              {t`New Question`}
+              {t`提问`}
             </Link>
           </li>
           <li className="flex-align-right transition-background hide sm-show">

@@ -54,7 +54,7 @@ export const SchemaAndSegmentTriggerContent = ({
     );
   } else {
     return (
-      <span className="text-grey-4 no-decoration">{t`Pick a segment or table`}</span>
+      <span className="text-grey-4 no-decoration">{t`选择分区或表格`}</span>
     );
   }
 };
@@ -70,7 +70,7 @@ export const DatabaseTriggerContent = ({ selectedDatabase }) =>
   selectedDatabase ? (
     <span className="text-grey no-decoration">{selectedDatabase.name}</span>
   ) : (
-    <span className="text-grey-4 no-decoration">{t`Select a database`}</span>
+    <span className="text-grey-4 no-decoration">{t`选择数据库`}</span>
   );
 
 export const SchemaTableAndFieldDataSelector = props => (
@@ -85,7 +85,7 @@ export const SchemaTableAndFieldDataSelector = props => (
 export const FieldTriggerContent = ({ selectedDatabase, selectedField }) => {
   if (!selectedField || !selectedField.table) {
     return (
-      <span className="flex-full text-grey-4 no-decoration">{t`Select...`}</span>
+      <span className="flex-full text-grey-4 no-decoration">{t`选择...`}</span>
     );
   } else {
     const hasMultipleSchemas =
@@ -125,7 +125,7 @@ export const TableTriggerContent = ({ selectedTable }) =>
       {selectedTable.display_name || selectedTable.name}
     </span>
   ) : (
-    <span className="text-grey-4 no-decoration">{t`Select a table`}</span>
+    <span className="text-grey-4 no-decoration">{t`选择表格`}</span>
   );
 
 @connect(state => ({ metadata: getMetadata(state) }), { fetchTableMetadata })
@@ -781,7 +781,7 @@ export const TablePicker = ({
             <h3 className="text-default">{header}</h3>
           </div>
         </div>
-        <div className="p4 text-centered">{t`No tables found in this database.`}</div>
+        <div className="p4 text-centered">{t`该数据库中没有表格。`}</div>
       </section>
     );
   } else {

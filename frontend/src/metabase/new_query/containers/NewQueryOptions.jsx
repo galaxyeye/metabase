@@ -136,8 +136,8 @@ export class NewQueryOptions extends Component {
                 <li className="Grid-cell">
                   <NewQueryOption
                     image="/app/img/questions_illustration"
-                    title={t`Metrics`}
-                    description={t`See data over time, as a map, or pivoted to help you understand trends or changes.`}
+                    title={t`指标`}
+                    description={t`按时间查看，轻松洞察趋势`}
                     to={metricSearchUrl}
                   />
                 </li>
@@ -148,10 +148,10 @@ export class NewQueryOptions extends Component {
                   image="/app/img/query_builder_illustration"
                   title={
                     showCustomInsteadOfNewQuestionText
-                      ? t`Custom`
-                      : t`New question`
+                      ? t`自定义`
+                      : t`提问`
                   }
-                  description={t`Use the simple question builder to see trends, lists of things, or to create your own metrics.`}
+                  description={t`使用问题创建器查看趋势、列表或者创建你自己的指标集`}
                   width={180}
                   to={this.getGuiQueryUrl}
                 />
@@ -160,8 +160,8 @@ export class NewQueryOptions extends Component {
                 <li className="Grid-cell">
                   <NewQueryOption
                     image="/app/img/sql_illustration"
-                    title={t`Native query`}
-                    description={t`For more complicated questions, you can write your own SQL or native query.`}
+                    title={t`自定义查询`}
+                    description={t`你可以使用SQL来创建更复杂的查询`}
                     to={this.getNativeQueryUrl}
                   />
                 </li>

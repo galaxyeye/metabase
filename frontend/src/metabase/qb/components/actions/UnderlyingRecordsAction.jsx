@@ -19,9 +19,9 @@ export default ({ question }: ClickActionProps): ClickAction[] => {
       name: "underlying-records",
       title: (
         <span>
-          {jt`View the underlying ${(
+          {jt`查看底层 ${(
             <span className="text-dark">{query.table().display_name}</span>
-          )} records`}
+          )} 记录`}
         </span>
       ),
       icon: "table2",

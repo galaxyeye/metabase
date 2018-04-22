@@ -47,7 +47,7 @@ export default class ArchiveCollectionWidget extends Component {
         }
         title={t`Archive this collection?`}
         footer={[
-          <Button onClick={this._onClose}>{t`Cancel`}</Button>,
+          <Button onClick={this._onClose}>{t`取消`}</Button>,
           <Button warning onClick={this._onArchive}>{t`Archive`}</Button>,
         ]}
       >

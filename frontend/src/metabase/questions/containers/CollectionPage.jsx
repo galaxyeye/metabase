@@ -62,7 +62,7 @@ export default class CollectionPage extends Component {
                 <Icon
                   size={18}
                   name="pencil"
-                  tooltip={t`Edit collection`}
+                  tooltip={t`编辑问题集`}
                   onClick={() =>
                     this.props.editCollection(this.props.collection.id)
                   }
@@ -72,7 +72,7 @@ export default class CollectionPage extends Component {
                 <Icon
                   size={18}
                   name="lock"
-                  tooltip={t`Set permissions`}
+                  tooltip={t`设置权限`}
                   onClick={() =>
                     this.props.editPermissions(this.props.collection.id)
                   }
@@ -83,7 +83,7 @@ export default class CollectionPage extends Component {
         </div>
         <div className="mt4">
           <EntityList
-            defaultEmptyState={t`No questions have been added to this collection yet.`}
+            defaultEmptyState={t`尚没有提问加入该问题集。`}
             entityType="cards"
             entityQuery={{
               f: "all",

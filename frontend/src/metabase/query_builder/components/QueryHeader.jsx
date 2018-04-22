@@ -240,14 +240,14 @@ export default class QueryHeader extends Component {
             >
               <span>
                 <Icon name="check" size={12} />
-                <span className="ml1">{t`Saved`}</span>
+                <span className="ml1">{t`已保存`}</span>
               </span>
             </button>,
           ]);
         } else {
           // edit button
           buttonSections.push([
-            <Tooltip key="edit" tooltip={t`Edit question`}>
+            <Tooltip key="edit" tooltip={t`编辑问题`}>
               <a
                 className="cursor-pointer text-brand-hover"
                 onClick={this.onBeginEditing}
@@ -264,10 +264,10 @@ export default class QueryHeader extends Component {
             key="save"
             actionFn={() => this.onSave(this.props.card, false)}
             className="cursor-pointer text-brand-hover bg-white text-grey-4 text-uppercase"
-            normalText={t`SAVE CHANGES`}
-            activeText={t`Saving…`}
-            failedText={t`Save failed`}
-            successText={t`Saved`}
+            normalText={t`保存更改`}
+            activeText={t`保存中…`}
+            failedText={t`保存失败`}
+            successText={t`已保存`}
           />,
         ]);
 
@@ -278,7 +278,7 @@ export default class QueryHeader extends Component {
             className="cursor-pointer text-brand-hover text-grey-4 text-uppercase"
             onClick={this.onCancel}
           >
-            {t`CANCEL`}
+            {t`取消`}
           </a>,
         ]);
 
@@ -293,7 +293,7 @@ export default class QueryHeader extends Component {
             key="move"
             full
             triggerElement={
-              <Tooltip tooltip={t`Move question`}>
+              <Tooltip tooltip={t`移动问题`}>
                 <Icon name="move" />
               </Tooltip>
             }
@@ -324,7 +324,7 @@ export default class QueryHeader extends Component {
         "text-brand-hover": !this.props.uiControls.isShowingTemplateTagsEditor,
       });
       buttonSections.push([
-        <Tooltip key="parameterEdititor" tooltip={t`Variables`}>
+        <Tooltip key="parameterEdititor" tooltip={t`变量`}>
           <a className={parametersButtonClasses}>
             <Icon
               name="variable"
@@ -340,7 +340,7 @@ export default class QueryHeader extends Component {
     if (!isNew && !isEditing) {
       // simply adding an existing saved card to a dashboard, so show the modal to do so
       buttonSections.push([
-        <Tooltip key="addtodash" tooltip={t`Add to dashboard`}>
+        <Tooltip key="addtodash" tooltip={t`加入到面板`}>
           <span
             data-metabase-event={"QueryBuilder;AddToDash Modal;normal"}
             className="cursor-pointer text-brand-hover"
@@ -353,7 +353,7 @@ export default class QueryHeader extends Component {
     } else if (isNew && isDirty) {
       // this is a new card, so we need the user to save first then they can add to dash
       buttonSections.push([
-        <Tooltip key="addtodashsave" tooltip={t`Add to dashboard`}>
+        <Tooltip key="addtodashsave" tooltip={t`加入到面板`}>
           <ModalWithTrigger
             ref="addToDashSaveModal"
             triggerClasses="h4 text-brand-hover text-uppercase"
@@ -389,7 +389,7 @@ export default class QueryHeader extends Component {
     // history icon on saved cards
     if (!isNew) {
       buttonSections.push([
-        <Tooltip key="history" tooltip={t`Revision history`}>
+        <Tooltip key="history" tooltip={t`修订历史`}>
           <ModalWithTrigger
             ref="cardHistory"
             triggerElement={
@@ -442,7 +442,7 @@ export default class QueryHeader extends Component {
       "text-brand-hover": !this.state.isShowingDataReference,
     });
     buttonSections.push([
-      <Tooltip key="dataReference" tooltip={t`Learn about your data`}>
+      <Tooltip key="dataReference" tooltip={t`探索数据`}>
         <a className={dataReferenceButtonClasses}>
           <Icon
             name="reference"
@@ -527,7 +527,7 @@ export default class QueryHeader extends Component {
       <div className="relative">
         <HeaderBar
           isEditing={this.props.isEditing}
-          name={this.props.isNew ? t`New question` : this.props.card.name}
+          name={this.props.isNew ? t`提问` : this.props.card.name}
           description={this.props.card ? this.props.card.description : null}
           breadcrumb={
             !this.props.card.id && this.props.originalCard ? (

@@ -14,11 +14,11 @@ const DetailPane = ({
   <div>
     <h1>{name}</h1>
     <p className={cx({ "text-grey-3": !description })}>
-      {description || t`No description set.`}
+      {description || t`尚无描述。`}
     </p>
     {useForCurrentQuestion && useForCurrentQuestion.length > 0 ? (
       <div className="py1">
-        <p className="text-bold">{t`Use for current question`}</p>
+        <p className="text-bold">{t`使用当前问题`}</p>
         <ul className="my2">
           {useForCurrentQuestion.map((item, index) => (
             <li className="mt1" key={index}>
@@ -30,7 +30,7 @@ const DetailPane = ({
     ) : null}
     {usefulQuestions && usefulQuestions.length > 0 ? (
       <div className="py1">
-        <p className="text-bold">{t`Potentially useful questions`}</p>
+        <p className="text-bold">{t`可能有用的问题`}</p>
         <ul>
           {usefulQuestions.map((item, index) => (
             <li className="border-row-divider" key={index}>

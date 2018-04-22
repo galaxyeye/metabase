@@ -90,7 +90,7 @@ export default class SegmentForm extends Component {
             tableMetadata.id
           }
           className="Button ml2"
-        >{t`Cancel`}</Link>
+        >{t`取消`}</Link>
       </div>
     );
   }

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import { t } from "c-3po";
-export const SERVER_ERROR_MESSAGE = t`Server error encountered`;
-export const UNKNOWN_ERROR_MESSAGE = t`Unknown error encountered`;
+export const SERVER_ERROR_MESSAGE = t`服务器错误`;
+export const UNKNOWN_ERROR_MESSAGE = t`未知错误`;
 
 export default class FormMessage extends Component {
   render() {

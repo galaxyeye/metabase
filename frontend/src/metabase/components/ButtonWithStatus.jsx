@@ -3,10 +3,10 @@ import cx from "classnames";
 import { t } from "c-3po";
 
 let defaultTitleForState = {
-  default: t`Save`,
-  inProgress: t`Saving...`,
-  completed: t`Saved!`,
-  failed: t`Saving failed.`,
+  default: t`保存`,
+  inProgress: t`保存中...`,
+  completed: t`已保存！`,
+  failed: t`保存失败.`,
 };
 
 // TODO Atte Keinänen 7/14/17: This could use Button component underneath and pass parameters to it

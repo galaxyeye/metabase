@@ -51,9 +51,9 @@ export default ({ question, clicked }: ClickActionProps): ClickAction[] => {
         section: "filter",
         title: (
           <span>
-            {jt`View this ${singularize(
+            {jt`查看 ${singularize(
               stripId(column.display_name),
-            )}'s ${pluralize(query.table().display_name)}`}
+            )} 的 ${pluralize(query.table().display_name)}`}
           </span>
         ),
         question: () => question.filter("=", column, value),

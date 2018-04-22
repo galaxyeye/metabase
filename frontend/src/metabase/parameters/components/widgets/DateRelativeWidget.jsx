@@ -6,29 +6,29 @@ import _ from "underscore";
 
 const SHORTCUTS = [
   {
-    name: t`Today`,
+    name: t`今天`,
     operator: ["=", "<", ">"],
     values: [["relative-datetime", "current"]],
   },
   {
-    name: t`Yesterday`,
+    name: t`昨天`,
     operator: ["=", "<", ">"],
     values: [["relative-datetime", -1, "day"]],
   },
-  { name: t`Past 7 days`, operator: "time-interval", values: [-7, "day"] },
-  { name: t`Past 30 days`, operator: "time-interval", values: [-30, "day"] },
+  { name: t`过去 7 天`, operator: "time-interval", values: [-7, "day"] },
+  { name: t`过去 30 天`, operator: "time-interval", values: [-30, "day"] },
 ];
 
 const RELATIVE_SHORTCUTS = {
   Last: [
-    { name: t`Week`, operator: "time-interval", values: ["last", "week"] },
-    { name: t`Month`, operator: "time-interval", values: ["last", "month"] },
-    { name: t`Year`, operator: "time-interval", values: ["last", "year"] },
+    { name: t`周`, operator: "time-interval", values: ["last", "week"] },
+    { name: t`月`, operator: "time-interval", values: ["last", "month"] },
+    { name: t`年`, operator: "time-interval", values: ["last", "year"] },
   ],
   This: [
-    { name: t`Week`, operator: "time-interval", values: ["current", "week"] },
-    { name: t`Month`, operator: "time-interval", values: ["current", "month"] },
-    { name: t`Year`, operator: "time-interval", values: ["current", "year"] },
+    { name: t`周`, operator: "time-interval", values: ["current", "week"] },
+    { name: t`月`, operator: "time-interval", values: ["current", "month"] },
+    { name: t`年`, operator: "time-interval", values: ["current", "year"] },
   ],
 };
 
@@ -141,43 +141,43 @@ export class PredefinedRelativeDatePicker extends Component {
 // HACK: easiest way to get working with RelativeDatePicker
 const FILTERS = {
   today: {
-    name: t`Today`,
+    name: t`今天`,
     mapping: ["=", null, ["relative-datetime", "current"]],
   },
   yesterday: {
-    name: t`Yesterday`,
+    name: t`昨天`,
     mapping: ["=", null, ["relative-datetime", -1, "day"]],
   },
   past7days: {
-    name: t`Past 7 Days`,
+    name: t`过去 7 天`,
     mapping: ["time-interval", null, -7, "day"],
   },
   past30days: {
-    name: t`Past 30 Days`,
+    name: t`过去 30 天`,
     mapping: ["time-interval", null, -30, "day"],
   },
   lastweek: {
-    name: t`Last Week`,
+    name: t`上周`,
     mapping: ["time-interval", null, "last", "week"],
   },
   lastmonth: {
-    name: t`Last Month`,
+    name: t`上个月`,
     mapping: ["time-interval", null, "last", "month"],
   },
   lastyear: {
-    name: t`Last Year`,
+    name: t`去年`,
     mapping: ["time-interval", null, "last", "year"],
   },
   thisweek: {
-    name: t`This Week`,
+    name: t`本周`,
     mapping: ["time-interval", null, "current", "week"],
   },
   thismonth: {
-    name: t`This Month`,
+    name: t`本月`,
     mapping: ["time-interval", null, "current", "month"],
   },
   thisyear: {
-    name: t`This Year`,
+    name: t`今年`,
     mapping: ["time-interval", null, "current", "year"],
   },
 };

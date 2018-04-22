@@ -47,7 +47,7 @@ export default class ObjectRetireModal extends Component {
 
           <div className="Form-actions ml-auto">
             <a className="Button" onClick={this.props.onClose}>
-              {t`Cancel`}
+              {t`取消`}
             </a>
             <ActionButton
               actionFn={this.handleSubmit.bind(this)}

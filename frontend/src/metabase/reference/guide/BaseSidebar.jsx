@@ -14,9 +14,9 @@ const BaseSidebar = ({ style, className }) => (
     <div className={S.breadcrumbs}>
       <Breadcrumbs
         className="py4"
-        crumbs={[[t`Data Reference`]]}
+        crumbs={[[t`数据源`]]}
         inSidebar={true}
-        placeholder={t`Data Reference`}
+        placeholder={t`数据源`}
       />
     </div>
     <ol>

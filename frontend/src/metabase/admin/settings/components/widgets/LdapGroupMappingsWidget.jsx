@@ -171,7 +171,7 @@ export default class LdapGroupMappingsWidget extends React.Component {
                 <Button
                   type="button"
                   onClick={this._cancelClick}
-                >{t`Cancel`}</Button>
+                >{t`取消`}</Button>
                 <Button primary onClick={this._saveClick}>{t`Save`}</Button>
               </ModalFooter>
             </div>
@@ -237,7 +237,7 @@ class AddMappingRow extends React.Component {
             <span
               className="link no-decoration cursor-pointer"
               onClick={this._handleCancelClick}
-            >{t`Cancel`}</span>
+            >{t`取消`}</span>
             <Button
               className="ml2"
               primary={!!isValid}

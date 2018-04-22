@@ -44,7 +44,7 @@ const ALL_COLORS = [].concat(
     Object.values(o),
   ),
 );
-pushHeader(t`Colors`);
+pushHeader(t`颜色`);
 pushIcons(ALL_COLORS);
 
 // Emoji

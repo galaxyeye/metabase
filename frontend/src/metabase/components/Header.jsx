@@ -90,7 +90,7 @@ export default class Header extends Component {
             type="text"
             value={this.props.item.description || ""}
             onChange={this.setItemAttribute.bind(this, "description")}
-            placeholder={t`No description yet`}
+            placeholder={t`没有描述`}
           />
         </div>
       );
@@ -105,7 +105,7 @@ export default class Header extends Component {
       } else {
         titleAndDescription = (
           <TitleAndDescription
-            title={t`New ${this.props.objectType}`}
+            title={t`新建 ${this.props.objectType}`}
             description={this.props.item.description}
           />
         );
@@ -116,7 +116,7 @@ export default class Header extends Component {
     if (this.props.item && this.props.item.creator) {
       attribution = (
         <div className="Header-attribution">
-          {t`Asked by ${this.props.item.creator.common_name}`}
+          {t`由 ${this.props.item.creator.common_name} 提问`}
         </div>
       );
     }

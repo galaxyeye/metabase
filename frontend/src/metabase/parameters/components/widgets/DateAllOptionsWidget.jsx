@@ -144,7 +144,7 @@ export default class DateAllOptionsWidget extends Component {
             })}
             onClick={this.commitAndClose}
           >
-            {t`Update filter`}
+            {t`更新过滤器`}
           </button>
         </div>
       </div>

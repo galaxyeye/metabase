@@ -153,7 +153,7 @@ export default class FieldPane extends Component {
         !_.some(query.breakouts(), this.isBreakoutWithCurrentField)
       ) {
         useForCurrentQuestion.push(
-          <UseForButton title={t`Group by ${name}`} onClick={this.groupBy} />,
+          <UseForButton title={t`按 ${name} 分组`} onClick={this.groupBy} />,
         );
       }
     }

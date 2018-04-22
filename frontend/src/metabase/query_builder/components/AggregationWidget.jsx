@@ -150,7 +150,7 @@ export default class AggregationWidget extends Component {
               >
                 <span className="View-section-aggregation QueryOption py1 mx1">
                   {aggregationName == null
-                    ? t`Choose an aggregation`
+                    ? t`选择一个聚合`
                     : name ? name : aggregationName}
                 </span>
               </div>

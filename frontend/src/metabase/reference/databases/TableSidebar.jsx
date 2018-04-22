@@ -20,7 +20,7 @@ const TableSidebar = ({ database, table, style, className, showXray }) => (
           [table.name],
         ]}
         inSidebar={true}
-        placeholder={t`Data Reference`}
+        placeholder={t`数据源`}
       />
     </div>
     <ol>

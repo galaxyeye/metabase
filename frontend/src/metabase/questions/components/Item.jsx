@@ -89,7 +89,7 @@ const Item = ({
           <ModalWithTrigger
             full
             triggerElement={
-              <Tooltip tooltip={t`Move to a collection`}>
+              <Tooltip tooltip={t`移动到一个问题集`}>
                 <Icon
                   className="text-light-blue cursor-pointer text-brand-hover transition-color mx2"
                   name="move"
@@ -103,7 +103,7 @@ const Item = ({
               initialCollectionId={collection && collection.id}
             />
           </ModalWithTrigger>
-          <Tooltip tooltip={archived ? t`Unarchive` : t`Archive`}>
+          <Tooltip tooltip={archived ? t`取消归档` : t`归档`}>
             <Icon
               className="text-light-blue cursor-pointer text-brand-hover transition-color"
               name={archived ? "unarchive" : "archive"}
@@ -167,7 +167,7 @@ const ItemBody = pure(
         {collection && <CollectionBadge collection={collection} />}
         {favorite != null &&
           setFavorited && (
-            <Tooltip tooltip={favorite ? t`Unfavorite` : t`Favorite`}>
+            <Tooltip tooltip={favorite ? t`取消收藏` : t`收藏`}>
               <Icon
                 className={cx(
                   "flex cursor-pointer",
@@ -188,7 +188,7 @@ const ItemBody = pure(
           { "text-light-blue": !description },
         )}
       >
-        {description ? description : t`No description yet`}
+        {description ? description : t`没有描述`}
       </div>
     </div>
   ),

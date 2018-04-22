@@ -77,7 +77,7 @@ export default class DeleteDatabaseModal extends Component {
           <button
             className="Button"
             onClick={this.props.onClose}
-          >{t`Cancel`}</button>
+          >{t`取消`}</button>
           <button
             className={cx("Button Button--danger ml2", {
               disabled: !confirmed,

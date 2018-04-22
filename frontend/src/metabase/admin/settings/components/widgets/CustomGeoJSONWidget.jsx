@@ -352,7 +352,7 @@ const EditMap = ({
         <button
           className={cx("Button Button")}
           onClick={onCancel}
-        >{t`Cancel`}</button>
+        >{t`取消`}</button>
         <button
           className={cx("Button Button--primary ml1", {
             disabled:

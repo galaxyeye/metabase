@@ -41,7 +41,7 @@ export default class ExpandableString extends Component {
           <span
             className="block mt1 link"
             onClick={this.toggleExpansion}
-          >{t`View less`}</span>
+          >{t`显示更少`}</span>
         </span>
       );
     } else if (truncated !== this.props.str) {
@@ -51,7 +51,7 @@ export default class ExpandableString extends Component {
           <span
             className="block mt1 link"
             onClick={this.toggleExpansion}
-          >{t`View more`}</span>
+          >{t`显示更多`}</span>
         </span>
       );
     } else {

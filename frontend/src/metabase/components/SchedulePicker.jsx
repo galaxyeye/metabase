@@ -20,13 +20,13 @@ export const AM_PM_OPTIONS = [
 ];
 
 export const DAY_OF_WEEK_OPTIONS = [
-  { name: t`"Sunday`, value: "sun" },
-  { name: t`Monday`, value: "mon" },
-  { name: t`Tuesday`, value: "tue" },
-  { name: t`Wednesday`, value: "wed" },
-  { name: t`Thursday`, value: "thu" },
-  { name: t`Friday`, value: "fri" },
-  { name: t`Saturday`, value: "sat" },
+  { name: t`周日`, value: "sun" },
+  { name: t`周一`, value: "mon" },
+  { name: t`周二`, value: "tue" },
+  { name: t`周三`, value: "wed" },
+  { name: t`周四`, value: "thu" },
+  { name: t`周五`, value: "fri" },
+  { name: t`周六`, value: "sat" },
 ];
 
 export const MONTH_DAY_OPTIONS = [

@@ -21,8 +21,8 @@ const ArchivedItem = ({
       <Tooltip
         tooltip={
           type === "card"
-            ? t`Unarchive this question`
-            : t`Unarchive this ${type}`
+            ? t`取消归档`
+            : t`取消 ${type} 的归档`
         }
       >
         <Icon

@@ -170,11 +170,11 @@ export default class ParameterWidget extends Component {
               onClick={() => setEditingParameter(parameter.id)}
             >
               <Icon name="pencil" />
-              <span className="ml1">{t`Edit`}</span>
+              <span className="ml1">{t`编辑`}</span>
             </div>
             <div className={S.removeButton} onClick={() => remove()}>
               <Icon name="close" />
-              <span className="ml1">{t`Remove`}</span>
+              <span className="ml1">{t`删除`}</span>
             </div>
           </div>
         </FieldSet>

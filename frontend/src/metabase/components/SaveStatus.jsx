@@ -50,14 +50,14 @@ export default class SaveStatus extends Component {
     } else if (this.state.error) {
       return (
         <div className="SaveStatus mx2 px2 border-right text-error">
-          {t`Error:`} {String(this.state.error.message || this.state.error)}
+          {t`错误：`} {String(this.state.error.message || this.state.error)}
         </div>
       );
     } else if (this.state.recentlySavedTimeout != null) {
       return (
         <div className="SaveStatus mx2 px2 border-right flex align-center text-success">
           <Icon name="check" size={16} />
-          <div className="ml1 h3 text-bold">{t`Saved`}</div>
+          <div className="ml1 h3 text-bold">{t`已保存`}</div>
         </div>
       );
     } else {

@@ -119,16 +119,16 @@ export default class QueryVisualization extends Component {
       result.cached &&
       result.average_execution_time > REFRESH_TOOLTIP_THRESHOLD
     ) {
-      runButtonTooltip = t`This question will take approximately ${duration(
+      runButtonTooltip = t`刷新大概耗时 ${duration(
         result.average_execution_time,
-      )} to refresh`;
+      )}`;
     }
 
     const messages = [];
     if (result && result.cached) {
       messages.push({
         icon: "clock",
-        message: <div>{t`Updated ${moment(result.updated_at).fromNow()}`}</div>,
+        message: <div>{t`已更新 ${moment(result.updated_at).fromNow()}`}</div>,
       });
     }
     if (
@@ -143,7 +143,7 @@ export default class QueryVisualization extends Component {
           // class name is included for the sake of making targeting the element in tests easier
           <div className="ShownRowCount">
             {jt`${
-              result.data.rows_truncated != null ? t`Showing first` : t`Showing`
+              result.data.rows_truncated != null ? t`显示前` : t`显示`
             } ${<strong>{formatNumber(result.row_count)}</strong>} ${inflect(
               "row",
               result.data.rows.length,
@@ -277,7 +277,7 @@ export default class QueryVisualization extends Component {
           <div className="Loading spread flex flex-column layout-centered text-brand z2">
             <LoadingSpinner />
             <h2 className="Loading-message text-brand text-uppercase my3">
-              {t`Doing science`}...
+              {t`计算中`}...
             </h2>
           </div>
         )}
@@ -290,12 +290,12 @@ export default class QueryVisualization extends Component {
 export const VisualizationEmptyState = ({ showTutorialLink }) => (
   <div className="flex full layout-centered text-grey-1 flex-column">
     <h1
-    >{t`If you give me some data I can show you something cool. Run a Query!`}</h1>
+    >{t`予我数据，馈以结论。开始查询！`}</h1>
     {showTutorialLink && (
       <Link
         to={Urls.question(null, "?tutorial")}
         className="link cursor-pointer my2"
-      >{t`How do I use this thing?`}</Link>
+      >{t`如何使用？`}</Link>
     )}
   </div>
 );

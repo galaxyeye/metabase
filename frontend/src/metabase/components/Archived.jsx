@@ -7,12 +7,12 @@ const Archived = ({ entityName, linkTo }) => (
     <EmptyState
       message={
         <div>
-          <div>{t`This ${entityName} has been archived`}</div>
+          <div>{t`${entityName} 已归档`}</div>
           <Link
             to={linkTo}
             className="my2 link"
             style={{ fontSize: "14px" }}
-          >{t`View the archive`}</Link>
+          >{t`查看存档`}</Link>
         </div>
       }
       icon="viewArchive"

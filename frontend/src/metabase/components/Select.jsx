@@ -277,7 +277,7 @@ class LegacySelect extends Component {
 
   static defaultProps = {
     placeholder: "",
-    emptyPlaceholder: t`Nothing to select`,
+    emptyPlaceholder: t`没有选项`,
     disabledOptionIds: [],
     optionNameFn: option => option.name,
     optionValueFn: option => option,

@@ -31,7 +31,7 @@ const EditHeader = ({
           reinitializeForm();
         }}
       >
-        {t`Cancel`}
+        {t`取消`}
       </button>
 
       {hasRevisionHistory ? (

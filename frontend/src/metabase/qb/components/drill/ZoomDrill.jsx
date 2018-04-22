@@ -23,7 +23,7 @@ export default ({
     {
       name: "timeseries-zoom",
       section: "zoom",
-      title: t`Zoom in`,
+      title: t`缩小`,
       question: () => question.pivot(drilldown.breakouts, dimensions),
     },
   ];

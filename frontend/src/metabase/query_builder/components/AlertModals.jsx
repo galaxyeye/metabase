@@ -177,9 +177,9 @@ export class CreateAlertModalContent extends Component {
           />
           <div className="flex align-center mt4">
             <div className="flex-full" />
-            <Button onClick={onCancel} className="mr2">{t`Cancel`}</Button>
+            <Button onClick={onCancel} className="mr2">{t`取消`}</Button>
             <ButtonWithStatus
-              titleForState={{ default: t`Done` }}
+              titleForState={{ default: t`完成` }}
               onClickOperation={this.onCreateAlert}
             />
           </div>
@@ -329,7 +329,7 @@ export class UpdateAlertModalContent extends Component {
 
           <div className="flex align-center mt4">
             <div className="flex-full" />
-            <Button onClick={onCancel} className="mr2">{t`Cancel`}</Button>
+            <Button onClick={onCancel} className="mr2">{t`取消`}</Button>
             <ButtonWithStatus
               titleForState={{ default: t`Save changes` }}
               onClickOperation={this.onUpdateAlert}

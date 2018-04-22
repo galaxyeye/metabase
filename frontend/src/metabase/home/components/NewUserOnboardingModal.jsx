@@ -15,8 +15,8 @@ type State = {
 
 const STEPS = [
   {
-    title: t`Ask questions and explore`,
-    text: t`Click on charts or tables to explore, or ask a new question using the easy interface or the powerful SQL editor.`,
+    title: t`提出一个问题，开始探索数据`,
+    text: t`点击图表或表格开始探索数据，或者使用SQL编辑器提一个新问题。`,
     image: (
       <RetinaImage
         className="absolute full"
@@ -26,8 +26,8 @@ const STEPS = [
     ),
   },
   {
-    title: t`Make your own charts`,
-    text: t`Create line charts, scatter plots, maps, and more.`,
+    title: t`创建你自己的图表`,
+    text: t`创建饼图、柱状图、热力图等等`,
     image: (
       <RetinaImage
         className="absolute ml-auto mr-auto inline-block left right"
@@ -37,8 +37,8 @@ const STEPS = [
     ),
   },
   {
-    title: t`Share what you find`,
-    text: t`Create powerful and flexible dashboards, and send regular updates via email or Slack.`,
+    title: t`分享你的发现`,
+    text: t`创建威力强大并且灵活的面板`,
     image: (
       <RetinaImage
         className="absolute ml-auto mr-auto inline-block left right"
@@ -93,7 +93,7 @@ export default class NewUserOnboardingModal extends Component {
               className="link flex-align-right text-bold absolute right"
               onClick={() => this.nextStep()}
             >
-              {step === 3 ? t`Let's go` : t`Next`}
+              {step === 3 ? t`开始` : t`下一步`}
             </a>
           </div>
         </div>

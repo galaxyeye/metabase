@@ -49,7 +49,7 @@ export default class RevisionMessageModal extends Component {
               type="button"
               className="Button ml1"
               onClick={onClose}
-            >{t`Cancel`}</button>
+            >{t`取消`}</button>
           </div>
         </ModalContent>
       </ModalWithTrigger>

@@ -33,7 +33,7 @@ export function LeftNavPaneItemBack({ path }) {
         to={path}
         className="AdminList-item flex align-center justify-between no-decoration link text-bold"
       >
-        &lt; {t`Back`}
+        &lt; {t`返回`}
       </Link>
     </li>
   );

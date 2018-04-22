@@ -139,7 +139,7 @@ export default class SaveQuestionModal extends Component {
     if (error) {
       var errorMessage;
       if (error.status === 500) {
-        errorMessage = t`Server error encountered`;
+        errorMessage = t`服务器错误`;
       }
 
       if (error.data && error.data.message) {
@@ -159,7 +159,7 @@ export default class SaveQuestionModal extends Component {
     if (!this.props.card.id && this.props.originalCard) {
       saveOrUpdate = (
         <FormField
-          displayName={t`Replace or save as new?`}
+          displayName={t`替换或新建？`}
           fieldName="saveType"
           errors={this.state.errors}
         >
@@ -168,12 +168,12 @@ export default class SaveQuestionModal extends Component {
             onChange={value => this.onChange("saveType", value)}
             options={[
               {
-                name: t`Replace original question, "${
+                name: t`替换原有问题, "${
                   this.props.originalCard.name
                 }"`,
                 value: "overwrite",
               },
-              { name: t`Save as new question`, value: "create" },
+              { name: t`新建问题`, value: "create" },
             ]}
             isVertical
           />
@@ -182,8 +182,8 @@ export default class SaveQuestionModal extends Component {
     }
 
     let title = this.props.multiStep
-      ? t`First, save your question`
-      : t`Save question`;
+      ? t`第一步，保存您的问题`
+      : t`保存`;
 
     return (
       <ModalContent
@@ -191,7 +191,7 @@ export default class SaveQuestionModal extends Component {
         title={title}
         footer={[
           formError,
-          <Button onClick={this.props.onClose}>{t`Cancel`}</Button>,
+          <Button onClick={this.props.onClose}>{t`取消`}</Button>,
           <ButtonWithStatus
             disabled={!this.state.valid}
             onClickOperation={this.formSubmitted}
@@ -212,28 +212,28 @@ export default class SaveQuestionModal extends Component {
                 className="saveQuestionModalFields"
               >
                 <FormField
-                  displayName={t`Name`}
+                  displayName={t`名称`}
                   fieldName="name"
                   errors={this.state.errors}
                 >
                   <input
                     className="Form-input full"
                     name="name"
-                    placeholder={t`What is the name of your card?`}
+                    placeholder={t`卡片名称`}
                     value={this.state.details.name}
                     onChange={e => this.onChange("name", e.target.value)}
                     autoFocus
                   />
                 </FormField>
                 <FormField
-                  displayName={t`Description`}
+                  displayName={t`描述`}
                   fieldName="description"
                   errors={this.state.errors}
                 >
                   <textarea
                     className="Form-input full"
                     name="description"
-                    placeholder={t`It's optional but oh, so helpful`}
+                    placeholder={t`卡片描述`}
                     value={this.state.details.description}
                     onChange={e => this.onChange("description", e.target.value)}
                   />
@@ -242,7 +242,7 @@ export default class SaveQuestionModal extends Component {
                   {collections =>
                     collections.length > 0 && (
                       <FormField
-                        displayName={t`Which collection should this go in?`}
+                        displayName={t`加入到哪个问题集中？`}
                         fieldName="collection_id"
                         errors={this.state.errors}
                       >
@@ -253,7 +253,7 @@ export default class SaveQuestionModal extends Component {
                             this.onChange("collection_id", e.target.value)
                           }
                         >
-                          {[{ name: t`None`, id: null }]
+                          {[{ name: t`无`, id: null }]
                             .concat(collections)
                             .map((collection, index) => (
                               <Option

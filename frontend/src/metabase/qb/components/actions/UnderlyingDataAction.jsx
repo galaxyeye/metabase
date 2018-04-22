@@ -11,7 +11,7 @@ export default ({ question }: ClickActionProps): ClickAction[] => {
     return [
       {
         name: "underlying-data",
-        title: t`View this as a table`,
+        title: t`表格形式查看`,
         icon: "table",
         question: () => question.toUnderlyingData(),
       },

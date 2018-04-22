@@ -234,21 +234,21 @@ export class FieldValuesWidget extends Component {
     let { placeholder } = this.props;
     if (!placeholder) {
       if (this.hasList()) {
-        placeholder = t`Search the list`;
+        placeholder = t`搜索当前列表`;
       } else if (this.isSearchable() && searchField) {
         const searchFieldName =
           stripId(searchField.display_name) || searchField.display_name;
-        placeholder = t`Search by ${searchFieldName}`;
+        placeholder = t`使用 ${searchFieldName} 搜索`;
         if (field.isID() && field !== searchField) {
-          placeholder += t` or enter an ID`;
+          placeholder += t` 或者输入 ID`;
         }
       } else {
         if (field.isID()) {
-          placeholder = t`Enter an ID`;
+          placeholder = t`输入 ID`;
         } else if (field.isNumeric()) {
-          placeholder = t`Enter a number`;
+          placeholder = t`输入数字`;
         } else {
-          placeholder = t`Enter some text`;
+          placeholder = t`输入文字`;
         }
       }
     }
@@ -354,15 +354,15 @@ const SearchState = () => (
 
 const NoMatchState = ({ field }) => (
   <OptionsMessage
-    message={jt`No matching ${(
+    message={jt`没有符合 ${(
       <strong>&nbsp;{field.display_name}&nbsp;</strong>
-    )} found.`}
+    )} 的匹配项。`}
   />
 );
 
 const EveryOptionState = () => (
   <OptionsMessage
-    message={t`Including every option in your filter probably won’t do much…`}
+    message={t`过多筛选条件或许不是好主义哦。`}
   />
 );
 

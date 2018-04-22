@@ -76,7 +76,7 @@ export default class AddToDashSelectDashModal extends Component {
       return (
         <ModalContent
           id="AddToDashSelectDashModal"
-          title={t`Add Question to Dashboard`}
+          title={t`加入面板`}
           onClose={this.props.onClose}
         >
           <div className="flex flex-column">
@@ -89,7 +89,7 @@ export default class AddToDashSelectDashModal extends Component {
                 style={{ right: 40 }}
               >
                 <Icon name="add" size={16} />
-                <h3 className="ml1">{t`Add to new dashboard`}</h3>
+                <h3 className="ml1">{t`加入到新面板`}</h3>
               </div>
             </div>
             <SortableItemList

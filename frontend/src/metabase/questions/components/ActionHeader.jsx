@@ -22,7 +22,7 @@ const ActionHeader = ({
 }) => (
   <div className={S.actionHeader}>
     <Tooltip
-      tooltip={t`Select all ${visibleCount}`}
+      tooltip={t`选择所有 ${visibleCount}`}
       isEnabled={!allAreSelected}
     >
       <span className="ml1">
@@ -41,7 +41,7 @@ const ActionHeader = ({
           triggerElement={
             <span className={S.actionButton}>
               <Icon name="label" />
-              {t`Labels`}
+              {t`标签`}
               <Icon name="chevrondown" size={12} />
             </span>
           }
@@ -54,7 +54,7 @@ const ActionHeader = ({
         triggerElement={
           <span className={S.actionButton}>
             <Icon name="move" className="mr1" />
-            {t`Move`}
+            {t`移动`}
           </span>
         }
       >
@@ -68,7 +68,7 @@ const ActionHeader = ({
           name={sectionIsArchive ? "unarchive" : "archive"}
           className="mr1"
         />
-        {sectionIsArchive ? t`Unarchive` : t`Archive`}
+        {sectionIsArchive ? t`取消归档` : t`归档`}
       </span>
     </span>
   </div>

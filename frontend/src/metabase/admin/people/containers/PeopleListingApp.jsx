@@ -219,7 +219,7 @@ export default class PeopleListingApp extends Component {
           <Button
             onClick={() => this.props.showModal({ type: MODAL_ADD_PERSON })}
           >{t`Add another person`}</Button>,
-          <Button primary onClick={this.onCloseModal}>{t`Done`}</Button>,
+          <Button primary onClick={this.onCloseModal}>{t`完成`}</Button>,
         ]}
         onClose={this.onCloseModal}
       >
@@ -256,7 +256,7 @@ export default class PeopleListingApp extends Component {
           <Button
             onClick={() => this.props.showModal({ type: MODAL_ADD_PERSON })}
           >{t`Add another person`}</Button>,
-          <Button primary onClick={this.onCloseModal}>{t`Done`}</Button>,
+          <Button primary onClick={this.onCloseModal}>{t`完成`}</Button>,
         ]}
         onClose={this.onCloseModal}
       >
@@ -296,7 +296,7 @@ export default class PeopleListingApp extends Component {
         small
         title={t`Remove ${user.common_name}?`}
         footer={[
-          <Button onClick={this.onCloseModal}>{t`Cancel`}</Button>,
+          <Button onClick={this.onCloseModal}>{t`取消`}</Button>,
           <Button
             className="Button--danger"
             onClick={() => this.onRemoveUserConfirm(user)}
@@ -321,7 +321,7 @@ export default class PeopleListingApp extends Component {
         small
         title={t`Reset ${user.first_name}'s password?`}
         footer={[
-          <Button onClick={this.onCloseModal}>{t`Cancel`}</Button>,
+          <Button onClick={this.onCloseModal}>{t`取消`}</Button>,
           <Button
             warning
             onClick={() => this.onPasswordResetConfirm(user)}
@@ -345,7 +345,7 @@ export default class PeopleListingApp extends Component {
           <button
             className="Button Button--primary mr2"
             onClick={this.onCloseModal}
-          >{t`Done`}</button>
+          >{t`完成`}</button>
         }
         onClose={this.onCloseModal}
       >
@@ -365,7 +365,7 @@ export default class PeopleListingApp extends Component {
       <Modal
         small
         title={t`${user.first_name}'s password has been reset`}
-        footer={<Button primary onClick={this.onCloseModal}>{t`Done`}</Button>}
+        footer={<Button primary onClick={this.onCloseModal}>{t`完成`}</Button>}
         onClose={this.onCloseModal}
       >
         <div className="px4 pb4">{t`We've sent them an email with instructions for creating a new password.`}</div>

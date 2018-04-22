@@ -36,7 +36,7 @@ export default class RecentViews extends Component {
   render() {
     const { recentViews } = this.props;
     return (
-      <SidebarSection title={t`Recently Viewed`} icon="clock">
+      <SidebarSection title={t`最近查看`} icon="clock">
         {recentViews.length > 0 ? (
           <ul className="p2">
             {recentViews.map((item, index) => {
@@ -70,7 +70,7 @@ export default class RecentViews extends Component {
               className="p3 text-centered text-grey-2"
               style={{ maxWidth: "100%" }}
             >
-              {t`You haven't looked at any dashboards or questions recently`}
+              {t`没有最近查看的面板或提问哦`}
             </p>
           </div>
         )}

@@ -75,7 +75,7 @@ export default class SortableItemList extends Component {
                   <div className="text-brand-hover">
                     <h3 className="mb1">{item.name}</h3>
                     <h4 className="text-grey-3">
-                      {item.description || t`No description yet`}
+                      {item.description || t`没有描述`}
                     </h4>
                   </div>
                 </div>

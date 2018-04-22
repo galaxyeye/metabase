@@ -85,11 +85,11 @@ export default class MetricSearch extends Component {
                 <EmptyState
                   message={
                     <span>
-                      ${t`Defining common metrics for your team makes it even easier to ask questions`}
+                      ${t`创建通用指标，让你的团队轻松提出问题！`}
                     </span>
                   }
                   image="/app/img/metrics_illustration"
-                  action={t`How to create metrics`}
+                  action={t`如何创建指标？`}
                   link="http://www.metabase.com/docs/latest/administration-guide/07-segments-and-metrics.html"
                   className="mt2"
                   imageClassName="mln2"

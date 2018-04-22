@@ -17,7 +17,7 @@ const SegmentSidebar = ({ segment, user, style, className }) => (
           className="py4"
           crumbs={[[t`Segments`, "/reference/segments"], [segment.name]]}
           inSidebar={true}
-          placeholder={t`Data Reference`}
+          placeholder={t`数据源`}
         />
       </div>
       <SidebarItem
