@@ -22,7 +22,7 @@ const FieldTypeDetail = ({
   <div className={cx(D.detail)}>
     <div className={D.detailBody}>
       <div className={D.detailTitle}>
-        <span className={D.detailName}>{t`Field type`}</span>
+        <span className={D.detailName}>{t`字段类型`}</span>
       </div>
       <div className={cx(D.detailSubtitle, { mt1: true })}>
         <span>
@@ -38,8 +38,8 @@ const FieldTypeDetail = ({
               options={MetabaseCore.field_special_types
                 .concat({
                   id: null,
-                  name: t`No field type`,
-                  section: t`Other`,
+                  name: t`没有字段类型`,
+                  section: t`其他`,
                 })
                 .filter(
                   type =>
@@ -54,7 +54,7 @@ const FieldTypeDetail = ({
               {getIn(MetabaseCore.field_special_types_map, [
                 field.special_type,
                 "name",
-              ]) || t`No field type`}
+              ]) || t`没有字段类型`}
             </span>
           )}
         </span>
@@ -65,11 +65,11 @@ const FieldTypeDetail = ({
                   fieldTypeFormField.value === undefined)) && (
                 <Select
                   triggerClasses="rounded bordered p1 inline-block"
-                  placeholder={t`Select a field type`}
+                  placeholder={t`选择字段类型`}
                   value={
                     foreignKeys[foreignKeyFormField.value] ||
                     foreignKeys[field.fk_target_field_id] || {
-                      name: t`Select a Foreign Key`,
+                      name: t`选择外键`,
                     }
                   }
                   options={Object.values(foreignKeys)}

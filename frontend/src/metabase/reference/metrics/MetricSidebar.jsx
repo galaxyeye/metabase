@@ -15,7 +15,7 @@ const MetricSidebar = ({ metric, user, style, className }) => (
       <div className={S.breadcrumbs}>
         <Breadcrumbs
           className="py4"
-          crumbs={[[t`Metrics`, "/reference/metrics"], [metric.name]]}
+          crumbs={[[t`指标集`, "/reference/metrics"], [metric.name]]}
           inSidebar={true}
           placeholder={t`数据源`}
         />

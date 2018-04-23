@@ -15,9 +15,9 @@ const DatabaseSidebar = ({ database, style, className }) => (
       <div className={S.breadcrumbs}>
         <Breadcrumbs
           className="py4"
-          crumbs={[[t`Databases`, "/reference/databases"], [database.name]]}
+          crumbs={[[t`数据库`, "/reference/databases"], [database.name]]}
           inSidebar={true}
-          placeholder={t`数据源`}
+          placeholder={t`数据库`}
         />
       </div>
       <SidebarItem
@@ -30,7 +30,7 @@ const DatabaseSidebar = ({ database, style, className }) => (
         key={`/reference/databases/${database.id}/tables`}
         href={`/reference/databases/${database.id}/tables`}
         icon="table2"
-        name={t`Tables in ${database.name}`}
+        name={t`${database.name} 的表格`}
       />
     </ul>
   </div>

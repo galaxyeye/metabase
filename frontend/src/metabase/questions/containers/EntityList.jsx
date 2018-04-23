@@ -67,7 +67,7 @@ const mapDispatchToProps = {
 const SECTIONS = [
   {
     id: "all",
-    name: t`所有问题`,
+    name: t`所有`,
     icon: "all",
     empty: t`还没有人提问。`,
   },
@@ -79,13 +79,13 @@ const SECTIONS = [
   },
   {
     id: "recent",
-    name: t`最近查看`,
+    name: t`最近`,
     icon: "recents",
     empty: t`你最近没有查看任何问题。`,
   },
   {
     id: "mine",
-    name: t`我的保存`,
+    name: t`保存`,
     icon: "mine",
     empty: t`你最近没有保存任何问题。`,
   },

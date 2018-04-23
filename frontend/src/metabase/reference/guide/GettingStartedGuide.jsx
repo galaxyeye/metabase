@@ -157,15 +157,15 @@ export default class GettingStartedGuide extends Component {
                   user &&
                   user.is_superuser && (
                     <AdminInstructions>
-                      <h2 className="py2">{t`Help your team get started with your data.`}</h2>
+                      <h2 className="py2">{t`帮助团队开始使用数据。`}</h2>
                       <GuideText>
-                        {t`Show your team what’s most important by choosing your top dashboard, metrics, and segments.`}
+                        {t`向你的团队展示哪些是最重要的面板，指标集和表集。`}
                       </GuideText>
                       <button
                         className="Button Button--primary"
                         onClick={startEditing}
                       >
-                        {t`Get started`}
+                        {t`开始`}
                       </button>
                     </AdminInstructions>
                   )}
@@ -173,7 +173,7 @@ export default class GettingStartedGuide extends Component {
                 {guide.most_important_dashboard !== null && [
                   <div className="my2">
                     <SectionHeader key={"dashboardTitle"}>
-                      {t`Our most important dashboard`}
+                      {t`最重要的面板`}
                     </SectionHeader>
                     <GuideDetail
                       key={"dashboardDetail"}
@@ -189,7 +189,7 @@ export default class GettingStartedGuide extends Component {
                       {guide.important_metrics &&
                       guide.important_metrics.length > 0
                         ? t`Numbers that we pay attention to`
-                        : t`Metrics`}
+                        : t`指标集`}
                     </SectionHeader>
                     {guide.important_metrics &&
                     guide.important_metrics.length > 0 ? (
@@ -221,7 +221,7 @@ export default class GettingStartedGuide extends Component {
                         className="Button Button--primary"
                         to={"/reference/metrics"}
                       >
-                        {t`See all metrics`}
+                        {t`查看所有指标集`}
                       </Link>
                     </div>
                   </div>
@@ -235,8 +235,8 @@ export default class GettingStartedGuide extends Component {
                     }
                   >
                     {Object.keys(segments).length > 0
-                      ? t`Segments and tables`
-                      : t`Tables`}
+                      ? t`表集和表`
+                      : t`表`}
                   </SectionHeader>
                   {has(guide.important_segments) ||
                   has(guide.important_tables) ? (
@@ -267,7 +267,7 @@ export default class GettingStartedGuide extends Component {
                           )}`}
                         </span>
                       ) : (
-                        t`Tables are the building blocks of your company's data.`
+                        t`表是数据最主要的形式。`
                       )}
                     </GuideText>
                   )}
@@ -277,7 +277,7 @@ export default class GettingStartedGuide extends Component {
                         className="Button Button--purple mr2"
                         to={"/reference/segments"}
                       >
-                        {t`See all segments`}
+                        {t`查看所有表集`}
                       </Link>
                     )}
                     <Link
@@ -293,7 +293,7 @@ export default class GettingStartedGuide extends Component {
                       )}
                       to={"/reference/databases"}
                     >
-                      {t`See all tables`}
+                      {t`查看所有表`}
                     </Link>
                   </div>
                 </div>
@@ -301,8 +301,8 @@ export default class GettingStartedGuide extends Component {
                 <div className="mt4 pt4">
                   <SectionHeader trim={!guide.things_to_know}>
                     {guide.things_to_know
-                      ? t`Other things to know about our data`
-                      : t`Find out more`}
+                      ? t`其他注意事项`
+                      : t`了解更多`}
                   </SectionHeader>
                   <GuideText>
                     {guide.things_to_know
@@ -313,7 +313,7 @@ export default class GettingStartedGuide extends Component {
                     className="Button link text-bold"
                     to={"/reference/databases"}
                   >
-                    {t`Explore our data`}
+                    {t`探索数据`}
                   </Link>
                 </div>
 

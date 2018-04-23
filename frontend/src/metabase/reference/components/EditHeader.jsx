@@ -16,7 +16,7 @@ const EditHeader = ({
   revisionMessageFormField,
 }) => (
   <div className={cx("EditHeader wrapper py1", S.editHeader)}>
-    <div>{t`You are editing this page`}</div>
+    <div>{t`你正在编辑本页面`}</div>
     <div className={S.editHeaderButtons}>
       <button
         type="button"
@@ -51,7 +51,7 @@ const EditHeader = ({
             type="button"
             disabled={submitting}
           >
-            {t`Save`}
+            {t`保存`}
           </button>
         </RevisionMessageModal>
       ) : (
@@ -66,7 +66,7 @@ const EditHeader = ({
           type="submit"
           disabled={submitting}
         >
-          {t`Save`}
+          {t`保存`}
         </button>
       )}
     </div>

@@ -16,7 +16,7 @@ const SegmentFieldSidebar = ({ segment, field, style, className }) => (
         <Breadcrumbs
           className="py4"
           crumbs={[
-            [t`Segments`, "/reference/segments"],
+            [t`表集`, "/reference/segments"],
             [segment.name, `/reference/segments/${segment.id}`],
             [field.name],
           ]}

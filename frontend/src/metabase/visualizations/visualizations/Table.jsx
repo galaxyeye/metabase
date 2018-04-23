@@ -64,7 +64,7 @@ export default class Table extends Component {
         data.cols.filter(isDimension).length === 2,
     },
     "table.columns": {
-      title: t`Fields to include`,
+      title: t`要包含的字段`,
       widget: ChartSettingOrderedFields,
       getHidden: (series, vizSettings) => vizSettings["table.pivot"],
       isValid: ([{ card, data }]) =>

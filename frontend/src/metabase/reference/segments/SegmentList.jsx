@@ -53,7 +53,7 @@ export default class SegmentList extends Component {
 
     return (
       <div style={style} className="full">
-        <ReferenceHeader name={t`Segments`} />
+        <ReferenceHeader name={t`表集`} />
         <LoadingAndErrorWrapper
           loading={!loadingError && loading}
           error={loadingError}

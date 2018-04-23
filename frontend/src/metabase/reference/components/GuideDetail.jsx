@@ -77,32 +77,32 @@ const GuideDetail = ({
       <div className="mt2">
         <ContextHeading>
           {type === "dashboard"
-            ? t`Why this ${type} is important`
-            : t`Why this ${type} is interesting`}
+            ? t`为什么该 ${type} 如此重要`
+            : t`为什么该 ${type} 令人感兴趣`}
         </ContextHeading>
 
         <ContextContent empty={!points_of_interest}>
           {points_of_interest ||
             (type === "dashboard"
               ? t`Nothing important yet`
-              : t`Nothing interesting yet`)}
+              : t`不感兴趣`)}
         </ContextContent>
 
         <div className="mt2">
           <ContextHeading>
-            {t`Things to be aware of about this ${type}`}
+            {t`该 ${type} 的注意事项`}
           </ContextHeading>
 
           <ContextContent empty={!caveats}>
-            {caveats || t`Nothing to be aware of yet`}
+            {caveats || t`没有注意事项`}
           </ContextContent>
         </div>
 
         {has(exploreLinks) && [
           <div className="mt2">
-            <ContextHeading key="detailLabel">{t`Explore this metric`}</ContextHeading>
+            <ContextHeading key="detailLabel">{t`探索指标集`}</ContextHeading>
             <div key="detailLinks">
-              <h4 className="inline-block mr2 link text-bold">{t`View this metric`}</h4>
+              <h4 className="inline-block mr2 link text-bold">{t`查看指标集`}</h4>
               {exploreLinks.map(link => (
                 <Link
                   className="inline-block text-bold text-brand mr2 link"
@@ -123,7 +123,7 @@ const GuideDetail = ({
             )}
             to={learnMoreLink}
           >
-            {t`Learn more`}
+            {t`更多`}
           </Link>
         )}
       </div>

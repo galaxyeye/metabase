@@ -43,7 +43,7 @@ export default class DatabaseList extends Component {
 
     return (
       <div style={style} className="full">
-        <ReferenceHeader name={t`Databases and tables`} />
+        <ReferenceHeader name={t`数据库和表`} />
         <LoadingAndErrorWrapper
           loading={!loadingError && loading}
           error={loadingError}

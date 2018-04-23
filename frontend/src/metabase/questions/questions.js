@@ -337,7 +337,7 @@ export const setAllSelected = createThunkAction(SET_ALL_SELECTED, selected => {
     }
     MetabaseAnalytics.trackEvent(
       "Questions",
-      selected ? "Select All" : "Unselect All",
+      selected ? "全选" : "全不选",
       visibleEntities.length,
     );
     return selectedIds;

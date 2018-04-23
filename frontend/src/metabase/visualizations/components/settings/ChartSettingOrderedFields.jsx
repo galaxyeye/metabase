@@ -82,7 +82,7 @@ export default class ChartSettingOrderedFields extends Component {
               invertChecked
             />
             <span className="ml1 h4">
-              {anySelected ? "Unselect all" : "Select all"}
+              {anySelected ? "全不选" : "全选"}
             </span>
           </div>
         </div>

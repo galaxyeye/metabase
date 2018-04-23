@@ -54,7 +54,7 @@ export const SchemaAndSegmentTriggerContent = ({
     );
   } else {
     return (
-      <span className="text-grey-4 no-decoration">{t`选择分区或表格`}</span>
+      <span className="text-grey-4 no-decoration">{t`选择表集或表格`}</span>
     );
   }
 };

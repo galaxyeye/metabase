@@ -224,9 +224,9 @@ export default class SegmentFieldDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="points_of_interest"
-                    name={t`Why this field is interesting`}
+                    name={t`为什么这个字段有意思`}
                     description={entity.points_of_interest}
-                    placeholder={t`Nothing interesting yet`}
+                    placeholder={t`不感兴趣`}
                     isEditing={isEditing}
                     field={points_of_interest}
                   />
@@ -234,9 +234,9 @@ export default class SegmentFieldDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="caveats"
-                    name={t`Things to be aware of about this field`}
+                    name={t`该字段的注意事项`}
                     description={entity.caveats}
-                    placeholder={t`Nothing to be aware of yet`}
+                    placeholder={t`没有注意事项`}
                     isEditing={isEditing}
                     field={caveats}
                   />

@@ -50,7 +50,7 @@ export default class Formula extends Component {
       >
         <div className={S.formulaHeader}>
           <Icon name="beaker" size={24} />
-          <span className={S.formulaTitle}>{t`View the ${type} formula`}</span>
+          <span className={S.formulaTitle}>{t`查看 ${type} 公式`}</span>
         </div>
         <ReactCSSTransitionGroup
           transitionName="formulaDefinition"

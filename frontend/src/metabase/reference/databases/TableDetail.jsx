@@ -44,7 +44,7 @@ const interestingQuestions = table => {
       }),
     },
     {
-      text: t`See raw data for ${table.display_name}`,
+      text: t`显示 ${table.display_name} 的原始数据`,
       icon: "table2",
       link: getQuestionUrl({
         dbId: table.db_id,
@@ -186,9 +186,9 @@ export default class TableDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="description"
-                    name={t`Description`}
+                    name={t`描述`}
                     description={entity.description}
-                    placeholder={t`No description yet`}
+                    placeholder={t`没有描述`}
                     isEditing={isEditing}
                     field={description}
                   />
@@ -206,9 +206,9 @@ export default class TableDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="points_of_interest"
-                    name={t`Why this table is interesting`}
+                    name={t`为什么该表令人注目`}
                     description={entity.points_of_interest}
-                    placeholder={t`Nothing interesting yet`}
+                    placeholder={t`不感兴趣`}
                     isEditing={isEditing}
                     field={points_of_interest}
                   />
@@ -216,9 +216,9 @@ export default class TableDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="caveats"
-                    name={t`Things to be aware of about this table`}
+                    name={t`使用该表需要注意的问题`}
                     description={entity.caveats}
-                    placeholder={t`Nothing to be aware of yet`}
+                    placeholder={t`没有注意事项`}
                     isEditing={isEditing}
                     field={caveats}
                   />

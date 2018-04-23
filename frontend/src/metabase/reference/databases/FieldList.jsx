@@ -36,7 +36,7 @@ import * as metadataActions from "metabase/redux/metadata";
 import * as actions from "metabase/reference/reference";
 
 const emptyStateData = {
-  message: t`Fields in this table will appear here as they're added`,
+  message: t`被添加的字段会出现在这里`,
   icon: "fields",
 };
 
@@ -146,13 +146,13 @@ export default class FieldList extends Component {
                 <div className={S.item}>
                   <div className={R.columnHeader}>
                     <div className={cx(S.itemTitle, F.fieldNameTitle)}>
-                      {t`Field name`}
+                      {t`字段名`}
                     </div>
                     <div className={cx(S.itemTitle, F.fieldType)}>
-                      {t`Field type`}
+                      {t`字段类型`}
                     </div>
                     <div className={cx(S.itemTitle, F.fieldDataType)}>
-                      {t`Data type`}
+                      {t`数据类型`}
                     </div>
                   </div>
                 </div>

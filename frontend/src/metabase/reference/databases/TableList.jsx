@@ -27,7 +27,7 @@ import {
 import * as metadataActions from "metabase/redux/metadata";
 
 const emptyStateData = {
-  message: t`Tables in this database will appear here as they're added`,
+  message: t`被添加的表会出现在这里`,
   icon: "table2",
 };
 

@@ -53,7 +53,7 @@ export default class MetricList extends Component {
 
     return (
       <div style={style} className="full">
-        <ReferenceHeader name={t`Metrics`} />
+        <ReferenceHeader name={t`指标集`} />
         <LoadingAndErrorWrapper
           loading={!loadingError && loading}
           error={loadingError}

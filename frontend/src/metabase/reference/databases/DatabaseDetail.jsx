@@ -153,7 +153,7 @@ export default class DatabaseDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="description"
-                    name={t`Description`}
+                    name={t`描述`}
                     description={entity.description}
                     placeholder={t`No description yet`}
                     isEditing={isEditing}
@@ -163,9 +163,9 @@ export default class DatabaseDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="points_of_interest"
-                    name={t`Why this database is interesting`}
+                    name={t`为什么该数据库引人注目`}
                     description={entity.points_of_interest}
-                    placeholder={t`Nothing interesting yet`}
+                    placeholder={t`不感兴趣`}
                     isEditing={isEditing}
                     field={points_of_interest}
                   />
@@ -173,9 +173,9 @@ export default class DatabaseDetail extends Component {
                 <li className="relative">
                   <Detail
                     id="caveats"
-                    name={t`Things to be aware of about this database`}
+                    name={t`使用该数据库需要注意的问题`}
                     description={entity.caveats}
-                    placeholder={t`Nothing to be aware of yet`}
+                    placeholder={t`没有注意事项`}
                     isEditing={isEditing}
                     field={caveats}
                   />

@@ -42,7 +42,7 @@ const FieldSidebar = ({
           field.id
         }`}
         icon="document"
-        name={t`Details`}
+        name={t`详情`}
       />
       {showXray && (
         <SidebarItem

@@ -11,7 +11,7 @@ const GuideHeader = ({ startEditing, isSuperuser }) => (
         <h1
           className="text-dark"
           style={{ fontWeight: 700 }}
-        >{t`Start here.`}</h1>
+        >{t`开始`}</h1>
         {isSuperuser && (
           <span className="ml-auto">
             <EditButton startEditing={startEditing} />
@@ -21,7 +21,7 @@ const GuideHeader = ({ startEditing, isSuperuser }) => (
       <p
         className="text-paragraph"
         style={{ maxWidth: 620 }}
-      >{t`This is the perfect place to start if you’re new to your company’s data, or if you just want to check in on what’s going on.`}</p>
+      >{t`如果你刚开始使用本软件，这里是个不错的开始。`}</p>
     </div>
   </div>
 );

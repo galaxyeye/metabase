@@ -147,7 +147,7 @@ class ChartSettings extends Component {
 
     return (
       <div className="flex flex-column spread p4">
-        <h2 className="my2">{t`Customize this ${this.getChartTypeName()}`}</h2>
+        <h2 className="my2">{t`定制 ${this.getChartTypeName()}`}</h2>
 
         {tabNames.length > 1 && (
           <ChartSettingsTabs
@@ -189,7 +189,7 @@ class ChartSettings extends Component {
               className="Button Button--danger float-right"
               onClick={this.onResetSettings}
               data-metabase-event="Chart Settings;Reset"
-            >{t`Reset to defaults`}</a>
+            >{t`恢复到默认值`}</a>
           )}
 
           <div className="float-left">

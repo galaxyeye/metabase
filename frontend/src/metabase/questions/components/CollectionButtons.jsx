@@ -55,7 +55,7 @@ class CollectionButton extends Component {
               >
                 <Icon
                   name="lockoutline"
-                  tooltip={t`Set collection permissions`}
+                  tooltip={t`设置问题集权限`}
                 />
               </Link>
               <ArchiveCollectionWidget collectionId={id} />

@@ -41,17 +41,17 @@ export default class ArchiveCollectionWidget extends Component {
         {...this.props}
         ref="modal"
         triggerElement={
-          <Tooltip tooltip={t`Archive collection`}>
+          <Tooltip tooltip={t`归档`}>
             <Icon size={18} name="archive" />
           </Tooltip>
         }
-        title={t`Archive this collection?`}
+        title={t`确认将本问题集归档？`}
         footer={[
           <Button onClick={this._onClose}>{t`取消`}</Button>,
-          <Button warning onClick={this._onArchive}>{t`Archive`}</Button>,
+          <Button warning onClick={this._onArchive}>{t`归档`}</Button>,
         ]}
       >
-        <div className="px4 pb4">{t`The saved questions in this collection will also be archived.`}</div>
+        <div className="px4 pb4">{t`问题集中的所有问题也同样会被归档。`}</div>
       </ModalWithTrigger>
     );
   }

@@ -24,25 +24,25 @@ const BaseSidebar = ({ style, className }) => (
         key="/reference/guide"
         href="/reference/guide"
         icon="reference"
-        name={t`Start here`}
+        name={t`开始`}
       />
       <SidebarItem
         key="/reference/metrics"
         href="/reference/metrics"
         icon="ruler"
-        name={t`Metrics`}
+        name={t`指标集`}
       />
       <SidebarItem
         key="/reference/segments"
         href="/reference/segments"
         icon="segment"
-        name={t`Segments`}
+        name={t`表集`}
       />
       <SidebarItem
         key="/reference/databases"
         href="/reference/databases"
         icon="database"
-        name={t`Databases and tables`}
+        name={t`数据库和表`}
       />
     </ol>
   </div>

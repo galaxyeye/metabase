@@ -23,7 +23,7 @@ const MetricImportantFieldsDetail = ({
       <div className={D.detailBody}>
         <div className={D.detailTitle}>
           <span className={D.detailName}>
-            {t`Which 2-3 fields do you usually group this metric by?`}
+            {t`这组指标集中哪 2-3 个字段是最常被用于聚合的？`}
           </span>
         </div>
         <div className={cx(D.detailSubtitle, { mt1: true })}>
@@ -32,7 +32,7 @@ const MetricImportantFieldsDetail = ({
             triggerClasses="input p1 block"
             options={table.fields.map(fieldId => allFields[fieldId])}
             optionNameFn={option => option.display_name || option.name}
-            placeholder={t`Select...`}
+            placeholder={t`选择...`}
             values={formField.value || []}
             disabledOptionIds={
               formField.value && formField.value.length === 3

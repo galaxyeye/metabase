@@ -44,7 +44,7 @@ const Field = ({ field, foreignKeys, url, icon, isEditing, formField }) => (
           {isEditing ? (
             <Select
               triggerClasses={F.fieldSelect}
-              placeholder={t`Select a field type`}
+              placeholder={t`选择一个字段`}
               value={
                 MetabaseCore.field_special_types_map[
                   formField.special_type.value
@@ -53,8 +53,8 @@ const Field = ({ field, foreignKeys, url, icon, isEditing, formField }) => (
               options={MetabaseCore.field_special_types
                 .concat({
                   id: null,
-                  name: t`No field type`,
-                  section: t`Other`,
+                  name: t`没有字段类型`,
+                  section: t`其他`,
                 })
                 .filter(
                   type =>
@@ -68,7 +68,7 @@ const Field = ({ field, foreignKeys, url, icon, isEditing, formField }) => (
               {getIn(MetabaseCore.field_special_types_map, [
                 field.special_type,
                 "name",
-              ]) || t`No field type`}
+              ]) || t`没有字段类型`}
             </span>
           )}
         </div>
@@ -83,7 +83,7 @@ const Field = ({ field, foreignKeys, url, icon, isEditing, formField }) => (
                   formField.special_type.value === undefined)) && (
                 <Select
                   triggerClasses={F.fieldSelect}
-                  placeholder={t`Select a field type`}
+                  placeholder={t`选择字段类型`}
                   value={
                     foreignKeys[formField.fk_target_field_id.value] ||
                     foreignKeys[field.fk_target_field_id] ||

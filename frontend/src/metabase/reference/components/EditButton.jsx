@@ -15,7 +15,7 @@ const EditButton = ({ className, startEditing }) => (
   >
     <div className={S.editButtonBody}>
       <Icon name="pencil" size={16} />
-      <span className="ml1">{t`Edit`}</span>
+      <span className="ml1">{t`编辑`}</span>
     </div>
   </button>
 );
