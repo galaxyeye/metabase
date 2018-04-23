@@ -189,7 +189,7 @@ export default class ExpressionEditorTextfield extends Component {
     } else if (this.state.expressionErrorMessage) {
       this.props.onError(this.state.expressionErrorMessage);
     } else {
-      this.props.onError({ message: t`Invalid expression` });
+      this.props.onError({ message: t`无效的表达式` });
     }
   }
 
@@ -263,7 +263,7 @@ export default class ExpressionEditorTextfield extends Component {
 
   render() {
     let errorMessage = this.state.expressionErrorMessage;
-    if (errorMessage && !errorMessage.length) errorMessage = t`unknown error`;
+    if (errorMessage && !errorMessage.length) errorMessage = t`未知错误`;
 
     const { placeholder } = this.props;
     const { suggestions, showAll } = this.state;

@@ -59,17 +59,17 @@ export default class ExpressionWidget extends Component {
                 className="link"
                 target="_blank"
                 href="http://www.metabase.com/docs/latest/users-guide/04-asking-questions.html#creating-a-custom-field"
-              >{t`Learn more`}</a>
+              >{t`了解更多`}</a>
             </p>
           </div>
 
-          <div className="mt3 h5 text-uppercase text-grey-3 text-bold">{t`Give it a name`}</div>
+          <div className="mt3 h5 text-uppercase text-grey-3 text-bold">{t`取个名字吧`}</div>
           <div>
             <input
               className="my1 input block full"
               type="text"
               value={this.state.name}
-              placeholder={t`Something nice and descriptive`}
+              placeholder={t`取个又好听又贴切的名字`}
               onChange={event => this.setState({ name: event.target.value })}
             />
           </div>
@@ -93,7 +93,7 @@ export default class ExpressionWidget extends Component {
               }
               disabled={!this.isValid()}
             >
-              {this.props.expression ? t`Update` : t`完成`}
+              {this.props.expression ? t`更新` : t`完成`}
             </button>
           </div>
           <div>
@@ -101,7 +101,7 @@ export default class ExpressionWidget extends Component {
               <a
                 className="pr2 ml2 text-warning link"
                 onClick={() => this.props.onRemoveExpression(this.props.name)}
-              >{t`Remove`}</a>
+              >{t`删除`}</a>
             ) : null}
           </div>
         </div>

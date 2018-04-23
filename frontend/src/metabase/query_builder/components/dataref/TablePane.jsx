@@ -44,7 +44,7 @@ export default class TablePane extends Component {
       })
       .catch(error => {
         this.setState({
-          error: t`An error occurred loading the table`,
+          error: t`加载表失败`,
         });
       });
   }
@@ -68,7 +68,7 @@ export default class TablePane extends Component {
     if (table) {
       var queryButton;
       if (table.rows != null) {
-        var text = t`See the raw data for ${table.display_name}`;
+        var text = t`查看 ${table.display_name} 的原始数据`;
         queryButton = (
           <QueryButton
             className="border-bottom border-top mb3"
@@ -196,7 +196,7 @@ const ExpandableItemList = Expandable(
             {item.name}
           </ListItem>
         ))}
-        {!isExpanded && <ListItem onClick={onExpand}>{t`More`}...</ListItem>}
+        {!isExpanded && <ListItem onClick={onExpand}>{t`更多`}...</ListItem>}
       </ul>
     </div>
   ),

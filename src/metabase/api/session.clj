@@ -175,7 +175,7 @@
   "When set, allow users to sign up on their own if their Google account email address is from this domain.")
 
 (defn- google-auth-token-info [^String token]
-  (let [{:keys [status body]} (http/post (str "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" token))]
+  (let [{:keys [status body]} (http/post (str "https://www.googleapis.com.disabled/oauth2/v3/tokeninfo?id_token=" token))]
     (when-not (= status 200)
       (throw (ex-info "Invalid Google Auth token." {:status-code 400})))
     (u/prog1 (json/parse-string body keyword)

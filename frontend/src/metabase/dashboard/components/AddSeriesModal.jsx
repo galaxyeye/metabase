@@ -306,7 +306,7 @@ export default class AddSeriesModal extends Component {
               className="h4 input full pl1"
               style={{ border: "none", backgroundColor: "transparent" }}
               type="search"
-              placeholder="Search for a question"
+              placeholder="搜索一个提问"
               onFocus={this.onSearchFocus}
               onChange={this.onSearchChange}
             />

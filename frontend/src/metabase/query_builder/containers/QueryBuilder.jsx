@@ -131,7 +131,7 @@ const mapDispatchToProps = {
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
-@title(({ card }) => (card && card.name) || t`Question`)
+@title(({ card }) => (card && card.name) || t`问题`)
 export default class QueryBuilder extends Component {
   forceUpdateDebounced: () => void;
 

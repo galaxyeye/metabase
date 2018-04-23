@@ -80,7 +80,7 @@ const TagExample = ({ datasetQuery, setDatasetQuery }) => (
           data-metabase-event="QueryBuilder;Template Tag Example Query Used"
           onClick={() => setDatasetQuery(datasetQuery, true)}
         >
-          {t`Try it`}
+          {t`试一下`}
         </div>
       )}
     </p>

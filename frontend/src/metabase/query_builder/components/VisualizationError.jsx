@@ -84,7 +84,7 @@ class VisualizationError extends Component {
         <div className="QueryError2 flex full justify-center">
           <div className="QueryError-image QueryError-image--queryError mr4" />
           <div className="QueryError2-details">
-            <h1 className="text-bold">{t`该问题出现一点问题...`}</h1>
+            <h1 className="text-bold">{t`该问题出现了一点小故障...`}</h1>
             <p className="QueryError-messageText">{t`Most of the time this is caused by an invalid selection or bad input value. Double check your inputs and retry your query.`}</p>
             <div className="pt2">
               <a

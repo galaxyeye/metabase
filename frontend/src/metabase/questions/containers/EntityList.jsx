@@ -67,39 +67,39 @@ const mapDispatchToProps = {
 const SECTIONS = [
   {
     id: "all",
-    name: t`All questions`,
+    name: t`所有问题`,
     icon: "all",
-    empty: t`No questions have been saved yet.`,
+    empty: t`还没有人提问。`,
   },
   {
     id: "fav",
-    name: t`Favorites`,
+    name: t`收藏`,
     icon: "star",
-    empty: t`You haven't favorited any questions yet.`,
+    empty: t`你还没有收藏任何问题。`,
   },
   {
     id: "recent",
-    name: t`Recently viewed`,
+    name: t`最近查看`,
     icon: "recents",
-    empty: t`You haven't viewed any questions recently.`,
+    empty: t`你最近没有查看任何问题。`,
   },
   {
     id: "mine",
-    name: t`Saved by me`,
+    name: t`我的保存`,
     icon: "mine",
-    empty: t`You haven't saved any questions yet.`,
+    empty: t`你最近没有保存任何问题。`,
   },
   {
     id: "popular",
-    name: t`Most popular`,
+    name: t`流行`,
     icon: "popular",
-    empty: t`The most-viewed questions across your company will show up here.`,
+    empty: t`显示所有最流行的问题。`,
   },
   {
     id: "archived",
-    name: t`Archive`,
+    name: t`归档`,
     icon: "archive",
-    empty: t`If you no longer need a question, you can archive it.`,
+    empty: t`如果你不再需要一个提问，你可以将它归档。`,
   },
 ];
 

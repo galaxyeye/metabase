@@ -189,7 +189,7 @@
                                           "https://maps.google.com"
                                           "https://apis.google.com"
                                           "https://www.google-analytics.com" ; Safari requires the protocol
-                                          "https://*.googleapis.com"
+                                          "https://*.googleapis.com.disabled"
                                           "*.gstatic.com"
                                           (when config/is-dev?
                                             "localhost:8080")]
@@ -198,7 +198,7 @@
                                           "https://accounts.google.com"]
                             :style-src   ["'unsafe-inline'"
                                           "'self'"
-                                          "fonts.googleapis.com"]
+                                          "fonts.googleapis.com.disabled"]
                             :font-src    ["'self'"
                                           "fonts.gstatic.com"
                                           "themes.googleusercontent.com"

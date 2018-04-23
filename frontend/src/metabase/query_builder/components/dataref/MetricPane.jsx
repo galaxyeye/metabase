@@ -77,7 +77,7 @@ export default class MetricPane extends Component {
     usefulQuestions.push(
       <QueryButton
         icon="number"
-        text={t`See ${metricName}`}
+        text={t`查看 ${metricName}`}
         onClick={this.setQueryMetric}
       />,
     );

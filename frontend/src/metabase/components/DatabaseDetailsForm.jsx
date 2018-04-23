@@ -16,16 +16,16 @@ function isEmpty(str) {
 
 const AUTH_URL_PREFIXES = {
   bigquery:
-    "https://accounts.google.com.disabled/o/oauth2/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/bigquery&client_id=",
+    "https://accounts.google.com.disabled/o/oauth2/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com.disabled/auth/bigquery&client_id=",
   bigquery_with_drive:
-    "https://accounts.google.com.disabled/o/oauth2/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/bigquery%20https://www.googleapis.com/auth/drive&client_id=",
+    "https://accounts.google.com.disabled/o/oauth2/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com.disabled/auth/bigquery%20https://www.googleapis.com.disabled/auth/drive&client_id=",
   googleanalytics:
-    "https://accounts.google.com.disabled/o/oauth2/auth?access_type=offline&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/analytics.readonly&client_id=",
+    "https://accounts.google.com.disabled/o/oauth2/auth?access_type=offline&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com.disabled/auth/analytics.readonly&client_id=",
 };
 
 const ENABLE_API_PREFIXES = {
   googleanalytics:
-    "https://console.developers.google.com.disabled/apis/api/analytics.googleapis.com/overview?project=",
+    "https://console.developers.google.com.disabled/apis/api/analytics.googleapis.com.disabled/overview?project=",
 };
 
 const CREDENTIALS_URL_PREFIXES = {
@@ -312,7 +312,7 @@ export default class DatabaseDetailsForm extends Component {
       // then projecID would be 12343611585
       const projectID = clientID && (clientID.match(/^\d+/) || [])[0];
       if (ENABLE_API_PREFIXES[engine] && projectID) {
-        // URL looks like https://console.developers.google.com.disabled/apis/api/analytics.googleapis.com/overview?project=12343611585
+        // URL looks like https://console.developers.google.com.disabled/apis/api/analytics.googleapis.com.disabled/overview?project=12343611585
         const enableAPIURL = ENABLE_API_PREFIXES[engine] + projectID;
         enableAPILink = (
           <div className="flex align-center Form-offset">

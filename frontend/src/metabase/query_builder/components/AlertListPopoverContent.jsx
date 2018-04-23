@@ -150,12 +150,12 @@ export class AlertListItem extends Component {
     const { alert } = this.props;
 
     try {
-      this.setState({ unsubscribingProgress: t`Unsubscribing...` });
+      this.setState({ unsubscribingProgress: t`退订` });
       await this.props.unsubscribeFromAlert(alert);
       this.setState({ hasJustUnsubscribed: true });
       this.props.onUnsubscribe(alert);
     } catch (e) {
-      this.setState({ unsubscribingProgress: t`Failed to unsubscribe` });
+      this.setState({ unsubscribingProgress: t`退订失败` });
     }
   };
 
