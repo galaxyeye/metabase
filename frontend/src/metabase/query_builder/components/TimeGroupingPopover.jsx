@@ -37,7 +37,7 @@ export default class TimeGroupingPopover extends Component {
   };
 
   static defaultProps = {
-    title: t`按时间分组`,
+    title: t`按时间聚合`,
     groupingOptions: [
       // "default",
       "minute",

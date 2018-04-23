@@ -57,8 +57,8 @@ export default class VisualizationResult extends Component {
         <div className="flex flex-full">
           <VisualizationErrorMessage
             type="noRows"
-            title="No results!"
-            message={t`你的查询结果可能是空，如果这不符合预期，试试调整筛选条件。`}
+            title="无结果！"
+            message={t`查询结果为空。如果这并非你所预期，请调整筛选条件，缩小筛选范围再试试。`}
             action={
               <div>
                 {supportsRowsPresentAlert &&

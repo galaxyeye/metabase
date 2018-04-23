@@ -247,7 +247,7 @@ export default class QueryHeader extends Component {
         } else {
           // edit button
           buttonSections.push([
-            <Tooltip key="edit" tooltip={t`编辑问题`}>
+            <Tooltip key="edit" tooltip={t`编辑`}>
               <a
                 className="cursor-pointer text-brand-hover"
                 onClick={this.onBeginEditing}
@@ -389,7 +389,7 @@ export default class QueryHeader extends Component {
     // history icon on saved cards
     if (!isNew) {
       buttonSections.push([
-        <Tooltip key="history" tooltip={t`修订历史`}>
+        <Tooltip key="history" tooltip={t`历史`}>
           <ModalWithTrigger
             ref="cardHistory"
             triggerElement={

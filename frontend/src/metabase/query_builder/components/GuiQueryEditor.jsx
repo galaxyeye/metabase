@@ -147,7 +147,7 @@ export default class GuiQueryEditor extends Component {
 
       if (query.canAddFilter()) {
         addFilterButton = this.renderAdd(
-          filterList ? null : t`增加筛选，缩小结果范围`,
+          filterList ? null : t`筛选，缩小结果范围`,
           null,
           "addFilterTarget",
         );
@@ -155,7 +155,7 @@ export default class GuiQueryEditor extends Component {
     } else {
       enabled = false;
       addFilterButton = this.renderAdd(
-        t`增加筛选，缩小结果范围`,
+        t`筛选，缩小结果范围`,
         null,
         "addFilterTarget",
       );
@@ -381,7 +381,7 @@ export default class GuiQueryEditor extends Component {
         className="GuiBuilder-section GuiBuilder-groupedBy flex align-center px1"
         ref="viewSection"
       >
-        <span className="GuiBuilder-section-label Query-label">{t`分组`}</span>
+        <span className="GuiBuilder-section-label Query-label">{t`聚合`}</span>
         {this.renderBreakouts()}
       </div>
     );

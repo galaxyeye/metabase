@@ -32,6 +32,7 @@ import type { Database } from "metabase/meta/types/Database";
 import type { TableMetadata } from "metabase/meta/types/Metadata";
 import type { DatasetQuery } from "metabase/meta/types/Card";
 import type { ParameterValues } from "metabase/meta/types/Parameter";
+import RunStepButton from "metabase/query_builder/components/RunStepButton";
 
 const REFRESH_TOOLTIP_THRESHOLD = 30 * 1000; // 30 seconds
 
@@ -100,6 +101,10 @@ export default class QueryVisualization extends Component {
     this.props.runQuestionQuery({ ignoreCache: true });
   };
 
+  runCurrentQuery = () => {
+    this.props.runQuestionQuery({ ignoreCache: true });
+  };
+
   renderHeader() {
     const {
       question,
@@ -145,7 +150,7 @@ export default class QueryVisualization extends Component {
             {jt`${
               result.data.rows_truncated != null ? t`显示前` : t`显示`
             } ${<strong>{formatNumber(result.row_count)}</strong>} ${inflect(
-              "row",
+              "行",
               result.data.rows.length,
             )}`}
           </div>
@@ -290,7 +295,7 @@ export default class QueryVisualization extends Component {
 export const VisualizationEmptyState = ({ showTutorialLink }) => (
   <div className="flex full layout-centered text-grey-1 flex-column">
     <h1
-    >{t`予我数据，馈以结论。开始查询！`}</h1>
+    >{t`予我五谷，馈以精酿。开始查询！`}</h1>
     {showTutorialLink && (
       <Link
         to={Urls.question(null, "?tutorial")}

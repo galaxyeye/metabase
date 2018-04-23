@@ -143,7 +143,7 @@ export default class TablePane extends Component {
       } else var descriptionClasses = cx({ "text-grey-3": !table.description });
       var description = (
         <p className={descriptionClasses}>
-          {table.description || t`No description set.`}
+          {table.description || t`没有描述。`}
         </p>
       );
 

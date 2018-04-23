@@ -22,18 +22,18 @@ const EXPORT_FORMATS = ["csv", "xlsx", "json"];
 const QueryDownloadWidget = ({ className, card, result, uuid, token }) => (
   <PopoverWithTrigger
     triggerElement={
-      <Tooltip tooltip={t`下载全部结果集`}>
+      <Tooltip tooltip={t`下载结果集`}>
         <Icon title={t`下载结果集`} name="downarrow" size={16} />
       </Tooltip>
     }
     triggerClasses={cx(className, "text-brand-hover")}
   >
     <div className="p2" style={{ maxWidth: 320 }}>
-      <h4>{t`下载全部结果集`}</h4>
+      <h4>{t`下载结果集`}</h4>
       {result.data.rows_truncated != null && (
         <FieldSet className="my2 text-gold border-gold" legend={t`警告`}>
-          <div className="my1">{t`该结果集比较大，可能需要一些时间下载`}</div>
-          <div>{t`表格限制为最多100万行。`}</div>
+          <div className="my1">{t`该结果集比较大，可能会花费一点时间`}</div>
+          <div>{t`表格被限制为最多 100 万行。`}</div>
         </FieldSet>
       )}
       <div className="flex flex-row mt2">

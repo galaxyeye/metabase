@@ -89,17 +89,17 @@ const AdvancedEmbedPane = ({
                 className="ml1"
                 medium
                 onClick={onDiscard}
-              >{t`Discard Changes`}</Button>
+              >{t`放弃更改`}</Button>
             ) : null}
             <ActionButton
               className="ml1"
               primary
               medium
               actionFn={onSave}
-              activeText={t`Updating...`}
-              successText={t`Updated`}
-              failedText={t`Failed!`}
-            >{t`Publish`}</ActionButton>
+              activeText={t`更新中...`}
+              successText={t`已更新`}
+              failedText={t`更新失败！`}
+            >{t`发布`}</ActionButton>
           </div>
         </div>
       ) : null}
@@ -107,8 +107,8 @@ const AdvancedEmbedPane = ({
         className="mb2 flex-no-shrink"
         style={{ width: 244, height: 34 }}
         value={pane === "preview"}
-        textLeft={t`Preview`}
-        textRight={t`Code`}
+        textLeft={t`预览`}
+        textRight={t`代码`}
         onChange={() => onChangePane(pane === "preview" ? "code" : "preview")}
       />
       {pane === "preview" ? (

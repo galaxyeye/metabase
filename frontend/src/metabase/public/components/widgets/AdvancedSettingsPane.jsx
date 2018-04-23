@@ -68,7 +68,7 @@ const AdvancedSettingsPane = ({
     )}
     style={{ width: 400 }}
   >
-    <Section title={t`Style`}>
+    <Section title={t`风格`}>
       <DisplayOptionsPane
         className="pt1"
         displayOptions={displayOptions}
@@ -76,7 +76,7 @@ const AdvancedSettingsPane = ({
       />
     </Section>
     {embedType === "application" && (
-      <Section title={t`Parameters`}>
+      <Section title={t`参数`}>
         {resourceParameters.length > 0 ? (
           <p>{t`Which parameters can users of this embed use?`}</p>
         ) : (
@@ -101,9 +101,9 @@ const AdvancedSettingsPane = ({
                 })
               }
             >
-              <Option icon="close" value="disabled">{t`Disabled`}</Option>
-              <Option icon="pencil" value="enabled">{t`Editable`}</Option>
-              <Option icon="lock" value="locked">{t`Locked`}</Option>
+              <Option icon="close" value="disabled">{t`禁用`}</Option>
+              <Option icon="pencil" value="enabled">{t`可编辑`}</Option>
+              <Option icon="lock" value="locked">{t`锁定`}</Option>
             </Select>
           </div>
         ))}
@@ -111,7 +111,7 @@ const AdvancedSettingsPane = ({
     )}
     {embedType === "application" &&
       previewParameters.length > 0 && (
-        <Section title={t`Preview Locked Parameters`}>
+        <Section title={t`预览锁定的参数`}>
           <p
           >{t`Try passing some values to your locked parameters here. Your server will have to provide the actual values in the signed token when using this for real.`}</p>
           <Parameters
@@ -124,9 +124,9 @@ const AdvancedSettingsPane = ({
         </Section>
       )}
     {resource.enable_embedding ? (
-      <Section title={t`Danger zone`}>
-        <p>{t`This will disable embedding for this ${resourceType}.`}</p>
-        <Button medium warning onClick={onUnpublish}>{t`Unpublish`}</Button>
+      <Section title={t`危险区域`}>
+        <p>{t`本操作将禁用该 ${resourceType} 的所有外部嵌入`}</p>
+        <Button medium warning onClick={onUnpublish}>{t`不发布`}</Button>
       </Section>
     ) : null}
   </div>

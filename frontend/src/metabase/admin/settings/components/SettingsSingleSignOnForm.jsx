@@ -119,7 +119,7 @@ export default class SettingsSingleSignOnForm extends Component {
             {jt`To allow users to sign in with Google you'll need to give Metabase a Google Developers console application client ID. It only takes a few steps and instructions on how to create a key can be found ${(
               <a
                 className="link"
-                href="https://developers.google.com/identity/sign-in/web/devconsole-project"
+                href="https://developers.google.com.disabled/identity/sign-in/web/devconsole-project"
                 target="_blank"
               >
                 here.

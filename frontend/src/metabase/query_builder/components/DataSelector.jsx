@@ -125,7 +125,7 @@ export const TableTriggerContent = ({ selectedTable }) =>
       {selectedTable.display_name || selectedTable.name}
     </span>
   ) : (
-    <span className="text-grey-4 no-decoration">{t`选择表格`}</span>
+    <span className="text-grey-4 no-decoration">{t`选择表`}</span>
   );
 
 @connect(state => ({ metadata: getMetadata(state) }), { fetchTableMetadata })

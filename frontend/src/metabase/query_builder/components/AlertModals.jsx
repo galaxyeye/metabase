@@ -146,7 +146,7 @@ export class CreateAlertModalContent extends Component {
         <ChannelSetupModal
           user={user}
           onClose={onCancel}
-          entityNamePlural={t`alerts`}
+          entityNamePlural={t`提醒`}
           channels={isAdmin ? ["email", "Slack"] : ["email"]}
           fullPageModal
         />
@@ -243,7 +243,7 @@ export class AlertEducationalScreen extends Component {
           primary
           className="mt4"
           onClick={onProceed}
-        >{t`Set up an alert`}</Button>
+        >{t`设置提醒`}</Button>
       </div>
     );
   }
@@ -306,7 +306,7 @@ export class UpdateAlertModalContent extends Component {
     const { modifiedAlert } = this.state;
 
     const isCurrentUser = alert.creator.id === user.id;
-    const title = isCurrentUser ? t`Edit your alert` : t`Edit alert`;
+    const title = isCurrentUser ? t`编辑你的提醒` : t`编辑提醒`;
     // TODO: Remove PulseEdit css hack
     return (
       <ModalContent onClose={onCancel}>
@@ -331,7 +331,7 @@ export class UpdateAlertModalContent extends Component {
             <div className="flex-full" />
             <Button onClick={onCancel} className="mr2">{t`取消`}</Button>
             <ButtonWithStatus
-              titleForState={{ default: t`Save changes` }}
+              titleForState={{ default: t`保存` }}
               onClickOperation={this.onUpdateAlert}
             />
           </div>
@@ -374,7 +374,7 @@ export class DeleteAlertSection extends Component {
         <h3
           className="text-error absolute top bg-white px1"
           style={{ marginTop: "-12px" }}
-        >{jt`Danger Zone`}</h3>
+        >{jt`危险区域`}</h3>
         <div className="ml1">
           <h4 className="text-bold mb1">{jt`Delete this alert`}</h4>
           <div className="flex">
@@ -488,8 +488,8 @@ export const AlertGoalToggles = ({ alertType, alert, onAlertChange }) => {
             ? t`The first time it crosses, or every time?`
             : t`The first time it reaches the goal, or every time?`
         }
-        trueText={t`The first time`}
-        falseText={t`Every time`}
+        trueText={t`首次`}
+        falseText={t`每一次`}
       />
     </div>
   );

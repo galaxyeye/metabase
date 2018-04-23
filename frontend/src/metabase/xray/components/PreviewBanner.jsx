@@ -2,7 +2,7 @@ import React from "react";
 import Icon from "metabase/components/Icon";
 import { jt } from "c-3po";
 const SURVEY_LINK =
-  "https://docs.google.com/forms/d/e/1FAIpQLSc92WzF76ViiT8l4646lvFSWejNUhh4lhCSMXdZECILVwJG2A/viewform?usp=sf_link";
+  "https://docs.google.com.disabled/forms/d/e/1FAIpQLSc92WzF76ViiT8l4646lvFSWejNUhh4lhCSMXdZECILVwJG2A/viewform?usp=sf_link";
 
 const PreviewBanner = () => (
   <div className="full py2 flex align-center justify-center full md-py3 text-centered text-slate text-paragraph bg-white border-bottom">

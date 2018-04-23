@@ -136,8 +136,8 @@ export class NewQueryOptions extends Component {
                 <li className="Grid-cell">
                   <NewQueryOption
                     image="/app/img/questions_illustration"
-                    title={t`指标`}
-                    description={t`按时间查看，轻松洞察趋势`}
+                    title={t`指标集`}
+                    description={t`使用指标集，轻松洞察数据更新和趋势`}
                     to={metricSearchUrl}
                   />
                 </li>
@@ -151,7 +151,7 @@ export class NewQueryOptions extends Component {
                       ? t`自定义`
                       : t`提问`
                   }
-                  description={t`使用问题创建器查看趋势、列表或者创建你自己的指标集`}
+                  description={t`使用查询器查看趋势、列表或者创建你自己的指标集`}
                   width={180}
                   to={this.getGuiQueryUrl}
                 />
@@ -160,8 +160,8 @@ export class NewQueryOptions extends Component {
                 <li className="Grid-cell">
                   <NewQueryOption
                     image="/app/img/sql_illustration"
-                    title={t`自定义查询`}
-                    description={t`你可以使用SQL来创建更复杂的查询`}
+                    title={t`高级查询`}
+                    description={t`使用 SQL 来创建高级查询`}
                     to={this.getNativeQueryUrl}
                   />
                 </li>

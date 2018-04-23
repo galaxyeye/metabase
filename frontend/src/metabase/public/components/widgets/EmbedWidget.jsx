@@ -49,7 +49,7 @@ export default class EmbedWidget extends Component {
         ref={m => (this._modal = m)}
         full
         triggerElement={
-          <Tooltip tooltip={t`Sharing and embedding`}>
+          <Tooltip tooltip={t`分享`}>
             <Icon
               name="share"
               onClick={() =>

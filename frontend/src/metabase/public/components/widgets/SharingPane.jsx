@@ -69,12 +69,12 @@ export default class SharingPane extends Component {
         {isAdmin &&
           isPublicSharingEnabled && (
             <div className="pb2 mb4 border-bottom flex align-center">
-              <h4>{t`Enable sharing`}</h4>
+              <h4>{t`开启分享`}</h4>
               <div className="ml-auto">
                 {resource.public_uuid ? (
                   <Confirm
-                    title={t`Disable this public link?`}
-                    content={t`This will cause the existing link to stop working. You can re-enable it, but when you do it will be a different link.`}
+                    title={t`禁用该公开链接？`}
+                    content={t`禁用将会导致原有链接失效，如果重新开启则会生成新链接。`}
                     action={() => {
                       MetabaseAnalytics.trackEvent(
                         "Sharing Modal",
@@ -156,7 +156,7 @@ export default class SharingPane extends Component {
           />
           <div className="ml2 flex-full">
             <h3 className="text-green mb1">{t`Public embed`}</h3>
-            <div className="mb1">{t`Embed this ${resourceType} in blog posts or web pages by copying and pasting this snippet:`}</div>
+            <div className="mb1">{t`复制粘贴以下代码，嵌入该 ${resourceType} 到博客、网站`}</div>
             <CopyWidget value={iframeSource} />
           </div>
         </div>
@@ -173,7 +173,7 @@ export default class SharingPane extends Component {
               forceOriginalDimensions={false}
             />
             <div className="ml2 flex-full">
-              <h3 className="text-purple mb1">{t`Embed this ${resourceType} in an application`}</h3>
+              <h3 className="text-purple mb1">{t`将该 ${resourceType} 嵌入到应用`}</h3>
               <div className="">{t`By integrating with your application server code, you can provide a secure stats ${resourceType} limited to a specific user, customer, organization, etc.`}</div>
             </div>
           </div>

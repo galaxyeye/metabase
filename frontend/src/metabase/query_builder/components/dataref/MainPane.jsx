@@ -11,7 +11,7 @@ const MainPane = ({ databases, show }) => (
   <div>
     <h1>{t`数据源`}</h1>
     <p>
-      {t`Learn more about your data structure to ask more useful questions`}.
+      {t`深入了解数据结构，提出富有洞见的问题！`}
     </p>
     <ul>
       {databases &&
