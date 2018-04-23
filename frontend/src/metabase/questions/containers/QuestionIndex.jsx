@@ -91,7 +91,7 @@ export const QuestionIndexHeader = ({
             </Link>
           )}
           <Link to="/questions/archive">
-            <Icon size={20} name="viewArchive" tooltip={t`View the archive`} />
+            <Icon size={20} name="viewArchive" tooltip={t`查看存档`} />
           </Link>
         </CollectionActions>
       </div>

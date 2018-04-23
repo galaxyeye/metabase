@@ -370,16 +370,16 @@ export const getRoutes = store => (
       </Route>
 
       {/* ADMIN */}
-      <Route path="/admin" title={t`Admin`} component={IsAdmin}>
+      <Route path="/admin" title={t`管理员`} component={IsAdmin}>
         <IndexRedirect to="/admin/settings" />
 
-        <Route path="databases" title={t`Databases`}>
+        <Route path="databases" title={t`数据源`}>
           <IndexRoute component={DatabaseListApp} />
           <Route path="create" component={DatabaseEditApp} />
           <Route path=":databaseId" component={DatabaseEditApp} />
         </Route>
 
-        <Route path="datamodel" title={t`Data Model`}>
+        <Route path="datamodel" title={t`数据模型`}>
           <IndexRedirect to="database" />
           <Route path="database" component={MetadataEditorApp} />
           <Route path="database/:databaseId" component={MetadataEditorApp} />
@@ -407,7 +407,7 @@ export const getRoutes = store => (
         </Route>
 
         {/* PEOPLE */}
-        <Route path="people" title={t`People`} component={AdminPeopleApp}>
+        <Route path="people" title={t`会员`} component={AdminPeopleApp}>
           <IndexRoute component={PeopleListingApp} />
           <Route path="groups" title={t`Groups`}>
             <IndexRoute component={GroupsListingApp} />
@@ -416,7 +416,7 @@ export const getRoutes = store => (
         </Route>
 
         {/* SETTINGS */}
-        <Route path="settings" title={t`Settings`}>
+        <Route path="settings" title={t`设置`}>
           <IndexRedirect to="/admin/settings/setup" />
           {/* <IndexRoute component={SettingsEditorApp} /> */}
           <Route path=":section/:authType" component={SettingsEditorApp} />

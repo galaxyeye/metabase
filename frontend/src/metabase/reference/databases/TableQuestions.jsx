@@ -92,9 +92,7 @@ export default class TableQuestions extends Component {
                               id={entity.id}
                               index={index}
                               name={entity.display_name || entity.name}
-                              description={t`Created ${moment(
-                                entity.created_at,
-                              ).fromNow()} by ${entity.creator.common_name}`}
+                              description={t`${entity.creator.common_name} 创建于 ${moment(entity.created_at, ).fromNow()}`}
                               url={Urls.question(entity.id)}
                               icon={visualizations.get(entity.display).iconName}
                             />

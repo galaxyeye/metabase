@@ -206,7 +206,7 @@ const ItemCreated = pure(
   ({ created, by }) =>
     created || by ? (
       <div className={S.itemSubtitle}>
-        {t`Created` + (created ? ` ${created}` : ``) + (by ? t` by ${by}` : ``)}
+        {(by ? t`${by}` : ``) + t` 创建于 ` + (created ? ` ${created}` : ``)}
       </div>
     ) : null,
 );
