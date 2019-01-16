@@ -57,7 +57,8 @@
                  [com.google.apis/google-api-services-bigquery        ; Google BigQuery Java Client Library
                    "v2-rev387-1.23.0"]
                  [com.jcraft/jsch "0.1.54"]                           ; SSH client for tunnels
-                 [com.h2database/h2 "1.4.197"]                        ; embedded SQL database
+                 ; [com.h2database/h2 "1.4.197"]                        ; embedded SQL database
+                 [fun.platonic.pulsar/pulsar-ql-common "0.5.0"]                     ; Pulsar Web SQL engine
                  [com.mattbertolini/liquibase-slf4j "2.0.0"]          ; Java Migrations lib
                  [com.mchange/c3p0 "0.9.5.2"]                         ; connection pooling library
                  [com.microsoft.sqlserver/mssql-jdbc "6.4.0.jre8"]    ; SQLServer JDBC driver
@@ -186,3 +187,8 @@
              ;; get the H2 shell with 'lein h2'
              :h2-shell {:main org.h2.tools.Shell}
              :generate-automagic-dashboards-pot {:main metabase.automagic-dashboards.rules}})
+;;
+;; https://github.com/technomancy/leiningen/blob/master/doc/FAQ.md
+(require 'cemerick.pomegranate.aether)
+(cemerick.pomegranate.aether/register-wagon-factory!
+ "http" #(org.apache.maven.wagon.providers.http.HttpWagon.))
