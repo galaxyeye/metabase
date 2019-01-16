@@ -178,7 +178,13 @@ export default class NativeQueryEditor extends Component {
     const { query } = this.props;
 
     let editorElement = ReactDOM.findDOMNode(this.refs.editor);
+
     // $FlowFixMe
+    if (typeof ace === "undefined" || !ace || !ace.edit) {
+      // fail gracefully-ish if ace isn't available, e.x. in integration tests
+      return;
+    }
+
     this._editor = ace.edit(editorElement);
 
     // listen to onChange events
@@ -272,6 +278,13 @@ export default class NativeQueryEditor extends Component {
     }
   };
 
+  setParameterIndex = (parameterId: ParameterId, parameterIndex: number) => {
+    const { query, setDatasetQuery } = this.props;
+    query
+      .setParameterIndex(parameterId, parameterIndex)
+      .update(setDatasetQuery);
+  };
+
   render() {
     const { query, setParameterValue, location } = this.props;
     const database = query.database();
@@ -290,7 +303,7 @@ export default class NativeQueryEditor extends Component {
             key="db_selector"
             className="GuiBuilder-section GuiBuilder-data flex align-center"
           >
-            <span className="GuiBuilder-section-label Query-label">{t`数据库`}</span>
+            <span className="GuiBuilder-section-label Query-label">{t`Database`}</span>
             <DatabaseDataSelector
               databases={databases}
               selectedDatabaseId={database && database.id}
@@ -315,7 +328,7 @@ export default class NativeQueryEditor extends Component {
             key="table_selector"
             className="GuiBuilder-section GuiBuilder-data flex align-center"
           >
-            <span className="GuiBuilder-section-label Query-label">{t`表`}</span>
+            <span className="GuiBuilder-section-label Query-label">{t`Table`}</span>
             <SchemaAndTableDataSelector
               selectedTableId={selectedTable ? selectedTable.id : null}
               selectedDatabaseId={database && database.id}
@@ -329,7 +342,7 @@ export default class NativeQueryEditor extends Component {
       }
     } else {
       dataSelectors = (
-        <span className="p2 text-grey-4">{t`该查询由 ${query.nativeQueryLanguage()} 编写。`}</span>
+        <span className="p2 text-medium">{t`This question is written in ${query.nativeQueryLanguage()}.`}</span>
       );
     }
 
@@ -337,14 +350,14 @@ export default class NativeQueryEditor extends Component {
     if (this.state.showEditor) {
       editorClasses = "";
       toggleEditorText = query.hasWritePermission()
-        ? t`隐藏编辑器`
-        : t`隐藏查询`;
+        ? t`Hide Editor`
+        : t`Hide Query`;
       toggleEditorIcon = "contract";
     } else {
       editorClasses = "hide";
       toggleEditorText = query.hasWritePermission()
-        ? t`打开编辑器`
-        : t`打开查询`;
+        ? t`Open Editor`
+        : t`Show Query`;
       toggleEditorIcon = "expand";
     }
 
@@ -357,7 +370,9 @@ export default class NativeQueryEditor extends Component {
               parameters={parameters}
               query={location.query}
               setParameterValue={setParameterValue}
+              setParameterIndex={this.setParameterIndex}
               syncQueryString
+              isEditing
               isQB
               commitImmediately
             />

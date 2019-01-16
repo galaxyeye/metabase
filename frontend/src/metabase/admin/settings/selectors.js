@@ -2,7 +2,6 @@ import _ from "underscore";
 import { createSelector } from "reselect";
 import MetabaseSettings from "metabase/lib/settings";
 import { t } from "c-3po";
-import { slugify } from "metabase/lib/formatting";
 import CustomGeoJSONWidget from "./components/widgets/CustomGeoJSONWidget.jsx";
 import {
   PublicLinksDashboardListing,
@@ -14,16 +13,20 @@ import SecretKeyWidget from "./components/widgets/SecretKeyWidget.jsx";
 import EmbeddingLegalese from "./components/widgets/EmbeddingLegalese";
 import EmbeddingLevel from "./components/widgets/EmbeddingLevel";
 import LdapGroupMappingsWidget from "./components/widgets/LdapGroupMappingsWidget";
+import FormattingWidget from "./components/widgets/FormattingWidget";
 
 import { UtilApi } from "metabase/services";
 
+/* Note - do not translate slugs */
 const SECTIONS = [
   {
     name: t`Setup`,
+    slug: "setup",
     settings: [],
   },
   {
     name: t`General`,
+    slug: "general",
     settings: [
       {
         key: "site-name",
@@ -88,10 +91,16 @@ const SECTIONS = [
         display_name: t`Enable Nested Queries`,
         type: "boolean",
       },
+      {
+        key: "enable-xrays",
+        display_name: t`Enable X-ray features`,
+        type: "boolean",
+      },
     ],
   },
   {
     name: t`Updates`,
+    slug: "updates",
     settings: [
       {
         key: "check-for-updates",
@@ -102,6 +111,7 @@ const SECTIONS = [
   },
   {
     name: t`Email`,
+    slug: "email",
     settings: [
       {
         key: "email-smtp-host",
@@ -153,6 +163,7 @@ const SECTIONS = [
   },
   {
     name: "Slack",
+    slug: "slack",
     settings: [
       {
         key: "slack-token",
@@ -176,6 +187,7 @@ const SECTIONS = [
   },
   {
     name: t`Single Sign-On`,
+    slug: "single_sign_on",
     sidebar: false,
     settings: [
       {
@@ -188,10 +200,12 @@ const SECTIONS = [
   },
   {
     name: t`Authentication`,
+    slug: "authentication",
     settings: [],
   },
   {
     name: t`LDAP`,
+    slug: "ldap",
     sidebar: false,
     settings: [
       {
@@ -243,7 +257,13 @@ const SECTIONS = [
         key: "ldap-user-filter",
         display_name: t`User filter`,
         type: "string",
-        validations: [["ldap_filter", t`Check your parentheses`]],
+        validations: [
+          value =>
+            (value.match(/\(/g) || []).length !==
+            (value.match(/\)/g) || []).length
+              ? t`Check your parentheses`
+              : null,
+        ],
       },
       {
         key: "ldap-attribute-email",
@@ -268,7 +288,7 @@ const SECTIONS = [
       },
       {
         key: "ldap-group-base",
-        display_name: t`"Group search base`,
+        display_name: t`Group search base`,
         type: "string",
       },
       {
@@ -278,6 +298,7 @@ const SECTIONS = [
   },
   {
     name: t`Maps`,
+    slug: "maps",
     settings: [
       {
         key: "map-tile-server-url",
@@ -295,7 +316,20 @@ const SECTIONS = [
     ],
   },
   {
+    name: t`Formatting`,
+    slug: "formatting",
+    settings: [
+      {
+        display_name: t`Formatting Options`,
+        description: "",
+        key: "custom-formatting",
+        widget: FormattingWidget,
+      },
+    ],
+  },
+  {
     name: t`Public Sharing`,
+    slug: "public_sharing",
     settings: [
       {
         key: "enable-public-sharing",
@@ -318,6 +352,7 @@ const SECTIONS = [
   },
   {
     name: t`Embedding in other Applications`,
+    slug: "embedding_in_other_applications",
     settings: [
       {
         key: "enable-embedding",
@@ -373,6 +408,7 @@ const SECTIONS = [
   },
   {
     name: t`Caching`,
+    slug: "caching",
     settings: [
       {
         key: "enable-query-caching",
@@ -402,22 +438,6 @@ const SECTIONS = [
       },
     ],
   },
-  {
-    name: t`X-Rays`,
-    settings: [
-      {
-        key: "enable-xrays",
-        display_name: t`Enable X-Rays`,
-        type: "boolean",
-        allowValueCollection: true,
-      },
-      {
-        key: "xray-max-cost",
-        type: "string",
-        allowValueCollection: true,
-      },
-    ],
-  },
   /*
     {
         name: "Premium Embedding",
@@ -431,9 +451,6 @@ const SECTIONS = [
     }
     */
 ];
-for (const section of SECTIONS) {
-  section.slug = slugify(section.name);
-}
 
 export const getSettings = createSelector(
   state => state.settings.settings,

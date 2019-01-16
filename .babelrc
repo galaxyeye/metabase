@@ -1,5 +1,6 @@
 {
   "plugins": [
+    "babel-plugin-styled-components",
     "transform-flow-strip-types",
     "add-react-displayname",
     "transform-decorators-legacy",
@@ -19,7 +20,8 @@
           "extract": {
             "output": "locales/metabase-frontend.pot"
           },
-          "discover": ["t", "jt"]
+          "discover": ["t", "jt"],
+          "numberedExpressions": true
         }]
       ]
     }

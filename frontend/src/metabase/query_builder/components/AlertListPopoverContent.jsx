@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { t, jt } from "c-3po";
 import _ from "underscore";
 import cx from "classnames";
-import cxs from "cxs";
 
 import { getQuestionAlerts } from "metabase/query_builder/selectors";
 import { getUser } from "metabase/selectors/user";
@@ -19,20 +18,6 @@ import {
   CreateAlertModalContent,
   UpdateAlertModalContent,
 } from "metabase/query_builder/components/AlertModals";
-
-const unsubscribedClasses = cxs({
-  marginLeft: "10px",
-});
-const ownAlertClasses = cxs({
-  marginLeft: "9px",
-  marginRight: "17px",
-});
-const unsubscribeButtonClasses = cxs({
-  transform: `translateY(4px)`,
-});
-const popoverClasses = cxs({
-  minWidth: "410px",
-});
 
 @connect(
   state => ({ questionAlerts: getQuestionAlerts(state), user: getUser(state) }),
@@ -58,7 +43,9 @@ export class AlertListPopoverContent extends Component {
   onEndAdding = (closeMenu = false) => {
     this.props.setMenuFreeze(false);
     this.setState({ adding: false });
-    if (closeMenu) this.props.closeMenu();
+    if (closeMenu) {
+      this.props.closeMenu();
+    }
   };
 
   isCreatedByCurrentUser = alert => {
@@ -87,7 +74,7 @@ export class AlertListPopoverContent extends Component {
     const hasOwnAndOthers = hasOwnAlerts && othersAlerts.length > 0;
 
     return (
-      <div className={popoverClasses}>
+      <div style={{ minWidth: 410 }}>
         <ul>
           {Object.values(sortedQuestionAlerts).map(alert => (
             <AlertListItem
@@ -109,8 +96,8 @@ export class AlertListPopoverContent extends Component {
               className="link flex align-center text-bold text-small"
               onClick={this.onAdd}
             >
-              <Icon name="add" className={ownAlertClasses} />{" "}
-              {t`设置警报`}
+              <Icon name="add" style={{ marginLeft: 9, marignRight: 17 }} />{" "}
+              {t`Set up your own alert`}
             </a>
           </div>
         )}
@@ -150,12 +137,12 @@ export class AlertListItem extends Component {
     const { alert } = this.props;
 
     try {
-      this.setState({ unsubscribingProgress: t`退订` });
+      this.setState({ unsubscribingProgress: t`Unsubscribing...` });
       await this.props.unsubscribeFromAlert(alert);
       this.setState({ hasJustUnsubscribed: true });
       this.props.onUnsubscribe(alert);
     } catch (e) {
-      this.setState({ unsubscribingProgress: t`退订失败` });
+      this.setState({ unsubscribingProgress: t`Failed to unsubscribe` });
     }
   };
 
@@ -167,7 +154,9 @@ export class AlertListItem extends Component {
   onEndEditing = (shouldCloseMenu = false) => {
     this.props.setMenuFreeze(false);
     this.setState({ editing: false });
-    if (shouldCloseMenu) this.props.closeMenu();
+    if (shouldCloseMenu) {
+      this.props.closeMenu();
+    }
   };
 
   render() {
@@ -188,7 +177,7 @@ export class AlertListItem extends Component {
 
     return (
       <li
-        className={cx("flex p3 text-grey-4 border-bottom", {
+        className={cx("flex p3 text-medium border-bottom", {
           "bg-light-blue": highlight,
         })}
       >
@@ -199,17 +188,20 @@ export class AlertListItem extends Component {
               <AlertCreatorTitle alert={alert} user={user} />
             </div>
             <div
-              className={`${unsubscribeButtonClasses} ml-auto text-bold text-small`}
+              className={`ml-auto text-bold text-small`}
+              style={{
+                transform: `translateY(4px)`,
+              }}
             >
               {(isAdmin || isCurrentUser) && (
-                <a className="link" onClick={this.onEdit}>{jt`编辑`}</a>
+                <a className="link" onClick={this.onEdit}>{jt`Edit`}</a>
               )}
               {!isAdmin &&
                 !unsubscribingProgress && (
                   <a
                     className="link ml2"
                     onClick={this.onUnsubscribe}
-                  >{jt`退订`}</a>
+                  >{jt`Unsubscribe`}</a>
                 )}
               {!isAdmin &&
                 unsubscribingProgress && <span> {unsubscribingProgress}</span>}
@@ -262,11 +254,12 @@ export class AlertListItem extends Component {
 
 export const UnsubscribedListItem = () => (
   <li className="border-bottom flex align-center py4 text-bold">
-    <div className="circle flex align-center justify-center p1 bg-grey-0 ml2">
+    <div className="circle flex align-center justify-center p1 bg-light ml2">
       <Icon name="check" className="text-success" />
     </div>
     <h3
-      className={`${unsubscribedClasses} text-dark`}
+      className={`text-dark`}
+      style={{ marginLeft: 10 }}
     >{jt`Okay, you're unsubscribed`}</h3>
   </li>
 );
@@ -336,7 +329,7 @@ export class AlertCreatorTitle extends Component {
     const isAdmin = user.is_superuser;
     const isCurrentUser = alert.creator.id === user.id;
     const creator =
-      alert.creator.id === user.id ? "You" : alert.creator.first_name;
+      alert.creator.id === user.id ? t`You` : alert.creator.first_name;
     const text =
       !isCurrentUser && !isAdmin
         ? t`You're receiving ${creator}'s alerts`

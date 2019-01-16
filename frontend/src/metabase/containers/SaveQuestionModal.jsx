@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import ReactCSSTransitionGroup from "react-addons-css-transition-group";
+import { CSSTransitionGroup } from "react-transition-group";
 
-import FormField from "metabase/components/FormField.jsx";
+import FormField from "metabase/components/form/FormField.jsx";
 import ModalContent from "metabase/components/ModalContent.jsx";
 import Radio from "metabase/components/Radio.jsx";
-import Select, { Option } from "metabase/components/Select.jsx";
 import Button from "metabase/components/Button";
-import CollectionList from "metabase/questions/containers/CollectionList";
+import CollectionSelect from "metabase/containers/CollectionSelect";
 
 import Query from "metabase/lib/query";
 import { t } from "c-3po";
@@ -33,7 +32,10 @@ export default class SaveQuestionModal extends Component {
               )
             : "",
         description: props.card.description || "",
-        collection_id: props.card.collection_id || null,
+        collection_id:
+          props.card.collection_id === undefined
+            ? props.initialCollectionId
+            : props.card.collection_id,
         saveType: props.originalCard ? "overwrite" : "create",
       },
     };
@@ -135,11 +137,11 @@ export default class SaveQuestionModal extends Component {
 
   render() {
     let { error, details } = this.state;
-    var formError;
+    let formError;
     if (error) {
-      var errorMessage;
+      let errorMessage;
       if (error.status === 500) {
-        errorMessage = t`服务器错误`;
+        errorMessage = t`Server error encountered`;
       }
 
       if (error.data && error.data.message) {
@@ -155,35 +157,35 @@ export default class SaveQuestionModal extends Component {
       }
     }
 
-    var saveOrUpdate = null;
+    let saveOrUpdate = null;
     if (!this.props.card.id && this.props.originalCard) {
       saveOrUpdate = (
         <FormField
-          displayName={t`替换或新建？`}
-          fieldName="saveType"
-          errors={this.state.errors}
+          name="saveType"
+          displayName={t`Replace or save as new?`}
+          formError={this.state.errors}
         >
           <Radio
             value={this.state.details.saveType}
             onChange={value => this.onChange("saveType", value)}
             options={[
               {
-                name: t`替换原有问题, "${
+                name: t`Replace original question, "${
                   this.props.originalCard.name
                 }"`,
                 value: "overwrite",
               },
-              { name: t`新建问题`, value: "create" },
+              { name: t`Save as new question`, value: "create" },
             ]}
-            isVertical
+            vertical
           />
         </FormField>
       );
     }
 
     let title = this.props.multiStep
-      ? t`第一步，保存您的问题`
-      : t`保存`;
+      ? t`First, save your question`
+      : t`Save question`;
 
     return (
       <ModalContent
@@ -191,7 +193,7 @@ export default class SaveQuestionModal extends Component {
         title={title}
         footer={[
           formError,
-          <Button onClick={this.props.onClose}>{t`取消`}</Button>,
+          <Button onClick={this.props.onClose}>{t`Cancel`}</Button>,
           <ButtonWithStatus
             disabled={!this.state.valid}
             onClickOperation={this.formSubmitted}
@@ -199,9 +201,9 @@ export default class SaveQuestionModal extends Component {
         ]}
         onClose={this.props.onClose}
       >
-        <form className="Form-inputs" onSubmit={this.formSubmitted}>
+        <form onSubmit={this.formSubmitted}>
           {saveOrUpdate}
-          <ReactCSSTransitionGroup
+          <CSSTransitionGroup
             transitionName="saveQuestionModalFields"
             transitionEnterTimeout={500}
             transitionLeaveTimeout={500}
@@ -212,70 +214,46 @@ export default class SaveQuestionModal extends Component {
                 className="saveQuestionModalFields"
               >
                 <FormField
-                  displayName={t`名称`}
-                  fieldName="name"
-                  errors={this.state.errors}
+                  name="name"
+                  displayName={t`Name`}
+                  formError={this.state.errors}
                 >
                   <input
                     className="Form-input full"
                     name="name"
-                    placeholder={t`卡片名称`}
+                    placeholder={t`What is the name of your card?`}
                     value={this.state.details.name}
                     onChange={e => this.onChange("name", e.target.value)}
                     autoFocus
                   />
                 </FormField>
                 <FormField
-                  displayName={t`描述`}
-                  fieldName="description"
-                  errors={this.state.errors}
+                  name="description"
+                  displayName={t`Description`}
+                  formError={this.state.errors}
                 >
                   <textarea
                     className="Form-input full"
                     name="description"
-                    placeholder={t`卡片描述`}
+                    placeholder={t`It's optional but oh, so helpful`}
                     value={this.state.details.description}
                     onChange={e => this.onChange("description", e.target.value)}
                   />
                 </FormField>
-                <CollectionList writable>
-                  {collections =>
-                    collections.length > 0 && (
-                      <FormField
-                        displayName={t`加入到哪个问题集中？`}
-                        fieldName="collection_id"
-                        errors={this.state.errors}
-                      >
-                        <Select
-                          className="block"
-                          value={this.state.details.collection_id}
-                          onChange={e =>
-                            this.onChange("collection_id", e.target.value)
-                          }
-                        >
-                          {[{ name: t`无`, id: null }]
-                            .concat(collections)
-                            .map((collection, index) => (
-                              <Option
-                                key={index}
-                                value={collection.id}
-                                icon={
-                                  collection.id != null ? "collection" : null
-                                }
-                                iconColor={collection.color}
-                                iconSize={18}
-                              >
-                                {collection.name}
-                              </Option>
-                            ))}
-                        </Select>
-                      </FormField>
-                    )
-                  }
-                </CollectionList>
+                <FormField
+                  name="collection_id"
+                  displayName={t`Which collection should this go in?`}
+                  formError={this.state.errors}
+                >
+                  <CollectionSelect
+                    className="block"
+                    value={this.state.details.collection_id}
+                    onChange={value => this.onChange("collection_id", value)}
+                  />
+                </FormField>
               </div>
             )}
-          </ReactCSSTransitionGroup>
+          </CSSTransitionGroup>
         </form>
       </ModalContent>
     );

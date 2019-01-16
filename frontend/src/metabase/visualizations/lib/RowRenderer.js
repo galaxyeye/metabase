@@ -8,11 +8,12 @@ import { formatValue } from "metabase/lib/formatting";
 
 import { initChart, forceSortedGroup, makeIndexMap } from "./renderer_utils";
 import { getFriendlyName } from "./utils";
+import { checkXAxisLabelOverlap } from "./LineAreaBarPostRender";
 
 export default function rowRenderer(
   element,
   { settings, series, onHoverChange, onVisualizationClick, height },
-) {
+): DeregisterFunction {
   const { cols } = series[0].data;
 
   if (series.length > 1) {
@@ -23,8 +24,6 @@ export default function rowRenderer(
 
   // disable clicks
   chart.onClick = () => {};
-
-  const colors = settings["graph.colors"];
 
   const formatDimension = row =>
     formatValue(row[0], { column: cols[0], type: "axis" });
@@ -92,7 +91,7 @@ export default function rowRenderer(
   });
 
   chart
-    .ordinalColors([colors[0]])
+    .ordinalColors([settings.series(series[0]).color])
     .x(d3.scale.linear().domain(xDomain))
     .elasticX(true)
     .dimension(dimension)
@@ -168,4 +167,13 @@ export default function rowRenderer(
     chart.margins().left += maxTextWidth;
     chart.render();
   }
+
+  // hide overlapping x-axis labels
+  if (checkXAxisLabelOverlap(chart, ".axis text")) {
+    chart.selectAll(".axis").remove();
+  }
+
+  return () => {
+    dc.chartRegistry.deregister(chart);
+  };
 }

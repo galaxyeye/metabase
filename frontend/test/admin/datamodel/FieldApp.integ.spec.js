@@ -1,6 +1,7 @@
 import {
   useSharedAdminLogin,
   createTestStore,
+  eventually,
 } from "__support__/integrated_tests";
 
 import {
@@ -29,12 +30,13 @@ import { FETCH_IDFIELDS } from "metabase/admin/datamodel/datamodel";
 import { delay } from "metabase/lib/promise";
 import FieldApp, {
   FieldHeader,
-  FieldRemapping,
-  FieldValueMapping,
+} from "metabase/admin/datamodel/containers/FieldApp";
+import FieldRemapping, {
   RemappingNamingTip,
   ValueRemappings,
-} from "metabase/admin/datamodel/containers/FieldApp";
-import Input from "metabase/components/Input";
+  FieldValueMapping,
+} from "metabase/admin/datamodel/components/FieldRemapping";
+import InputBlurChange from "metabase/components/InputBlurChange";
 import {
   FieldVisibilityPicker,
   SpecialTypeAndTargetPicker,
@@ -45,8 +47,7 @@ import SelectButton from "metabase/components/SelectButton";
 import ButtonWithStatus from "metabase/components/ButtonWithStatus";
 import { getMetadata } from "metabase/selectors/metadata";
 
-const getRawFieldWithId = (store, fieldId) =>
-  store.getState().metadata.fields[fieldId];
+import { MetabaseApi } from "metabase/services";
 
 // TODO: Should we use the metabase/lib/urls methods for constructing urls also here?
 
@@ -88,11 +89,11 @@ describe("FieldApp", () => {
       const header = fieldApp.find(FieldHeader);
       expect(header.length).toBe(1);
 
-      const nameInput = header.find(Input).at(0);
+      const nameInput = header.find(InputBlurChange).at(0);
       expect(nameInput.props().value).toBe(
         staticFixtureMetadata.fields["1"].display_name,
       );
-      const descriptionInput = header.find(Input).at(1);
+      const descriptionInput = header.find(InputBlurChange).at(1);
       expect(descriptionInput.props().value).toBe(
         staticFixtureMetadata.fields["1"].description,
       );
@@ -109,25 +110,19 @@ describe("FieldApp", () => {
 
       const header = fieldApp.find(FieldHeader);
       expect(header.length).toBe(1);
-      const nameInput = header.find(Input).at(0);
-      const descriptionInput = header.find(Input).at(1);
+      const nameInput = header.find(InputBlurChange).at(0);
+      const descriptionInput = header.find(InputBlurChange).at(1);
 
       expect(nameInput.props().value).toBe(newTitle);
       expect(descriptionInput.props().value).toBe(newDescription);
     });
 
     afterAll(async () => {
-      const store = await createTestStore();
-      await store.dispatch(fetchTableMetadata(1));
-      const createdAtField = getRawFieldWithId(store, CREATED_AT_ID);
-
-      await store.dispatch(
-        updateField({
-          ...createdAtField,
-          display_name: staticFixtureMetadata.fields[1].display_name,
-          description: staticFixtureMetadata.fields[1].description,
-        }),
-      );
+      await MetabaseApi.field_update({
+        id: CREATED_AT_ID,
+        display_name: staticFixtureMetadata.fields[1].display_name,
+        description: staticFixtureMetadata.fields[1].description,
+      });
     });
   });
 
@@ -165,16 +160,10 @@ describe("FieldApp", () => {
     });
 
     afterAll(async () => {
-      const store = await createTestStore();
-      await store.dispatch(fetchTableMetadata(1));
-      const createdAtField = getRawFieldWithId(store, CREATED_AT_ID);
-
-      await store.dispatch(
-        updateField({
-          ...createdAtField,
-          visibility_type: "normal",
-        }),
-      );
+      await MetabaseApi.field_update({
+        id: CREATED_AT_ID,
+        visibility_type: "normal",
+      });
     });
   });
 
@@ -189,6 +178,7 @@ describe("FieldApp", () => {
       const { store, fieldApp } = await initFieldApp({
         fieldId: CREATED_AT_ID,
       });
+
       const picker = fieldApp.find(SpecialTypeAndTargetPicker);
       const typeSelect = picker.find(Select).at(0);
       click(typeSelect);
@@ -262,17 +252,11 @@ describe("FieldApp", () => {
     });
 
     afterAll(async () => {
-      const store = await createTestStore();
-      await store.dispatch(fetchTableMetadata(1));
-      const createdAtField = getRawFieldWithId(store, CREATED_AT_ID);
-
-      await store.dispatch(
-        updateField({
-          ...createdAtField,
-          special_type: null,
-          fk_target_field_id: null,
-        }),
-      );
+      await MetabaseApi.field_update({
+        id: CREATED_AT_ID,
+        special_type: "type/CreationTimestamp",
+        fk_target_field_id: null,
+      });
     });
   });
 
@@ -285,7 +269,7 @@ describe("FieldApp", () => {
 
       click(mappingTypePicker);
       const pickerOptions = mappingTypePicker.find(Popover).find("li");
-      expect(pickerOptions.length).toBe(1);
+      expect(pickerOptions.map(o => o.text())).toEqual(["Use original value"]);
     });
 
     it("lets you change to 'Use foreign key' and change the target for field with fk", async () => {
@@ -306,12 +290,14 @@ describe("FieldApp", () => {
         .first();
       click(useFKButton);
       store.waitForActions([UPDATE_FIELD_DIMENSION, FETCH_TABLE_METADATA]);
-      // TODO: Figure out a way to avoid using delay – the use of delays may lead to occasional CI failures
-      await delay(500);
 
-      const fkFieldSelect = section.find(SelectButton);
+      let fkFieldSelect;
 
-      expect(fkFieldSelect.text()).toBe("Name");
+      await eventually(() => {
+        fkFieldSelect = section.find(SelectButton);
+        expect(fkFieldSelect.text()).toBe("Name");
+      });
+
       click(fkFieldSelect);
 
       const sourceField = fkFieldSelect
@@ -325,9 +311,11 @@ describe("FieldApp", () => {
 
       click(sourceField);
       store.waitForActions([FETCH_TABLE_METADATA]);
-      // TODO: Figure out a way to avoid using delay – the use of delays may lead to occasional CI failures
-      await delay(500);
-      expect(fkFieldSelect.text()).toBe("Source");
+
+      await eventually(() => {
+        fkFieldSelect = section.find(SelectButton);
+        expect(fkFieldSelect.text()).toBe("Source");
+      });
     });
 
     it("doesn't show date fields in fk options", async () => {
@@ -401,7 +389,7 @@ describe("FieldApp", () => {
         e: { target: document.documentElement },
       });
       await delay(300); // delay needed because of setState in FieldApp; app.update() does not work for whatever reason
-      expect(section.find(".text-danger").length).toBe(1); // warning that you should choose a column
+      expect(section.find(".text-error").length).toBe(1); // warning that you should choose a column
     });
 
     it("doesn't let you enter custom remappings for a field with string values", async () => {
@@ -450,13 +438,16 @@ describe("FieldApp", () => {
 
       const firstMapping = fieldValueMappings.at(0);
       expect(firstMapping.find("h3").text()).toBe("1");
-      expect(firstMapping.find(Input).props().value).toBe("1");
-      setInputValue(firstMapping.find(Input), "Terrible");
+      expect(firstMapping.find(InputBlurChange).props().value).toBe("1");
+      setInputValue(firstMapping.find(InputBlurChange), "Terrible");
 
       const lastMapping = fieldValueMappings.last();
       expect(lastMapping.find("h3").text()).toBe("5");
-      expect(lastMapping.find(Input).props().value).toBe("5");
-      setInputValue(lastMapping.find(Input), "Extraordinarily awesome");
+      expect(lastMapping.find(InputBlurChange).props().value).toBe("5");
+      setInputValue(
+        lastMapping.find(InputBlurChange),
+        "Extraordinarily awesome",
+      );
 
       const saveButton = valueRemappingsSection.find(ButtonWithStatus);
       clickButton(saveButton);
@@ -477,13 +468,13 @@ describe("FieldApp", () => {
       expect(
         fieldValueMappings
           .first()
-          .find(Input)
+          .find(InputBlurChange)
           .props().value,
       ).toBe("Terrible");
       expect(
         fieldValueMappings
           .last()
-          .find(Input)
+          .find(InputBlurChange)
           .props().value,
       ).toBe("Extraordinarily awesome");
     });

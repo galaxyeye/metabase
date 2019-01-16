@@ -20,17 +20,17 @@ export default class RunButton extends Component {
     if (isRunning) {
       buttonText = (
         <div className="flex align-center">
-          <Icon className="mr1" name="close" />
-          {t`取消`}
+          <Icon className="sm-mr1" name="close" />
+          <span className="hide sm-show">{t`Cancel`}</span>
         </div>
       );
     } else if (isRunnable && isDirty) {
-      buttonText = t`获取结果`;
+      buttonText = t`Get Answer`;
     } else if (isRunnable && !isDirty) {
       buttonText = (
         <div className="flex align-center">
-          <Icon className="mr1" name="refresh" />
-          {t`更新`}
+          <Icon className="sm-mr1" name="refresh" />
+          <span className="hide sm-show">{t`Refresh`}</span>
         </div>
       );
     }
@@ -40,8 +40,8 @@ export default class RunButton extends Component {
       {
         "RunButton--hidden": !buttonText,
         "Button--primary": isDirty,
-        "text-grey-2": !isDirty,
-        "text-grey-4-hover": !isDirty,
+        "text-medium": !isDirty,
+        "text-brand-hover": !isDirty,
       },
     );
     return (

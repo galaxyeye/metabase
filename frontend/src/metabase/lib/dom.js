@@ -45,8 +45,8 @@ export function isObscured(element, offset) {
 
 // get the position of an element on the page
 export function findPosition(element, excludeScroll = false) {
-  var offset = { top: 0, left: 0 };
-  var scroll = { top: 0, left: 0 };
+  let offset = { top: 0, left: 0 };
+  let scroll = { top: 0, left: 0 };
   let offsetParent = element;
   while (offsetParent) {
     // we need to check every element for scrollTop/scrollLeft
@@ -173,7 +173,7 @@ function getTextNodeAtPosition(root, index) {
       return NodeFilter.FILTER_ACCEPT;
     },
   );
-  var c = treeWalker.nextNode();
+  let c = treeWalker.nextNode();
   return {
     node: c ? c : root,
     position: c ? index : 0,
@@ -181,9 +181,9 @@ function getTextNodeAtPosition(root, index) {
 }
 
 // https://davidwalsh.name/add-rules-stylesheets
-var STYLE_SHEET = (function() {
+let STYLE_SHEET = (function() {
   // Create the <style> tag
-  var style = document.createElement("style");
+  let style = document.createElement("style");
 
   // WebKit hack :(
   style.appendChild(document.createTextNode("/* dynamic stylesheet */"));
@@ -203,6 +203,9 @@ export function addCSSRule(selector, rules, index = 0) {
 }
 
 export function constrainToScreen(element, direction, padding) {
+  if (!element) {
+    return false;
+  }
   if (direction === "bottom") {
     let screenBottom = window.innerHeight + getScrollY();
     let overflowY = element.getBoundingClientRect().bottom - screenBottom;
@@ -243,6 +246,81 @@ export function moveToFront(element) {
   if (element && element.parentNode) {
     element.parentNode.appendChild(element);
   }
+}
+
+// need to keep track of the latest click's metaKey state because sometimes
+// `open` is called asynchronously, thus window.event isn't the click event
+let metaKey;
+window.addEventListener(
+  "mouseup",
+  e => {
+    metaKey = e.metaKey;
+  },
+  true,
+);
+
+/**
+ * helper for opening links in same or different window depending on origin and
+ * meta key state
+ */
+export function open(
+  url,
+  {
+    // custom function for opening in same window
+    openInSameWindow = url => clickLink(url, false),
+    // custom function for opening in new window
+    openInBlankWindow = url => clickLink(url, true),
+    ...options
+  } = {},
+) {
+  if (shouldOpenInBlankWindow(url, options)) {
+    openInBlankWindow(url);
+  } else {
+    openInSameWindow(url);
+  }
+}
+
+function clickLink(url, blank = false) {
+  const a = document.createElement("a");
+  a.style.display = "none";
+  document.body.appendChild(a);
+  try {
+    a.href = url;
+    a.rel = "noopener";
+    if (blank) {
+      a.target = "_blank";
+    }
+    a.click();
+  } finally {
+    a.remove();
+  }
+}
+
+export function shouldOpenInBlankWindow(
+  url,
+  {
+    event = window.event,
+    // always open in new window
+    blank = false,
+    // open in new window if command-click
+    blankOnMetaKey = true,
+    // open in new window for different origin
+    blankOnDifferentOrigin = true,
+  } = {},
+) {
+  if (blank) {
+    return true;
+  } else if (
+    blankOnMetaKey &&
+    (event && event.metaKey != null ? event.metaKey : metaKey)
+  ) {
+    return true;
+  } else if (blankOnDifferentOrigin) {
+    const a = document.createElement("a");
+    a.href = url;
+    return a.origin !== window.location.origin;
+  }
+  return false;
 }
 
 /**

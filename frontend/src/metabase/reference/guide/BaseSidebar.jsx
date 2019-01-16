@@ -14,35 +14,29 @@ const BaseSidebar = ({ style, className }) => (
     <div className={S.breadcrumbs}>
       <Breadcrumbs
         className="py4"
-        crumbs={[[t`数据源`]]}
+        crumbs={[[t`Data Reference`]]}
         inSidebar={true}
-        placeholder={t`数据源`}
+        placeholder={t`Data Reference`}
       />
     </div>
     <ol>
       <SidebarItem
-        key="/reference/guide"
-        href="/reference/guide"
-        icon="reference"
-        name={t`开始`}
-      />
-      <SidebarItem
         key="/reference/metrics"
         href="/reference/metrics"
         icon="ruler"
-        name={t`指标集`}
+        name={t`Metrics`}
       />
       <SidebarItem
         key="/reference/segments"
         href="/reference/segments"
         icon="segment"
-        name={t`表集`}
+        name={t`Segments`}
       />
       <SidebarItem
         key="/reference/databases"
         href="/reference/databases"
         icon="database"
-        name={t`数据库和表`}
+        name={t`Databases and tables`}
       />
     </ol>
   </div>

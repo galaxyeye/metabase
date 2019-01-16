@@ -23,6 +23,7 @@ export default class DeleteModalWithConfirm extends Component {
     confirmItems: PropTypes.array.isRequired,
     onClose: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    buttonText: PropTypes.string,
   };
 
   async onDelete() {
@@ -31,7 +32,7 @@ export default class DeleteModalWithConfirm extends Component {
   }
 
   render() {
-    const { title, objectType, confirmItems } = this.props;
+    const { title, objectType, confirmItems, buttonText } = this.props;
     const { checked } = this.state;
     let confirmed = confirmItems.reduce(
       (acc, item, index) => acc && checked[index],
@@ -68,7 +69,7 @@ export default class DeleteModalWithConfirm extends Component {
           <button
             className="Button"
             onClick={this.props.onClose}
-          >{t`取消`}</button>
+          >{t`Cancel`}</button>
           <button
             className={cx("Button ml2", {
               disabled: !confirmed,
@@ -76,7 +77,7 @@ export default class DeleteModalWithConfirm extends Component {
             })}
             onClick={this.onDelete}
           >
-            {t`确认删除 ${objectType} ？`}
+            {buttonText || t`Delete this ${objectType}`}
           </button>
         </div>
       </ModalContent>

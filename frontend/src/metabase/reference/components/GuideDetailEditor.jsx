@@ -84,7 +84,7 @@ const GuideDetailEditor = ({
                   );
                 }
               }}
-              placeholder={t`选择...`}
+              placeholder={t`Select...`}
             />
           ) : (
             <SchemaTableAndSegmentDataSelector
@@ -142,8 +142,8 @@ const GuideDetailEditor = ({
             />
           )}
         </div>
-        <div className="ml-auto cursor-pointer text-grey-2">
-          <Tooltip tooltip={t`删除`}>
+        <div className="ml-auto cursor-pointer text-light">
+          <Tooltip tooltip={t`Remove item`}>
             <Icon name="close" width={16} height={16} onClick={removeField} />
           </Tooltip>
         </div>
@@ -152,12 +152,12 @@ const GuideDetailEditor = ({
         <div className={cx("mb2", { disabled: disabled })}>
           <EditLabel>
             {type === "dashboard"
-              ? t`为什么这个面板最重要？`
-              : t`这个 ${type} 的重要性是什么？`}
+              ? t`Why is this dashboard the most important?`
+              : t`What is useful or interesting about this ${type}?`}
           </EditLabel>
           <textarea
             className={S.guideDetailEditorTextarea}
-            placeholder={t`写点有用的吧`}
+            placeholder={t`Write something helpful here`}
             {...formField.points_of_interest}
             disabled={disabled}
           />
@@ -166,8 +166,8 @@ const GuideDetailEditor = ({
         <div className={cx("mb2", { disabled: disabled })}>
           <EditLabel>
             {type === "dashboard"
-              ? t`使用这个面板需要注意什么吗？`
-              : t`使用该 ${type} 需要注意的问题`}
+              ? t`Is there anything users of this dashboard should be aware of?`
+              : t`Anything users should be aware of about this ${type}?`}
           </EditLabel>
           <textarea
             className={S.guideDetailEditorTextarea}
@@ -179,12 +179,12 @@ const GuideDetailEditor = ({
         {type === "metric" && (
           <div className={cx("mb2", { disabled: disabled })}>
             <EditLabel key="metricFieldsLabel">
-              {t`这组指标集中哪 2-3 个字段是最常被用于聚合的？`}
+              {t`Which 2-3 fields do you usually group this metric by?`}
             </EditLabel>
             <Select
               options={fieldsByMetric}
               optionNameFn={option => option.display_name || option.name}
-              placeholder={t`选择...`}
+              placeholder={t`Select...`}
               values={formField.important_fields.value || []}
               disabledOptionIds={
                 formField.important_fields.value &&

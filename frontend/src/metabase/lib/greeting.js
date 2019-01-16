@@ -1,20 +1,20 @@
 import { t } from "c-3po";
 
 const greetingPrefixes = [
-  t`你好啊`,
-  t`最近怎么样呀`,
-  t`你好`,
-  t`见到你真开心`,
-  t`欢迎回来`,
+  t`Hey there`,
+  t`How's it going`,
+  t`Howdy`,
+  t`Greetings`,
+  t`Good to see you`,
 ];
 
 const subheadPrefixes = [
-  t`想了解些什么？`,
-  t`你在思考什么呢？`,
-  t`你想要怎么解决这个问题？`,
+  t`What do you want to know?`,
+  t`What's on your mind?`,
+  t`What do you want to find out?`,
 ];
 
-var Greeting = {
+const Greeting = {
   simpleGreeting: function() {
     // TODO - this can result in an undefined thing
     const randomIndex = Math.floor(
@@ -25,8 +25,8 @@ var Greeting = {
 
   sayHello: function(personalization) {
     if (personalization) {
-      var g = Greeting.simpleGreeting();
-      if (g === t`最近怎么样呀`) {
+      let g = Greeting.simpleGreeting();
+      if (g === t`How's it going`) {
         return g + ", " + personalization + "?";
       } else {
         return g + ", " + personalization;

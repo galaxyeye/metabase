@@ -19,7 +19,8 @@
             [metabase
              [config :as config]
              [db :as mdb]
-             [util :as u]]))
+             [util :as u]]
+            [metabase.util.date :as du]))
 
 (defn ^:command migrate
   "Run database migrations. Valid options for DIRECTION are `up`, `force`, `down-one`, `print`, or `release-locks`."
@@ -40,14 +41,20 @@
   []
   ;; override env var that would normally make Jetty block forever
   (require 'environ.core)
-  (intern 'environ.core 'env (assoc environ.core/env :mb-jetty-join "false"))
-  (u/profile "start-normally" ((resolve 'metabase.core/start-normally))))
+  (intern 'environ.core 'env (assoc @(resolve 'environ.core/env) :mb-jetty-join "false"))
+  (du/profile "start-normally" ((resolve 'metabase.core/start-normally))))
 
 (defn ^:command reset-password
   "Reset the password for a user with EMAIL-ADDRESS."
   [email-address]
   (require 'metabase.cmd.reset-password)
   ((resolve 'metabase.cmd.reset-password/reset-password!) email-address))
+
+(defn ^:command refresh-integration-test-db-metadata
+  "Re-sync the frontend integration test DB's metadata for the Sample Dataset."
+  []
+  (require 'metabase.cmd.refresh-integration-test-db-metadata)
+  ((resolve 'metabase.cmd.refresh-integration-test-db-metadata/refresh-integration-test-db-metadata)))
 
 (defn ^:command help
   "Show this help message listing valid Metabase commands."
@@ -85,9 +92,16 @@
   (require 'metabase.cmd.endpoint-dox)
   ((resolve 'metabase.cmd.endpoint-dox/generate-dox!)))
 
+(defn ^:command driver-methods
+  "Print a list of all multimethods a available for a driver to implement. A useful reference when implementing a new
+  driver."
+  []
+  (require 'metabase.cmd.driver-methods)
+  ((resolve 'metabase.cmd.driver-methods/print-available-multimethods)))
+
 (defn ^:command check-i18n
   "Run normally, but with fake translations in place for all user-facing backend strings. Useful for checking what
-  things need to be translated."
+  things need to be wrapped with i18n forms."
   []
   (println "Swapping out implementation of puppetlabs.i18n.core/fmt...")
   (require 'puppetlabs.i18n.core)

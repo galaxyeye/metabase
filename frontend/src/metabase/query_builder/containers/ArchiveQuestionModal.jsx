@@ -37,7 +37,7 @@ class ArchiveQuestionModal extends Component {
       <ModalWithTrigger
         ref="archiveModal"
         triggerElement={
-          <Tooltip key="archive" tooltip={t`归档`}>
+          <Tooltip key="archive" tooltip={t`Archive`}>
             <span className="text-brand-hover">
               <Icon name="archive" size={16} />
             </span>
@@ -45,15 +45,16 @@ class ArchiveQuestionModal extends Component {
         }
         title={t`Archive this question?`}
         footer={[
-          <Button key="cancel" onClick={this.onClose}>{t`取消`}</Button>,
+          <Button key="cancel" onClick={this.onClose}>{t`Cancel`}</Button>,
           <Button
             key="archive"
             warning
             onClick={this.onArchive}
-          >{t`归档`}</Button>,
+          >{t`Archive`}</Button>,
         ]}
       >
-        <div className="px4 pb4">{t`这个提问将会从所有面板中被移除。`}</div>
+        <div
+        >{t`This question will be removed from any dashboards or pulses using it.`}</div>
       </ModalWithTrigger>
     );
   }

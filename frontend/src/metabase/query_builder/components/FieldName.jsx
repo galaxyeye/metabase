@@ -14,7 +14,7 @@ export default class FieldName extends Component {
   static propTypes = {
     field: PropTypes.oneOfType([PropTypes.number, PropTypes.array]),
     onClick: PropTypes.func,
-    removeField: PropTypes.func,
+    onRemove: PropTypes.func,
     tableMetadata: PropTypes.object.isRequired,
     query: PropTypes.object,
   };
@@ -73,21 +73,28 @@ export default class FieldName extends Component {
           </span>,
         );
       } else {
-        parts.push(<span key="field">{t`未知字段`}</span>);
+        parts.push(<span key="field">{t`Unknown Field`}</span>);
       }
     } else {
-      parts.push(<span key="field" className={"text-grey-2"}>{t`字段`}</span>);
+      parts.push(<span key="field" className={"text-light"}>{t`field`}</span>);
     }
 
-    return (
-      <Clearable onClear={this.props.removeField}>
-        <div
-          className={cx(className, { selected: Query.isValidField(field) })}
-          onClick={this.props.onClick}
-        >
-          <span className="QueryOption">{parts}</span>
-        </div>
-      </Clearable>
+    const content = (
+      <span
+        className={cx(className, {
+          selected: Query.isValidField(field),
+          "cursor-pointer": this.props.onClick,
+        })}
+        onClick={this.props.onClick}
+      >
+        {parts}
+      </span>
+    );
+
+    return this.props.onRemove ? (
+      <Clearable onClear={this.props.onRemove}>{content}</Clearable>
+    ) : (
+      content
     );
   }
 }

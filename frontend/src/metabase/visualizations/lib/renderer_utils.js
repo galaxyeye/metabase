@@ -75,24 +75,20 @@ export function reduceGroup(group, key, warnUnaggregated) {
       if (acc == null && d[key] == null) {
         return null;
       } else {
-        if (acc != null) {
+        if (acc != null && d[key] != null) {
           warnUnaggregated();
-          return acc + (d[key] || 0);
-        } else {
-          return d[key] || 0;
         }
+        return (acc || 0) + (d[key] || 0);
       }
     },
     (acc, d) => {
       if (acc == null && d[key] == null) {
         return null;
       } else {
-        if (acc != null) {
+        if (acc != null && d[key] != null) {
           warnUnaggregated();
-          return acc - (d[key] || 0);
-        } else {
-          return -(d[key] || 0);
         }
+        return (acc || 0) - (d[key] || 0);
       }
     },
     () => null,
@@ -124,6 +120,7 @@ export const isTimeseries = settings =>
 export const isQuantitative = settings =>
   ["linear", "log", "pow"].indexOf(settings["graph.x_axis.scale"]) >= 0;
 export const isHistogram = settings =>
+  settings["graph.x_axis._scale_original"] === "histogram" ||
   settings["graph.x_axis.scale"] === "histogram";
 export const isOrdinal = settings =>
   !isTimeseries(settings) && !isHistogram(settings);

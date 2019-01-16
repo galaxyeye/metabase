@@ -70,7 +70,7 @@ export default class AggregationWidget extends Component {
           )}
           {fieldId && (
             <FieldName
-              className="View-section-aggregation-target SelectionModule py1"
+              className="View-section-aggregation-target SelectionModule py1 QueryOption"
               tableMetadata={tableMetadata}
               field={fieldId}
               fieldOptions={Query.getFieldOptions(tableMetadata.fields, true)}
@@ -127,13 +127,16 @@ export default class AggregationWidget extends Component {
   render() {
     const { aggregation, addButton, name } = this.props;
     if (aggregation && aggregation.length > 0) {
-      let aggregationName = NamedClause.isNamed(aggregation)
-        ? NamedClause.getName(aggregation)
-        : AggregationClause.isCustom(aggregation)
-          ? this.renderCustomAggregation()
-          : AggregationClause.isMetric(aggregation)
-            ? this.renderMetricAggregation()
-            : this.renderStandardAggregation();
+      let aggregationName;
+      try {
+        aggregationName = NamedClause.isNamed(aggregation)
+          ? NamedClause.getName(aggregation)
+          : AggregationClause.isCustom(aggregation)
+            ? this.renderCustomAggregation()
+            : AggregationClause.isMetric(aggregation)
+              ? this.renderMetricAggregation()
+              : this.renderStandardAggregation();
+      } catch (e) {}
 
       return (
         <div

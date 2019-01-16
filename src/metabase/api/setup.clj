@@ -14,8 +14,9 @@
              [database :refer [Database]]
              [session :refer [Session]]
              [user :as user :refer [User]]]
-            [metabase.util.schema :as su]
-            [puppetlabs.i18n.core :refer [tru]]
+            [metabase.util
+             [i18n :refer [tru]]
+             [schema :as su]]
             [schema.core :as s]
             [toucan.db :as db]))
 
@@ -58,7 +59,7 @@
     (public-settings/anon-tracking-enabled (or (nil? allow_tracking)
                                                allow_tracking))
     ;; setup database (if needed)
-    (when (driver/is-engine? engine)
+    (when (some-> engine driver/available?)
       (let [db (db/insert! Database
                  (merge
                   {:name         name
@@ -142,7 +143,7 @@
      {:title       (tru "Organize questions")
       :group       (tru "Curate your data")
       :description (tru "Have a lot of saved questions in {0}? Create collections to help manage them and add context." (tru "Metabase"))
-      :link        "/questions/"
+      :link        "/collection/root"
       :completed   has-collections?
       :triggered   (>= num-cards 30)}
      {:title       (tru "Create metrics")

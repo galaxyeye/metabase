@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "c-3po";
 import QueryModeButton from "./QueryModeButton.jsx";
@@ -15,17 +14,15 @@ import Modal from "metabase/components/Modal.jsx";
 import ModalWithTrigger from "metabase/components/ModalWithTrigger.jsx";
 import QuestionSavedModal from "metabase/components/QuestionSavedModal.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
-import MoveToCollection from "metabase/questions/containers/MoveToCollection.jsx";
+import CollectionMoveModal from "metabase/containers/CollectionMoveModal.jsx";
 import ArchiveQuestionModal from "metabase/query_builder/containers/ArchiveQuestionModal";
+import CollectionBadge from "metabase/questions/components/CollectionBadge";
 
 import SaveQuestionModal from "metabase/containers/SaveQuestionModal.jsx";
 
 import { clearRequestState } from "metabase/redux/requests";
 
-import { CardApi, RevisionApi } from "metabase/services";
-
-import MetabaseAnalytics from "metabase/lib/analytics";
-import * as Urls from "metabase/lib/urls";
+import { RevisionApi } from "metabase/services";
 
 import cx from "classnames";
 import _ from "underscore";
@@ -40,10 +37,16 @@ import {
 import { getUser } from "metabase/home/selectors";
 import { fetchAlertsForQuestion } from "metabase/alert/alert";
 
+import Collections from "metabase/entities/collections";
+
 const mapStateToProps = (state, props) => ({
   questionAlerts: getQuestionAlerts(state),
   visualizationSettings: getVisualizationSettings(state),
   user: getUser(state),
+  initialCollectionId: Collections.selectors.getInitialCollectionId(
+    state,
+    props,
+  ),
 });
 
 const mapDispatchToProps = {
@@ -62,21 +65,6 @@ export default class QueryHeader extends Component {
       modal: null,
       revisions: null,
     };
-
-    _.bindAll(
-      this,
-      "resetStateOnTimeout",
-      "onCreate",
-      "onSave",
-      "onBeginEditing",
-      "onCancel",
-      "onDelete",
-      "onFollowBreadcrumb",
-      "onToggleDataReference",
-      "onFetchRevisions",
-      "onRevertToRevision",
-      "onRevertedRevision",
-    );
   }
 
   static propTypes = {
@@ -98,14 +86,14 @@ export default class QueryHeader extends Component {
     clearTimeout(this.timeout);
   }
 
-  resetStateOnTimeout() {
+  resetStateOnTimeout = () => {
     // clear any previously set timeouts then start a new one
     clearTimeout(this.timeout);
     this.timeout = setTimeout(
       () => this.setState({ recentlySaved: null }),
       5000,
     );
-  }
+  };
 
   onCreate = async (card, showSavedModal = true) => {
     const { question, apiCreateQuestion } = this.props;
@@ -140,52 +128,45 @@ export default class QueryHeader extends Component {
     );
   };
 
-  onBeginEditing() {
+  onBeginEditing = () => {
     this.props.onBeginEditing();
-  }
+  };
 
-  async onCancel() {
+  onCancel = async () => {
     if (this.props.fromUrl) {
       this.onGoBack();
     } else {
       this.props.onCancelEditing();
     }
-  }
+  };
 
-  async onDelete() {
-    // TODO: reduxify
-    await CardApi.delete({ cardId: this.props.card.id });
-    this.onGoBack();
-    MetabaseAnalytics.trackEvent("QueryBuilder", "Delete");
-  }
-
-  onFollowBreadcrumb() {
+  onFollowBreadcrumb = () => {
     this.props.onRestoreOriginalQuery();
-  }
+  };
 
-  onToggleDataReference() {
+  onToggleDataReference = () => {
     this.props.toggleDataReferenceFn();
-  }
+  };
 
-  onGoBack() {
+  onGoBack = () => {
     this.props.onChangeLocation(this.props.fromUrl || "/");
-  }
+  };
 
-  async onFetchRevisions({ entity, id }) {
+  onFetchRevisions = async ({ entity, id }) => {
     // TODO: reduxify
-    var revisions = await RevisionApi.list({ entity, id });
+    let revisions = await RevisionApi.list({ entity, id });
     this.setState({ revisions });
-  }
+  };
 
-  onRevertToRevision({ entity, id, revision_id }) {
+  onRevertToRevision = ({ entity, id, revision_id }) => {
     // TODO: reduxify
     return RevisionApi.revert({ entity, id, revision_id });
-  }
+  };
 
-  onRevertedRevision() {
+  onRevertedRevision = () => {
     this.props.reloadCardFn();
     this.refs.cardHistory.toggle();
-  }
+  };
 
   getHeaderButtons() {
     const {
@@ -203,7 +184,7 @@ export default class QueryHeader extends Component {
       id: card && card.dataset_query && card.dataset_query.database,
     });
 
-    var buttonSections = [];
+    let buttonSections = [];
 
     // A card that is either completely new or it has been derived from a saved question
     if (isNew && isDirty) {
@@ -212,8 +193,8 @@ export default class QueryHeader extends Component {
           form
           key="save"
           ref="saveModal"
-          triggerClasses="h4 text-grey-4 text-brand-hover text-uppercase"
-          triggerElement="Save"
+          triggerClasses="h4 text-medium text-brand-hover text-uppercase"
+          triggerElement={t`Save`}
         >
           <SaveQuestionModal
             card={this.props.card}
@@ -222,7 +203,8 @@ export default class QueryHeader extends Component {
             // if saving modified question, don't show "add to dashboard" modal
             saveFn={card => this.onSave(card, false)}
             createFn={this.onCreate}
-            onClose={() => this.refs.saveModal.toggle()}
+            onClose={() => this.refs.saveModal && this.refs.saveModal.toggle()}
+            initialCollectionId={this.props.initialCollectionId}
           />
         </ModalWithTrigger>,
       ]);
@@ -240,14 +222,14 @@ export default class QueryHeader extends Component {
             >
               <span>
                 <Icon name="check" size={12} />
-                <span className="ml1">{t`已保存`}</span>
+                <span className="ml1">{t`Saved`}</span>
               </span>
             </button>,
           ]);
         } else {
           // edit button
           buttonSections.push([
-            <Tooltip key="edit" tooltip={t`编辑`}>
+            <Tooltip key="edit" tooltip={t`Edit question`}>
               <a
                 className="cursor-pointer text-brand-hover"
                 onClick={this.onBeginEditing}
@@ -263,11 +245,11 @@ export default class QueryHeader extends Component {
           <ActionButton
             key="save"
             actionFn={() => this.onSave(this.props.card, false)}
-            className="cursor-pointer text-brand-hover bg-white text-grey-4 text-uppercase"
-            normalText={t`保存更改`}
-            activeText={t`保存中…`}
-            failedText={t`保存失败`}
-            successText={t`已保存`}
+            className="cursor-pointer text-brand-hover bg-white text-medium text-uppercase"
+            normalText={t`SAVE CHANGES`}
+            activeText={t`Saving…`}
+            failedText={t`Save failed`}
+            successText={t`Saved`}
           />,
         ]);
 
@@ -275,10 +257,10 @@ export default class QueryHeader extends Component {
         buttonSections.push([
           <a
             key="cancel"
-            className="cursor-pointer text-brand-hover text-grey-4 text-uppercase"
+            className="cursor-pointer text-brand-hover text-medium text-uppercase"
             onClick={this.onCancel}
           >
-            {t`取消`}
+            {t`CANCEL`}
           </a>,
         ]);
 
@@ -289,25 +271,29 @@ export default class QueryHeader extends Component {
 
         buttonSections.push([
           <ModalWithTrigger
-            ref="move"
             key="move"
-            full
             triggerElement={
-              <Tooltip tooltip={t`移动问题`}>
+              <Tooltip tooltip={t`Move question`}>
                 <Icon name="move" />
               </Tooltip>
             }
           >
-            <MoveToCollection
-              questionId={this.props.card.id}
-              initialCollectionId={
-                this.props.card && this.props.card.collection_id
-              }
-              setCollection={(questionId, collection) => {
-                this.props.onSetCardAttribute("collection", collection);
-                this.props.onSetCardAttribute("collection_id", collection.id);
-              }}
-            />
+            {({ onClose }) => (
+              <CollectionMoveModal
+                title={t`Which collection should this be in?`}
+                initialCollectionId={
+                  this.props.card && this.props.card.collection_id
+                }
+                onClose={onClose}
+                onMove={collection => {
+                  this.props.onSetCardAttribute(
+                    "collection_id",
+                    collection && collection.id,
+                  );
+                  onClose();
+                }}
+              />
+            )}
           </ModalWithTrigger>,
         ]);
       }
@@ -324,7 +310,7 @@ export default class QueryHeader extends Component {
         "text-brand-hover": !this.props.uiControls.isShowingTemplateTagsEditor,
       });
       buttonSections.push([
-        <Tooltip key="parameterEdititor" tooltip={t`变量`}>
+        <Tooltip key="parameterEdititor" tooltip={t`Variables`}>
           <a className={parametersButtonClasses}>
             <Icon
               name="variable"
@@ -340,7 +326,7 @@ export default class QueryHeader extends Component {
     if (!isNew && !isEditing) {
       // simply adding an existing saved card to a dashboard, so show the modal to do so
       buttonSections.push([
-        <Tooltip key="addtodash" tooltip={t`加入到面板`}>
+        <Tooltip key="addtodash" tooltip={t`Add to dashboard`}>
           <span
             data-metabase-event={"QueryBuilder;AddToDash Modal;normal"}
             className="cursor-pointer text-brand-hover"
@@ -353,7 +339,7 @@ export default class QueryHeader extends Component {
     } else if (isNew && isDirty) {
       // this is a new card, so we need the user to save first then they can add to dash
       buttonSections.push([
-        <Tooltip key="addtodashsave" tooltip={t`加入到面板`}>
+        <Tooltip key="addtodashsave" tooltip={t`Add to dashboard`}>
           <ModalWithTrigger
             ref="addToDashSaveModal"
             triggerClasses="h4 text-brand-hover text-uppercase"
@@ -380,6 +366,7 @@ export default class QueryHeader extends Component {
               }}
               onClose={() => this.refs.addToDashSaveModal.toggle()}
               multiStep
+              initiCollectionId={this.props.initiCollectionId}
             />
           </ModalWithTrigger>
         </Tooltip>,
@@ -389,7 +376,7 @@ export default class QueryHeader extends Component {
     // history icon on saved cards
     if (!isNew) {
       buttonSections.push([
-        <Tooltip key="history" tooltip={t`历史`}>
+        <Tooltip key="history" tooltip={t`Revision history`}>
           <ModalWithTrigger
             ref="cardHistory"
             triggerElement={
@@ -437,12 +424,12 @@ export default class QueryHeader extends Component {
     ]);
 
     // data reference button
-    var dataReferenceButtonClasses = cx("transition-color", {
+    let dataReferenceButtonClasses = cx("transition-color", {
       "text-brand": this.props.isShowingDataReference,
       "text-brand-hover": !this.state.isShowingDataReference,
     });
     buttonSections.push([
-      <Tooltip key="dataReference" tooltip={t`探索数据`}>
+      <Tooltip key="dataReference" tooltip={t`Learn about your data`}>
         <a className={dataReferenceButtonClasses}>
           <Icon
             name="reference"
@@ -524,15 +511,15 @@ export default class QueryHeader extends Component {
 
   render() {
     return (
-      <div className="relative">
+      <div className="relative px2 sm-px0">
         <HeaderBar
           isEditing={this.props.isEditing}
-          name={this.props.isNew ? t`提问` : this.props.card.name}
+          name={this.props.isNew ? t`New question` : this.props.card.name}
           description={this.props.card ? this.props.card.description : null}
           breadcrumb={
             !this.props.card.id && this.props.originalCard ? (
               <span className="pl2">
-                {t`从这里开始：`}
+                {t`started from`}{" "}
                 <a className="link" onClick={this.onFollowBreadcrumb}>
                   {this.props.originalCard.name}
                 </a>
@@ -542,22 +529,11 @@ export default class QueryHeader extends Component {
           buttons={this.getHeaderButtons()}
           setItemAttributeFn={this.props.onSetCardAttribute}
           badge={
-            this.props.card.collection && (
-              <Link
-                to={Urls.collection(this.props.card.collection)}
-                className="text-uppercase flex align-center no-decoration"
-                style={{
-                  color: this.props.card.collection.color,
-                  fontSize: 12,
-                }}
-              >
-                <Icon
-                  name="collection"
-                  size={12}
-                  style={{ marginRight: "0.5em" }}
-                />
-                {this.props.card.collection.name}
-              </Link>
+            this.props.card.id && (
+              <CollectionBadge
+                collectionId={this.props.card.collection_id}
+                analyticsContext="QueryBuilder"
+              />
             )
           }
         />
@@ -620,6 +596,7 @@ export default class QueryHeader extends Component {
               this.setState({ modal: null })
             }
             multiStep
+            initiCollectionId={this.props.initiCollectionId}
           />
         </Modal>
       </div>

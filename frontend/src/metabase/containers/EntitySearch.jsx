@@ -16,12 +16,14 @@ import { KEYCODE_DOWN, KEYCODE_ENTER, KEYCODE_UP } from "metabase/lib/keyboard";
 import { LocationDescriptor } from "metabase/meta/types/index";
 import { parseHashOptions, updateQueryString } from "metabase/lib/browser";
 
+import colors from "metabase/lib/colors";
+
 const PAGE_SIZE = 10;
 
 const SEARCH_GROUPINGS = [
   {
     id: "name",
-    name: t`名字`,
+    name: t`Name`,
     icon: null,
     // Name grouping is a no-op grouping so always put all results to same group with identifier `0`
     groupBy: () => 0,
@@ -30,21 +32,21 @@ const SEARCH_GROUPINGS = [
   },
   {
     id: "table",
-    name: t`表`,
+    name: t`Table`,
     icon: "table2",
     groupBy: entity => entity.table.id,
     getGroupName: entity => entity.table.display_name,
   },
   {
     id: "database",
-    name: t`数据库`,
+    name: t`Database`,
     icon: "database",
     groupBy: entity => entity.table.db.id,
     getGroupName: entity => entity.table.db.name,
   },
   {
     id: "creator",
-    name: t`创建者`,
+    name: t`Creator`,
     icon: "mine",
     groupBy: entity => entity.creator.id,
     getGroupName: entity => entity.creator.common_name,
@@ -183,7 +185,7 @@ export default class EntitySearch extends Component {
       filteredEntities.length > 0;
 
     return (
-      <div className="bg-slate-extra-light full Entity-search">
+      <div className="bg-light full Entity-search">
         <div className="wrapper wrapper--small pt4 pb4">
           <div className="flex mb4 align-center" style={{ height: "50px" }}>
             <div
@@ -233,11 +235,11 @@ export default class EntitySearch extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`没有结果`}</h3>
-                      <p className="text-grey-4">{t`调整过滤条件试试看？`}</p>
+                      <h3 className="text-medium">{t`No results found`}</h3>
+                      <p className="text-medium">{t`Try adjusting your filter to find what you’re looking for.`}</p>
                     </div>
                   }
-                  image="/app/img/empty_question"
+                  image="app/img/empty_question"
                   imageHeight="213px"
                   imageClassName="mln2"
                   smallDescription
@@ -253,7 +255,7 @@ export default class EntitySearch extends Component {
 
 export const SearchGroupingOptions = ({ currentGrouping, setGrouping }) => (
   <div className="Entity-search-grouping-options">
-    <h3 className="mb3">{t`查看`}</h3>
+    <h3 className="mb3">{t`View by`}</h3>
     <ul>
       {SEARCH_GROUPINGS.map(groupingOption => (
         <SearchGroupingOption
@@ -285,7 +287,7 @@ export class SearchGroupingOption extends Component {
       <li
         className={cx(
           "my2 cursor-pointer text-uppercase text-small text-green-saturated-hover",
-          { "text-grey-4": !active },
+          { "text-medium": !active },
           { "text-green-saturated": active },
         )}
         onClick={this.onSetGrouping}
@@ -447,8 +449,12 @@ export const SearchResultsGroup = ({
 }) => (
   <div>
     {groupName !== null && (
-      <div className="flex align-center bg-slate-almost-extra-light bordered mt3 px3 py2">
-        <Icon className="mr1" style={{ color: "#BCC5CA" }} name={groupIcon} />
+      <div className="flex align-center bg-medium bordered mt3 px3 py2">
+        <Icon
+          className="mr1"
+          style={{ color: colors["text-light"] }}
+          name={groupIcon}
+        />
         <h4>{groupName}</h4>
       </div>
     )}
@@ -491,8 +497,8 @@ class SearchResultsList extends Component {
         <span
           className={cx(
             "mx1 flex align-center justify-center rounded",
-            { "cursor-pointer bg-grey-2 text-white": !isInBeginning },
-            { "bg-grey-0 text-grey-1": isInBeginning },
+            { "cursor-pointer bg-medium text-white": !isInBeginning },
+            { "bg-light text-light": isInBeginning },
           )}
           style={{ width: "22px", height: "22px" }}
           onClick={() =>
@@ -504,8 +510,8 @@ class SearchResultsList extends Component {
         <span
           className={cx(
             "flex align-center justify-center rounded",
-            { "cursor-pointer bg-grey-2 text-white": !isInEnd },
-            { "bg-grey-0 text-grey-2": isInEnd },
+            { "cursor-pointer bg-medium text-white": !isInEnd },
+            { "bg-light text-light": isInEnd },
           )}
           style={{ width: "22px", height: "22px" }}
           onClick={() => !isInEnd && setCurrentPage(entities, currentPage + 1)}
@@ -581,8 +587,8 @@ export class SearchResultListItem extends Component {
       <li>
         <Link
           className={cx(
-            "no-decoration flex py2 px3 cursor-pointer bg-slate-extra-light-hover border-bottom",
-            { "bg-grey-0": highlight },
+            "no-decoration flex py2 px3 cursor-pointer bg-light-hover border-bottom",
+            { "bg-light": highlight },
           )}
           to={getUrlForEntity(entity)}
         >

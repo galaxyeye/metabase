@@ -15,8 +15,8 @@ const EditHeader = ({
   onSubmit,
   revisionMessageFormField,
 }) => (
-  <div className={cx("EditHeader wrapper py1", S.editHeader)}>
-    <div>{t`你正在编辑本页面`}</div>
+  <div className={cx("EditHeader wrapper p1", S.editHeader)}>
+    <div>{t`You are editing this page`}</div>
     <div className={S.editHeaderButtons}>
       <button
         type="button"
@@ -31,7 +31,7 @@ const EditHeader = ({
           reinitializeForm();
         }}
       >
-        {t`取消`}
+        {t`Cancel`}
       </button>
 
       {hasRevisionHistory ? (
@@ -51,7 +51,7 @@ const EditHeader = ({
             type="button"
             disabled={submitting}
           >
-            {t`保存`}
+            {t`Save`}
           </button>
         </RevisionMessageModal>
       ) : (
@@ -66,7 +66,7 @@ const EditHeader = ({
           type="submit"
           disabled={submitting}
         >
-          {t`保存`}
+          {t`Save`}
         </button>
       )}
     </div>

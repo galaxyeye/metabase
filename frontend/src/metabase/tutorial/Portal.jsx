@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import BodyComponent from "metabase/components/BodyComponent.jsx";
+import colors from "metabase/lib/colors";
 
 @BodyComponent
 export default class Portal extends Component {
@@ -17,13 +18,36 @@ export default class Portal extends Component {
   };
 
   componentWillMount() {
+    // sometimes the position of target changes, track it here
+    this._timer = setInterval(() => {
+      const p1 = this.state.position;
+      const p2 =
+        this.props.target &&
+        this.props.target !== true &&
+        this.props.target.getBoundingClientRect();
+      if (
+        p1 &&
+        p2 &&
+        (p1.left !== p2.left ||
+          p1.top !== p2.top ||
+          p1.width !== p2.width ||
+          p1.height !== p2.height)
+      ) {
+        this.setState({ position: p2 });
+      }
+    }, 100);
     this.componentWillReceiveProps(this.props);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer);
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.target !== this.state.target) {
       const { target, padding } = newProps;
       let position;
+      // setting target={true} causes the portal to close and disappear
       if (target === true) {
         position = {
           top: this.state.position.top + this.state.position.height / 2,
@@ -46,8 +70,8 @@ export default class Portal extends Component {
     return {
       position: "absolute",
       boxSizing: "content-box",
-      border: "10000px solid rgba(0,0,0,0.70)",
-      boxShadow: "inset 0px 0px 8px rgba(0,0,0,0.25)",
+      border: `10000px solid ${colors["text-dark"]}`,
+      boxShadow: `inset 0px 0px 8px ${colors["shadow"]}`,
       transform: "translate(-10000px, -10000px)",
       borderRadius: "10010px",
       pointerEvents: "none",

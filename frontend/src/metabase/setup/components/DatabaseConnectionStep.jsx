@@ -122,7 +122,7 @@ export default class DatabaseConnectionStep extends Component {
     return (
       <label className="Select Form-offset mt1">
         <select defaultValue={engine} onChange={this.chooseDatabaseEngine}>
-          <option value="">Select the type of Database you use</option>
+          <option value="">{t`Select the type of Database you use`}</option>
           {engineNames.map(opt => (
             <option key={opt} value={opt}>
               {engines[opt]["driver-name"]}
@@ -158,7 +158,7 @@ export default class DatabaseConnectionStep extends Component {
       );
     } else {
       return (
-        <section className="SetupStep rounded full relative SetupStep--active">
+        <section className="SetupStep bg-white rounded full relative SetupStep--active">
           <StepTitle title={stepText} circleText={"2"} />
           <div className="mb4">
             <div style={{ maxWidth: 600 }} className="Form-field Form-offset">
@@ -185,7 +185,7 @@ export default class DatabaseConnectionStep extends Component {
                 formError={formError}
                 hiddenFields={{ ssl: true }}
                 submitFn={this.connectionDetailsCaptured}
-                submitButtonText={"Next"}
+                submitButtonText={t`Next`}
               />
             ) : null}
 

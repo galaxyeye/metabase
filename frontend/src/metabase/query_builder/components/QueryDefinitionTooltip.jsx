@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import FilterList from "./filters/FilterList.jsx";
+import FilterList from "./FilterList.jsx";
 import AggregationWidget from "./AggregationWidget.jsx";
 import FieldSet from "metabase/components/FieldSet.jsx";
 
@@ -21,13 +21,13 @@ export default class QueryDefinitionTooltip extends Component {
     return (
       <div className="p2" style={{ width: 250 }}>
         <div>
-          {type && type === "metric" && !object.is_active
-            ? t`该指标集已经不再使用了。`
+          {type && type === "metric" && object.archived
+            ? t`This metric has been retired.  It's no longer available for use.`
             : object.description}
         </div>
         {object.definition && (
           <div className="mt2">
-            <FieldSet legend={t`定义`} className="border-light">
+            <FieldSet legend={t`Definition`} className="border-light">
               <div className="TooltipFilterList">
                 {Query.getAggregations(object.definition).map(aggregation => (
                   <AggregationWidget
@@ -37,7 +37,6 @@ export default class QueryDefinitionTooltip extends Component {
                 ))}
                 <FilterList
                   filters={Query.getFilters(object.definition)}
-                  tableMetadata={tableMetadata}
                   maxDisplayValues={Infinity}
                 />
               </div>

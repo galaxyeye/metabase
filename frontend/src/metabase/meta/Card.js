@@ -43,7 +43,7 @@ export const STRUCTURED_QUERY_TEMPLATE: StructuredDatasetQuery = {
   type: "query",
   database: null,
   query: {
-    source_table: null,
+    "source-table": null,
     aggregation: undefined,
     breakout: undefined,
     filter: undefined,
@@ -55,7 +55,7 @@ export const NATIVE_QUERY_TEMPLATE: NativeDatasetQuery = {
   database: null,
   native: {
     query: "",
-    template_tags: {},
+    "template-tags": {},
   },
 };
 
@@ -72,7 +72,7 @@ export function canRun(card: Card): boolean {
     const query = getQuery(card);
     return (
       query != null &&
-      query.source_table != undefined &&
+      query["source-table"] != undefined &&
       Query.hasValidAggregation(query)
     );
   } else if (card.dataset_query.type === "native") {
@@ -85,20 +85,30 @@ export function canRun(card: Card): boolean {
   }
 }
 
+export function cardVisualizationIsEquivalent(
+  cardA: Card,
+  cardB: Card,
+): boolean {
+  return _.isEqual(
+    _.pick(cardA, "display", "visualization_settings"),
+    _.pick(cardB, "display", "visualization_settings"),
+  );
+}
+
+export function cardQueryIsEquivalent(cardA: Card, cardB: Card): boolean {
+  cardA = updateIn(cardA, ["dataset_query", "parameters"], p => p || []);
+  cardB = updateIn(cardB, ["dataset_query", "parameters"], p => p || []);
+  return _.isEqual(
+    _.pick(cardA, "dataset_query"),
+    _.pick(cardB, "dataset_query"),
+  );
+}
+
 export function cardIsEquivalent(cardA: Card, cardB: Card): boolean {
-  cardA = updateIn(
-    cardA,
-    ["dataset_query", "parameters"],
-    parameters => parameters || [],
+  return (
+    cardQueryIsEquivalent(cardA, cardB) &&
+    cardVisualizationIsEquivalent(cardA, cardB)
   );
-  cardB = updateIn(
-    cardB,
-    ["dataset_query", "parameters"],
-    parameters => parameters || [],
-  );
-  cardA = _.pick(cardA, "dataset_query", "display", "visualization_settings");
-  cardB = _.pick(cardB, "dataset_query", "display", "visualization_settings");
-  return _.isEqual(cardA, cardB);
 }
 
 export function getQuery(card: Card): ?StructuredQuery {
@@ -114,8 +124,8 @@ export function getTableMetadata(
   metadata: Metadata,
 ): ?TableMetadata {
   const query = getQuery(card);
-  if (query && query.source_table != null) {
-    return metadata.tables[query.source_table] || null;
+  if (query && query["source-table"] != null) {
+    return metadata.tables[query["source-table"]] || null;
   }
   return null;
 }
@@ -124,8 +134,8 @@ export function getTemplateTags(card: ?Card): Array<TemplateTag> {
   return card &&
     card.dataset_query &&
     card.dataset_query.type === "native" &&
-    card.dataset_query.native.template_tags
-    ? Object.values(card.dataset_query.native.template_tags)
+    card.dataset_query.native["template-tags"]
+    ? Object.values(card.dataset_query.native["template-tags"])
     : [];
 }
 
@@ -179,10 +189,21 @@ export function applyParameters(
       continue;
     }
 
-    const mapping = _.findWhere(parameterMappings, {
-      card_id: card.id || card.original_card_id,
-      parameter_id: parameter.id,
-    });
+    const cardId = card.id || card.original_card_id;
+    const mapping = _.findWhere(
+      parameterMappings,
+      cardId != null
+        ? {
+            card_id: cardId,
+            parameter_id: parameter.id,
+          }
+        : // NOTE: this supports transient dashboards where cards don't have ids
+          // BUT will not work correctly with multiseries dashcards since
+          // there's no way to identify which card the mapping applies to.
+          {
+            parameter_id: parameter.id,
+          },
+    );
     if (mapping) {
       // mapped target, e.x. on a dashboard
       datasetQuery.parameters.push({
@@ -201,6 +222,10 @@ export function applyParameters(
   }
 
   return datasetQuery;
+}
+
+export function isTransientId(id: ?any) {
+  return id != null && typeof id === "string" && isNaN(parseInt(id));
 }
 
 /** returns a question URL with parameters added to query string or MBQL filters */
@@ -229,6 +254,7 @@ export function questionUrlWithParameters(
   // If we have a clean question without parameters applied, don't add the dataset query hash
   if (
     !cardIsDirty &&
+    !isTransientId(card.id) &&
     datasetQuery.parameters &&
     datasetQuery.parameters.length === 0
   ) {
@@ -257,5 +283,13 @@ export function questionUrlWithParameters(
       console.warn("UNHANDLED PARAMETER", datasetParameter);
     }
   }
+
+  if (isTransientId(card.id)) {
+    card = assoc(card, "id", null);
+  }
+  if (isTransientId(card.original_card_id)) {
+    card = assoc(card, "original_card_id", null);
+  }
+
   return Urls.question(null, card.dataset_query ? card : undefined, query);
 }

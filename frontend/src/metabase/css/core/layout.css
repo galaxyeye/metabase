@@ -9,6 +9,7 @@
 :local(.wrapper) {
   width: 100%;
   margin: 0 auto;
+  padding: 0 1em;
 }
 
 @media screen and (--breakpoint-min-sm) {
@@ -31,11 +32,6 @@
 .full-height,
 :local(.full-height) {
   height: 100%;
-}
-
-/* set height to that of the viewport */
-.viewport-height {
-  height: 100vh;
 }
 
 /* display utilities */
@@ -91,6 +87,12 @@
 .absolute,
 :local(.absolute) {
   position: absolute;
+}
+
+@media screen and (--breakpoint-min-sm) {
+  .sm-absolute {
+    position: absolute;
+  }
 }
 
 .top,

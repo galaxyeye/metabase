@@ -10,9 +10,10 @@ import {
   createAction,
   createThunkAction,
 } from "metabase/lib/redux";
+import { open } from "metabase/lib/dom";
 import { normalize, schema } from "normalizr";
 
-import { saveDashboard } from "metabase/dashboards/dashboards";
+import Dashboards from "metabase/entities/dashboards";
 
 import {
   createParameter,
@@ -33,7 +34,11 @@ import Utils from "metabase/lib/utils";
 import { getPositionForNewDashCard } from "metabase/lib/dashboard_grid";
 import { createCard } from "metabase/lib/card";
 
-import { addParamValues, fetchDatabaseMetadata } from "metabase/redux/metadata";
+import {
+  addParamValues,
+  addFields,
+  fetchDatabaseMetadata,
+} from "metabase/redux/metadata";
 import { push } from "react-router-redux";
 
 import {
@@ -42,9 +47,12 @@ import {
   RevisionApi,
   PublicApi,
   EmbedApi,
+  AutoApi,
+  MetabaseApi,
 } from "metabase/services";
 
 import { getDashboard, getDashboardComplete } from "./selectors";
+import { getMetadata } from "metabase/selectors/metadata";
 import { getCardAfterVisualizationClick } from "metabase/visualizations/lib/utils";
 
 const DATASET_SLOW_TIMEOUT = 15 * 1000;
@@ -100,6 +108,7 @@ export const REMOVE_PARAMETER = "metabase/dashboard/REMOVE_PARAMETER";
 export const SET_PARAMETER_MAPPING = "metabase/dashboard/SET_PARAMETER_MAPPING";
 export const SET_PARAMETER_NAME = "metabase/dashboard/SET_PARAMETER_NAME";
 export const SET_PARAMETER_VALUE = "metabase/dashboard/SET_PARAMETER_VALUE";
+export const SET_PARAMETER_INDEX = "metabase/dashboard/SET_PARAMETER_INDEX";
 export const SET_PARAMETER_DEFAULT_VALUE =
   "metabase/dashboard/SET_PARAMETER_DEFAULT_VALUE";
 
@@ -108,6 +117,8 @@ function getDashboardType(id) {
     return "public";
   } else if (Utils.isJWT(id)) {
     return "embed";
+  } else if (/\/auto\/dashboard/.test(id)) {
+    return "transient";
   } else {
     return "normal";
   }
@@ -130,7 +141,7 @@ export const fetchCards = createThunkAction(FETCH_CARDS, function(
 ) {
   return async function(dispatch, getState) {
     let cards = await CardApi.list({ f: filterMode });
-    for (var c of cards) {
+    for (let c of cards) {
       c.updated_at = moment(c.updated_at);
     }
     return normalize(cards, [card]);
@@ -284,7 +295,9 @@ export const saveDashboardAndCards = createThunkAction(
       // update the dashboard itself
       if (dashboard.isDirty) {
         let { id, name, description, parameters } = dashboard;
-        await dispatch(saveDashboard({ id, name, description, parameters }));
+        await dispatch(
+          Dashboards.actions.update({ id }, { name, description, parameters }),
+        );
       }
 
       // reposition the cards
@@ -333,7 +346,7 @@ export const saveDashboardAndCards = createThunkAction(
         }
       }
 
-      await dispatch(saveDashboard(dashboard));
+      await dispatch(Dashboards.actions.update(dashboard));
 
       // make sure that we've fully cleared out any dirty state from editing (this is overkill, but simple)
       dispatch(fetchDashboard(dashboard.id, null, true)); // disable using query parameters when saving
@@ -464,6 +477,8 @@ export const fetchCardData = createThunkAction(FETCH_CARD_DATA, function(
           ...getParametersBySlug(dashboard.parameters, parameterValues),
         }),
       );
+    } else if (dashboardType === "transient") {
+      result = await fetchDataOrError(MetabaseApi.dataset(datasetQuery));
     } else {
       result = await fetchDataOrError(
         CardApi.query({ cardId: card.id, parameters: datasetQuery.parameters }),
@@ -513,6 +528,20 @@ export const fetchDashboard = createThunkAction(FETCH_DASHBOARD, function(
           dashboard_id: dashId,
         })),
       };
+    } else if (dashboardType === "transient") {
+      const subPath = dashId
+        .split("/")
+        .slice(3)
+        .join("/");
+      result = await AutoApi.dashboard({ subPath });
+      result = {
+        ...result,
+        id: dashId,
+        ordered_cards: result.ordered_cards.map(dc => ({
+          ...dc,
+          dashboard_id: dashId,
+        })),
+      };
     } else {
       result = await DashboardApi.get({ dashId: dashId });
     }
@@ -528,7 +557,7 @@ export const fetchDashboard = createThunkAction(FETCH_DASHBOARD, function(
       }
     }
 
-    if (dashboardType === "normal") {
+    if (dashboardType === "normal" || dashboardType === "transient") {
       // fetch database metadata for every card
       _.chain(result.ordered_cards)
         .map(dc => [dc.card].concat(dc.series))
@@ -544,12 +573,18 @@ export const fetchDashboard = createThunkAction(FETCH_DASHBOARD, function(
     // copy over any virtual cards from the dashcard to the underlying card/question
     result.ordered_cards.forEach(card => {
       if (card.visualization_settings.virtual_card) {
-        _.extend(card.card, card.visualization_settings.virtual_card);
+        card.card = Object.assign(
+          card.card || {},
+          card.visualization_settings.virtual_card,
+        );
       }
     });
 
     if (result.param_values) {
       dispatch(addParamValues(result.param_values));
+    }
+    if (result.param_fields) {
+      dispatch(addFields(result.param_fields));
     }
 
     return {
@@ -696,6 +731,28 @@ export const setParameterDefaultValue = createThunkAction(
   },
 );
 
+export const setParameterIndex = createThunkAction(
+  SET_PARAMETER_INDEX,
+  (parameterId, index) => (dispatch, getState) => {
+    const dashboard = getDashboard(getState());
+    const parameterIndex = _.findIndex(
+      dashboard.parameters,
+      p => p.id === parameterId,
+    );
+    if (parameterIndex >= 0) {
+      const parameters = dashboard.parameters.slice();
+      parameters.splice(index, 0, parameters.splice(parameterIndex, 1)[0]);
+      dispatch(
+        setDashboardAttributes({
+          id: dashboard.id,
+          attributes: { parameters },
+        }),
+      );
+    }
+    return { id: parameterId, index };
+  },
+);
+
 export const setParameterValue = createThunkAction(
   SET_PARAMETER_VALUE,
   (parameterId, value) => (dispatch, getState) => {
@@ -740,7 +797,7 @@ const NAVIGATE_TO_NEW_CARD = "metabase/dashboard/NAVIGATE_TO_NEW_CARD";
 export const navigateToNewCardFromDashboard = createThunkAction(
   NAVIGATE_TO_NEW_CARD,
   ({ nextCard, previousCard, dashcard }) => (dispatch, getState) => {
-    const { metadata } = getState();
+    const metadata = getMetadata(getState());
     const { dashboardId, dashboards, parameterValues } = getState().dashboard;
     const dashboard = dashboards[dashboardId];
     const cardIsDirty = !_.isEqual(
@@ -770,7 +827,10 @@ export const navigateToNewCardFromDashboard = createThunkAction(
       cardIsDirty,
     );
 
-    dispatch(push(url));
+    open(url, {
+      blankOnMetaKey: true,
+      openInSameWindow: url => dispatch(push(url)),
+    });
   },
 );
 

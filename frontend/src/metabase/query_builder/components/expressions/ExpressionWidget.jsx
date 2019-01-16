@@ -43,7 +43,7 @@ export default class ExpressionWidget extends Component {
     return (
       <div style={{ maxWidth: "600px" }}>
         <div className="p2">
-          <div className="h5 text-uppercase text-grey-3 text-bold">{t`Field formula`}</div>
+          <div className="h5 text-uppercase text-medium text-bold">{t`Field formula`}</div>
           <div>
             <ExpressionEditorTextfield
               expression={expression}
@@ -53,23 +53,23 @@ export default class ExpressionWidget extends Component {
               }
               onError={errorMessage => this.setState({ error: errorMessage })}
             />
-            <p className="h5 text-grey-5">
-              {t`Think of this as being kind of like writing a formula in a spreadsheet program: you can use numbers, fields in this table, mathematical symbols like +, and some functions. So you could type something like Subtotal &minus; Cost.`}
+            <p className="h5 text-medium">
+              {t`Think of this as being kind of like writing a formula in a spreadsheet program: you can use numbers, fields in this table, mathematical symbols like +, and some functions. So you could type something like Subtotal - Cost.`}
               &nbsp;<a
                 className="link"
                 target="_blank"
                 href="http://www.metabase.com/docs/latest/users-guide/04-asking-questions.html#creating-a-custom-field"
-              >{t`了解更多`}</a>
+              >{t`Learn more`}</a>
             </p>
           </div>
 
-          <div className="mt3 h5 text-uppercase text-grey-3 text-bold">{t`取个名字吧`}</div>
+          <div className="mt3 h5 text-uppercase text-medium text-bold">{t`Give it a name`}</div>
           <div>
             <input
               className="my1 input block full"
               type="text"
               value={this.state.name}
-              placeholder={t`取个又好听又贴切的名字`}
+              placeholder={t`Something nice and descriptive`}
               onChange={event => this.setState({ name: event.target.value })}
             />
           </div>
@@ -80,7 +80,7 @@ export default class ExpressionWidget extends Component {
             <button
               className="Button"
               onClick={() => this.props.onCancel()}
-            >{t`取消`}</button>
+            >{t`Cancel`}</button>
             <button
               className={cx("Button ml2", {
                 "Button--primary": this.isValid(),
@@ -93,15 +93,15 @@ export default class ExpressionWidget extends Component {
               }
               disabled={!this.isValid()}
             >
-              {this.props.expression ? t`更新` : t`完成`}
+              {this.props.expression ? t`Update` : t`Done`}
             </button>
           </div>
           <div>
             {this.props.expression ? (
               <a
-                className="pr2 ml2 text-warning link"
+                className="pr2 ml2 text-error link"
                 onClick={() => this.props.onRemoveExpression(this.props.name)}
-              >{t`删除`}</a>
+              >{t`Remove`}</a>
             ) : null}
           </div>
         </div>

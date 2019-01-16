@@ -1,12 +1,14 @@
 /* @flow */
 
+// TODO: merge with metabase/dashboard/containers/Dashboard.jsx
+
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import DashboardGrid from "../components/DashboardGrid.jsx";
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.jsx";
-
+import { t } from "c-3po";
 import Parameters from "metabase/parameters/components/Parameters.jsx";
 
 import DashboardControls from "../hoc/DashboardControls";
@@ -86,6 +88,7 @@ type Props = {
     parameterId: ParameterId,
     defaultValue: string,
   ) => void,
+  setParameterIndex: (parameterId: ParameterId, index: number) => void,
 
   editingParameter: ?Parameter,
 
@@ -241,6 +244,7 @@ export default class Dashboard extends Component {
           editingParameter={editingParameter}
           setEditingParameter={this.props.setEditingParameter}
           setParameterName={this.props.setParameterName}
+          setParameterIndex={this.props.setParameterIndex}
           setParameterDefaultValue={this.props.setParameterDefaultValue}
           removeParameter={this.props.removeParameter}
           setParameterValue={this.props.setParameterValue}
@@ -279,10 +283,10 @@ export default class Dashboard extends Component {
                 <div className="absolute z1 top bottom left right flex flex-column layout-centered">
                   <span className="QuestionCircle">?</span>
                   <div className="text-normal mt3 mb1">
-                    This dashboard is looking empty.
+                    {t`This dashboard is looking empty.`}
                   </div>
-                  <div className="text-normal text-grey-2">
-                    Add a question to start making it useful!
+                  <div className="text-normal text-light">
+                    {t`Add a question to start making it useful!`}
                   </div>
                 </div>
               ) : (
