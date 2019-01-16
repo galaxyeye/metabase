@@ -68,7 +68,8 @@
                  it.unimi.dsi/fastutil]]
    [com.draines/postal "2.0.3"]                                       ; SMTP library
    [com.jcraft/jsch "0.1.55"]                                         ; SSH client for tunnels
-   [com.h2database/h2 "1.4.197"]                                      ; embedded SQL database
+   ; [com.h2database/h2 "1.4.197"]                                     ; embedded SQL database
+   [fun.platonic.pulsar/pulsar-ql-common "0.5.0"]                     ; Pulsar Web SQL engine
    [com.mattbertolini/liquibase-slf4j "2.0.0"]                        ; Java Migrations lib logging. We don't actually use this AFAIK (?)
    [com.mchange/c3p0 "0.9.5.2"]                                       ; connection pooling library
    [com.taoensso/nippy "2.14.0"]                                      ; Fast serialization (i.e., GZIP) library for Clojure
@@ -284,3 +285,9 @@
 
    :generate-automagic-dashboards-pot
    {:main metabase.automagic-dashboards.rules}})
+
+;; "Tried to use insecure HTTP repository without TLS" issue
+;; https://github.com/technomancy/leiningen/blob/master/doc/FAQ.md
+(require 'cemerick.pomegranate.aether)
+(cemerick.pomegranate.aether/register-wagon-factory!
+ "http" #(org.apache.maven.wagon.providers.http.HttpWagon.))
