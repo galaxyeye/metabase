@@ -200,7 +200,7 @@ describe("QueryBuilder", () => {
             .children()
             .at(1)
             .text(),
-        ).toBe(`started from ${savedQuestion.displayName()}`);
+        ).toBe(`从这里开始：${savedQuestion.displayName()}`);
 
         // Click "SAVE" button
         click(

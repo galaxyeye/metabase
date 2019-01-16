@@ -45,7 +45,7 @@
                  [com.draines/postal "2.0.2"]                         ; SMTP library
                  [com.github.brandtg/stl-java "0.1.1"]                ; STL decomposition
                  [com.jcraft/jsch "0.1.54"]                           ; SSH client for tunnels
-                 [fun.platonic.nebula/nebula-ql-common "0.3.7"]       ; Nebula database
+                 [fun.platonic.pulsar/pulsar-ql-common "0.5.0"]       ; Pulsar Web SQL engine
                  [com.mattbertolini/liquibase-slf4j "2.0.0"]          ; Java Migrations lib
                  [com.mchange/c3p0 "0.9.5.2"]                         ; connection pooling library
                  [com.novemberain/monger "3.1.0"]                     ; MongoDB Driver

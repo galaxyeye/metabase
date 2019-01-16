@@ -11,7 +11,7 @@
             [metabase.models.database :refer [Database]]
             [metabase.util.honeysql-extensions :as hx]
             [toucan.db :as db])
-  (:import (fun.platonic.nebula.ql H2Config)))
+  (:import (fun.platonic.pulsar.ql H2Config)))
 
 (defn- connection-details->spec
   "Create a database specification for a h2 database."

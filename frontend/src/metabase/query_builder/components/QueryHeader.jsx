@@ -532,7 +532,7 @@ export default class QueryHeader extends Component {
           breadcrumb={
             !this.props.card.id && this.props.originalCard ? (
               <span className="pl2">
-                {t`started from`}{" "}
+                {t`从这里开始：`}
                 <a className="link" onClick={this.onFollowBreadcrumb}>
                   {this.props.originalCard.name}
                 </a>
