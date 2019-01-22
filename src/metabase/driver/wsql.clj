@@ -1,4 +1,4 @@
-(ns metabase.driver.h2tcp
+(ns metabase.driver.wsql
   (:require [clojure.string :as s]
             [honeysql.core :as hsql]
             [metabase.driver.h2 :as h2]
@@ -37,11 +37,11 @@
     #".*" ; default
     message))
 
-(defrecord H2TcpDriver []
+(defrecord WSQLDriver []
   clojure.lang.Named
-  (getName [_] "H2TCP"))
+  (getName [_] "Web SQL"))
 
-(u/strict-extend H2TcpDriver
+(u/strict-extend WSQLDriver
   driver/IDriver
   (merge (sql/IDriverSQLDefaultsMixin)
          {
@@ -68,7 +68,7 @@
                                                              :placeholder  "*******"}
                                                           ])
            :humanize-connection-error-message (u/drop-first-arg humanize-connection-error-message)
-           :current-db-time                   (driver/make-current-db-time-fn h2/h2-date-formatter h2/h2-db-time-query)})
+           :current-db-time                   (driver/make-current-db-time-fn h2/h2-db-time-query h2/h2-date-formatters)})
 
   sql/ISQLDriver
   (merge (sql/ISQLDriverDefaultsMixin)
@@ -80,8 +80,7 @@
           :unix-timestamp->timestamp (u/drop-first-arg h2/h2-unix-timestamp->timestamp)}))
 
 (defn -init-driver
-  "Register the H2tcp driver"
+  "Register the Web SQL driver"
   []
   (. H2Config config)
-  (driver/register-driver! :h2tcp (H2TcpDriver.))
-  )
+  (driver/register-driver! :wsql (WSQLDriver.)))

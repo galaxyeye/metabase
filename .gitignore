@@ -19,6 +19,7 @@ profiles.clj
 /*.mv.db
 /*.lock.db
 /*.trace.db
+/resources/frontend_client/locales
 /resources/frontend_client/app/dist/
 /resources/frontend_client/index.html
 /resources/frontend_client/public.html
