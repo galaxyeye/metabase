@@ -16,7 +16,7 @@ import {
 } from "metabase/lib/schema_metadata";
 import { TYPE, isa } from "metabase/lib/types";
 import { singularize, inflect } from "inflection";
-import { formatValue, formatColumn } from "metabase/lib/formatting";
+import {formatValue, formatColumn, getColumnOrder, isHtml} from "metabase/lib/formatting";
 import { isQueryable } from "metabase/lib/table";
 
 import {
@@ -110,8 +110,15 @@ export class ObjectDetail extends Component {
           jsx: true,
           rich: true,
         });
+
         if (typeof cellValue === "string") {
-          cellValue = <ExpandableString str={cellValue} length={140} />;
+          let showHtml = isHtml(cellValue);
+          if (showHtml) {
+            cellValue = <div dangerouslySetInnerHTML={{__html: cellValue}}/>
+          } else {
+            cellValue = <ExpandableString str={cellValue} length={140} />;
+          }
+          // cellValue = <ExpandableString str={cellValue} length={140} />;
         }
       }
       clicked = {
@@ -146,14 +153,17 @@ export class ObjectDetail extends Component {
 
   renderDetailsTable() {
     const { data: { cols, rows } } = this.props;
-    return cols.map((column, columnIndex) => (
+
+    let sortedCols = _.sortBy(cols, column => getColumnOrder(column));
+
+    return sortedCols.map((column, columnIndex) => (
       <div className="Grid Grid--1of2 mb2" key={columnIndex}>
         <div className="Grid-cell">
           {this.cellRenderer(column, rows[0][columnIndex], true)}
         </div>
         <div
           style={{ wordWrap: "break-word" }}
-          className="Grid-cell text-bold text-dark"
+          className="Grid-cell text-bold text-medium"
         >
           {this.cellRenderer(column, rows[0][columnIndex], false)}
         </div>

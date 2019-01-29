@@ -530,6 +530,11 @@ export function formatImage(
 
 // fallback for formatting a string without a column special_type
 function formatStringFallback(value: Value, options: FormattingOptions = {}) {
+  let trimmed: string = value.trim();
+  if (options.type === "cell" && trimmed.startsWith("<") && trimmed.endsWith(">")) {
+    return trimmed;
+  }
+
   value = formatUrl(value, options);
   if (typeof value === "string") {
     value = formatEmail(value, options);
@@ -659,6 +664,16 @@ export function formatColumn(column: Column): string {
     }
     return columnTitle;
   }
+}
+
+export function getColumnOrder(column: Column): number {
+  let name = formatColumn(column);
+  let suffix = name.substr(1);
+  return Number.parseInt(suffix)
+}
+
+export function isHtml(value): boolean {
+  return (typeof value === "string") && /<\/?[^>]*>/.test(value.trim())
 }
 
 export function formatField(field: Field): string {

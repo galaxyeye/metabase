@@ -7,7 +7,7 @@ import "./TableInteractive.css";
 
 import Icon from "metabase/components/Icon.jsx";
 
-import { formatValue } from "metabase/lib/formatting";
+import {formatValue, isHtml} from "metabase/lib/formatting";
 import { isID, isFK } from "metabase/lib/schema_metadata";
 import {
   getTableCellClickedObject,
@@ -345,7 +345,7 @@ export default class TableInteractive extends Component {
           transition: dragColIndex != null ? "left 200ms" : null,
           backgroundColor,
         }}
-        className={cx("TableInteractive-cellWrapper text-dark", {
+        className={cx("TableInteractive-cellWrapper text-medium", {
           "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
           "TableInteractive-cellWrapper--lastColumn":
             columnIndex === cols.length - 1,
@@ -371,19 +371,28 @@ export default class TableInteractive extends Component {
               options={columnSettings}
               extent={getColumnExtent(data.cols, data.rows, columnIndex)}
               cellHeight={ROW_HEIGHT}
-            />
-          ) : (
-            /* using formatValue instead of <Value> here for performance. The later wraps in an extra <span> */
-            formatValue(value, {
-              ...columnSettings,
-              type: "cell",
-              jsx: true,
-              rich: true,
-            })
-          )}
+            />) : (this.getCellValue(value, columnSettings))
+          }
         </div>
       </div>
     );
+  };
+
+  getCellValue = (value, columnSettings) => {
+    /* using formatValue instead of <Value> here for performance. The later wraps in an extra <span> */
+    let formatted = formatValue(value, {
+      ...columnSettings,
+      type: "cell",
+      jsx: true,
+      rich: true,
+    });
+
+    if (isHtml(formatted)) {
+      return <div dangerouslySetInnerHTML={{__html: formatted}}/>;
+    } else {
+      return formatted;
+    }
+    // return formatted;
   };
 
   getDragColNewIndex(data: { x: number }) {
