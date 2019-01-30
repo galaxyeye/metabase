@@ -3,6 +3,7 @@
   implementations."
   (:require [clojure.tools.logging :as log]
             [medley.core :as m]
+            [clojure.string :as str]
             [metabase
              [driver :as driver]
              [util :as u]]
@@ -206,12 +207,21 @@
 
 (def ^:private default-pipeline (qp-pipeline execute-query))
 
-(defn process-query
+(defn process-query2
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
   (default-pipeline query))
 
+(defn process-query
+  "A pipeline of various QP functions (including middleware) that are used to process MB queries."
+  {:style/indent 0}
+  [query]
+  (last (for [rawSql (-> query :native :query (str/split #";+"))
+              :let [sql (str/trim rawSql)]
+              :when (and (not (re-matches #"^\s*--.+" sql)) (> (count sql) 5)) ]
+          ((qp-pipeline execute-query) (assoc-in query [:native :query] sql))))
+  )
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                            DATASET-QUERY PUBLIC API                                            |

@@ -123,7 +123,6 @@
         (hx/* bin-width)
         (hx/+ min-value))))
 
-
 (defmethod ->honeysql [Object :count] [driver [_ field]]
   (if field
     (hsql/call :count (->honeysql driver field))
@@ -443,7 +442,6 @@
         ;; in
         (update honeysql-form :select #(if (seq %) % [:*]))))))
 
-
 ;;; -------------------------------------------- Handling source queries ---------------------------------------------
 
 (declare apply-clauses)
@@ -629,8 +627,56 @@
           (.cancel stmt)
           (throw e))))))
 
+(defn- removeComments
+  [sql]
+  (str/replace sql #"('(''|[^'])*')|[\t\r\n]|(--[^\r\n]*)|(/\*[\w\W]*?(?=\*/)\*/)" ""))
+
+(defn-
+  is-query?
+  "Whether the statement do not modify the database. This is a temporary solution"
+  [stat]
+  (re-matches #"(?i)^\s*(select|show|explain|with).+" (removeComments stat)))
+
+(defn- jdbc-query
+  "Run the query"
+  [sql timezone db]
+  (jdbc/query db sql {:identifiers    identity, :as-arrays? true
+                      :read-columns   (read-columns-with-date-handling timezone)
+                      :set-parameters (set-parameters-with-timezone timezone)}))
+
+(defn- jdbc-execute!
+  "Run the execution"
+  [sql timezone db]
+  [[:affectedRows]
+   (try (jdbc/execute! db sql {:set-parameters (set-parameters-with-timezone timezone)})
+        (catch SQLException e
+          (log/debug (u/format-color 'red "EXECUTE FAILED: \n%s\n" sql))
+          (jdbc/print-sql-exception-chain e))
+        )])
+
+(defn- do-run-query
+  "Run the query itself."
+  [sql params timezone connection]
+  (let [opts {:identifiers    identity, :as-arrays? true
+              :read-columns   (read-columns-with-date-handling timezone)
+              :set-parameters (set-parameters-with-timezone timezone)}]
+    (cancellable-run-query connection sql params opts)))
+
 (defn- run-query
   "Run the query itself."
+  [driver {rawSql :query, params :params, remark :remark} timezone connection]
+  (let [
+        sql (str "-- " remark "\n" (hx/unescape-dots rawSql))
+        statement (into [sql] params)
+        [columns & rows] (if (is-query? rawSql)
+                           (do-run-query sql params timezone connection)
+                           (jdbc-execute! sql timezone connection))
+        ]
+    {:rows    (or rows [])
+     :columns (map u/keyword->qualified-name columns)}))
+
+(defn- run-query-no-execute
+  "Run the query itself, do execute support."
   [driver {sql :query, params :params, remark :remark} timezone connection]
   (let [sql              (str "-- " remark "\n" (hx/unescape-dots sql))
         statement        (into [sql] params)
