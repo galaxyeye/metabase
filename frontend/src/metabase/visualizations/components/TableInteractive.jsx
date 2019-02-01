@@ -387,12 +387,13 @@ export default class TableInteractive extends Component {
       rich: true,
     });
 
-    if (isHtml(formatted)) {
+    if (formatted == null) {
+      return ".";
+    } else if (isHtml(formatted)) {
       return <div dangerouslySetInnerHTML={{__html: formatted}}/>;
     } else {
       return formatted;
     }
-    // return formatted;
   };
 
   getDragColNewIndex(data: { x: number }) {

@@ -553,7 +553,8 @@ const MARKDOWN_RENDERERS = {
 };
 
 export function formatValue(value: Value, options: FormattingOptions = {}) {
-  const formatted = formatValueRaw(value, options);
+  let formatted = formatValueRaw(value, options);
+
   if (options.markdown_template) {
     if (options.jsx) {
       // inject the formatted value as "value" and the unformatted value as "raw"
@@ -570,6 +571,7 @@ export function formatValue(value: Value, options: FormattingOptions = {}) {
       return formatted;
     }
   }
+
   if (options.prefix || options.suffix) {
     if (options.jsx && typeof formatted !== "string") {
       return (
