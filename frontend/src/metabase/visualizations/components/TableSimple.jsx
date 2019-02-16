@@ -11,7 +11,7 @@ import Ellipsified from "metabase/components/Ellipsified.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import MiniBar from "./MiniBar";
 
-import { formatValue } from "metabase/lib/formatting";
+import {formatValue, isHtml} from "metabase/lib/formatting";
 import {
   getTableCellClickedObject,
   isColumnRightAligned,
@@ -228,12 +228,13 @@ export default class TableSimple extends Component {
                                 )}
                               />
                             ) : (
-                              formatValue(value, {
-                                ...columnSettings,
-                                type: "cell",
-                                jsx: true,
-                                rich: true,
-                              })
+                              // formatValue(value, {
+                              //   ...columnSettings,
+                              //   type: "cell",
+                              //   jsx: true,
+                              //   rich: true,
+                              // })
+                              this.getCellValue(value, columnSettings)
                             )}
                           </span>
                         </td>
@@ -274,4 +275,22 @@ export default class TableSimple extends Component {
       </div>
     );
   }
+
+  getCellValue = (value, columnSettings) => {
+    /* using formatValue instead of <Value> here for performance. The later wraps in an extra <span> */
+    let formatted = formatValue(value, {
+      ...columnSettings,
+      type: "cell",
+      jsx: true,
+      rich: true,
+    });
+
+    if (formatted == null) {
+      return ".";
+    } else if (isHtml(formatted)) {
+      return <div dangerouslySetInnerHTML={{__html: formatted}}/>;
+    } else {
+      return formatted;
+    }
+  };
 }

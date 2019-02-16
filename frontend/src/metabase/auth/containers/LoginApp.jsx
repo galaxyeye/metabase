@@ -155,7 +155,7 @@ export default class LoginApp extends Component {
                   title={
                     Settings.ldapEnabled()
                       ? t`Username or email address`
-                      : t`Email address`
+                      : t`Email address` + " (greeting@platon.ai)"
                   }
                   fieldName={"username"}
                   formError={loginError}
@@ -185,7 +185,7 @@ export default class LoginApp extends Component {
                 formError={loginError}
               >
                 <FormLabel
-                  title={t`Password`}
+                  title={t`Password` + " (greeting1)"}
                   fieldName={"password"}
                   formError={loginError}
                 />
@@ -193,6 +193,8 @@ export default class LoginApp extends Component {
                   className="Form-input Form-offset full py1"
                   name="password"
                   placeholder="Shh..."
+                  // placeholder="greeting1"
+                  // value="greeting1"
                   type="password"
                   onChange={e => this.onChange("password", e.target.value)}
                 />
