@@ -207,13 +207,13 @@
 
 (def ^:private default-pipeline (qp-pipeline execute-query))
 
-(defn process-query2
+(defn process-query-honey
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
   (default-pipeline query))
 
-(defn process-query
+(defn process-query-native
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
@@ -222,6 +222,17 @@
               :when (and (not (re-matches #"^\s*--.+" sql)) (> (count sql) 5)) ]
           ((qp-pipeline execute-query) (assoc-in query [:native :query] sql))))
   )
+
+;;; TODO: failed to execute queries with string variables
+(defn process-query
+  "A pipeline of various QP functions (including middleware) that are used to process MB queries."
+  {:style/indent 0}
+  [query]
+  (if
+    (instance? String (query :query))
+    (process-query-native query)
+    (process-query-honey query)
+    ))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                            DATASET-QUERY PUBLIC API                                            |
