@@ -207,31 +207,51 @@
 
 (def ^:private default-pipeline (qp-pipeline execute-query))
 
-(defn process-query-honey
+(defn process-honeysql-query
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
   (default-pipeline query))
 
-(defn process-query-native
-  "A pipeline of various QP functions (including middleware) that are used to process MB queries."
+(defn process-native-query-statment
+  {:style/indent 0}
+  [query statment]
+  ((qp-pipeline execute-query) (assoc-in query [:native :query] statment)))
+
+(defn process-native-query-statments
   {:style/indent 0}
   [query]
-  (last (for [rawSql (-> query :native :query (str/split #";+"))
-              :let [sql (str/trim rawSql)]
-              :when (and (not (re-matches #"^\s*--.+" sql)) (> (count sql) 5)) ]
-          ((qp-pipeline execute-query) (assoc-in query [:native :query] sql))))
-  )
+  (for [sql (-> query :native :query (str/split #";+"))
+        :let [statment (str/trim sql)]
+        :when (and
+               (not (re-matches #"(--.*)|(((/\*)+?[\w\W]+?(\*/)+))" statment))
+               (> (count statment) 5))]
+    (process-native-query-statment query statment)))
 
-;;; TODO: failed to execute queries with string variables
+;; TODO: we may need display multi results
+(defn process-native-query
+  "Process native query."
+  {:style/indent 0}
+  [query]
+  (let [result (process-native-query-statments query)]
+    (if (empty? result)
+      {
+        :status    "success"
+        :row_count 0
+        :data      {
+                     :rows    []
+                     :cols    []
+                     :columns []}}
+      (last result))))
+
 (defn process-query
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
   (if
-    (instance? String (query :query))
-    (process-query-native query)
-    (process-query-honey query)
+    (= "native" (query :type))
+    (process-native-query query)
+    (process-honeysql-query query)
     ))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
