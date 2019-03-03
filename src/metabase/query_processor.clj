@@ -207,18 +207,49 @@
 
 (def ^:private default-pipeline (qp-pipeline execute-query))
 
-(defn process-honeysql-query
+(defn- find-nested
+  [m k]
+  (->> (tree-seq map? vals m)
+       (filter map?)
+       (some k)))
+
+(defn- is-parametered-harvest?
+  [statment]
+  (re-matches #"(?i).+harvest\(\{\{.+\}\}\).*" statment))
+
+(defn- get-the-only-query-parameter
+  [query]
+  (let [parameters (query :parameters)]
+    (if
+      (or (empty? parameters) (empty? (find-nested parameters :value)))
+      (find-nested (query :native :template-tags) :default)
+      (find-nested parameters :value))))
+
+;;; special case: SELECT * FROM HARVEST({{PORTAL_URL}});
+(defn- process-parametered-harvest
+  {:style/indent 0}
+  [query statment]
+  (let [parameter (get-the-only-query-parameter query)]
+    (assoc query :native [])
+    (assoc query :parameters [])
+    (let [stat (str/replace statment #"\{\{.+\}\}" (str "\\'" parameter "\\'"))]
+      (default-pipeline (assoc-in query [:native :query] stat)))))
+
+(defn- process-honeysql-query
   "A pipeline of various QP functions (including middleware) that are used to process MB queries."
   {:style/indent 0}
   [query]
   (default-pipeline query))
 
-(defn process-native-query-statment
+;;; TODO: we may need a better way to handle all parametered pulsar udfs
+(defn- process-native-query-statment
   {:style/indent 0}
   [query statment]
-  ((qp-pipeline execute-query) (assoc-in query [:native :query] statment)))
+  (if (is-parametered-harvest? statment)
+    (process-parametered-harvest query statment)
+    (default-pipeline (assoc-in query [:native :query] statment))))
 
-(defn process-native-query-statments
+(defn- process-native-query-statments
   {:style/indent 0}
   [query]
   (for [sql (-> query :native :query (str/split #";+"))
@@ -229,7 +260,7 @@
     (process-native-query-statment query statment)))
 
 ;; TODO: we may need display multi results
-(defn process-native-query
+(defn- process-native-query
   "Process native query."
   {:style/indent 0}
   [query]
@@ -249,7 +280,7 @@
   {:style/indent 0}
   [query]
   (if
-    (= "native" (query :type))
+    (str/ends-with? (query :type) "native")
     (process-native-query query)
     (process-honeysql-query query)
     ))
