@@ -249,10 +249,13 @@
     (process-parametered-harvest query statment)
     (default-pipeline (assoc-in query [:native :query] statment))))
 
+;;; not the split regex: the entire sql is splitted into statements by ; not not followed by \'.
+;;; this handles the case when select values('a-sql-as-string')
+;;; TODO: should use a sql parser to split sql statments, the regex sulotion is buggy
 (defn- process-native-query-statments
   {:style/indent 0}
   [query]
-  (for [sql (-> query :native :query (str/split #";+"))
+  (for [sql (-> query :native :query (str/split #"\s*;\s*(?=([^']*'[^']*')*[^']*$)"))
         :let [statment (str/trim sql)]
         :when (and
                (not (re-matches #"(--.*)|(((/\*)+?[\w\W]+?(\*/)+))" statment))
