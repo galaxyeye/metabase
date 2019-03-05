@@ -220,10 +220,9 @@
 (defn- get-the-only-query-parameter
   [query]
   (let [parameters (query :parameters)]
-    (if
-      (or (empty? parameters) (empty? (find-nested parameters :value)))
+    (if (or (empty? parameters) (empty? (find-nested (first parameters) :value)))
       (find-nested (query :native :template-tags) :default)
-      (find-nested parameters :value))))
+      (find-nested (first parameters) :value))))
 
 ;;; special case: SELECT * FROM HARVEST({{PORTAL_URL}});
 (defn- process-parametered-harvest
