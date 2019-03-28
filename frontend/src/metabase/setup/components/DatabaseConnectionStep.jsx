@@ -164,6 +164,12 @@ export default class DatabaseConnectionStep extends Component {
             <div style={{ maxWidth: 600 }} className="Form-field Form-offset">
               {t`You’ll need some info about your database, like the username and password. If you don’t have that right now, Metabase also comes with a sample dataset you can get started with.`}
             </div>
+            <div style={{ maxWidth: 600, color: "red" }} className="Form-field Form-offset">
+              数据库类型选择 X-SQL, 用户名密码等信息选择默认即可.
+            </div>
+            <div style={{ maxWidth: 600 }} className="Form-field Form-offset">
+              Choose X-SQL as the database type, and just keep the default username and password.
+            </div>
 
             <FormField fieldName="engine">
               {this.renderEngineSelect()}

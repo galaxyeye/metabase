@@ -333,8 +333,7 @@
    `driver-init` function which provides a uniform way for Driver initialization to be done."
   []
   (doseq [ns-symb @u/metabase-namespace-symbols
-;          :when   (re-matches #"^metabase\.driver\.[a-z0-9_]+$" (name ns-symb))]
-          :when   (re-matches #"^metabase\.driver\.(h2|h2tcp)\.clj$" (name ns-symb))]
+          :when   (re-matches #"^metabase\.driver\.[a-z0-9_]+$" (name ns-symb))]
     (init-driver-in-namespace! ns-symb)))
 
 (defn is-engine?
