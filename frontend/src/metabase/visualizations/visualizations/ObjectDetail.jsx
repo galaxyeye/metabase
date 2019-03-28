@@ -154,9 +154,10 @@ export class ObjectDetail extends Component {
   renderDetailsTable() {
     const { data: { cols, rows } } = this.props;
 
-    let sortedCols = _.sortBy(cols, column => getColumnOrder(column));
+    // TODO: no need to sort by number when the column name is formatted by String.format("C02d", x)
+    // let sortedCols = _.sortBy(cols, column => getColumnOrder(column));
 
-    return sortedCols.map((column, columnIndex) => (
+    return cols.map((column, columnIndex) => (
       <div className="Grid Grid--1of2 mb2" key={columnIndex}>
         <div className="Grid-cell">
           {this.cellRenderer(column, rows[0][columnIndex], true)}

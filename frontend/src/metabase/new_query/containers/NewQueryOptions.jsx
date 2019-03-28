@@ -130,6 +130,18 @@ export class NewQueryOptions extends Component {
       <div className="full-height flex align-center justify-center">
         <div className="wrapper wrapper--trim lg-wrapper--trim xl-wrapper--trim ">
           <ol className="Grid Grid--guttersXl Grid--full sm-Grid--normal">
+            {showSQLOption && (
+              <li className="Grid-cell">
+                <NewQueryOption
+                  image="app/img/sql_illustration"
+                  // title={t`Native query`}
+                  // description={t`For more complicated questions, you can write your own SQL or native query.`}
+                  title={t`X-SQL`}
+                  description={t`Write X-SQL to turn Web pages into tables and charts`}
+                  to={this.getNativeQueryUrl}
+                />
+              </li>
+            )}
             {showMetricOption && (
               <li className="Grid-cell">
                 <NewQueryOption
@@ -154,16 +166,6 @@ export class NewQueryOptions extends Component {
                 to={this.getGuiQueryUrl}
               />
             </li>
-            {showSQLOption && (
-              <li className="Grid-cell">
-                <NewQueryOption
-                  image="app/img/sql_illustration"
-                  title={t`Native query`}
-                  description={t`For more complicated questions, you can write your own SQL or native query.`}
-                  to={this.getNativeQueryUrl}
-                />
-              </li>
-            )}
           </ol>
         </div>
       </div>
