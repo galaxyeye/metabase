@@ -7,12 +7,9 @@
              [driver :as driver]
              [util :as u]]
             [metabase.driver.druid.query-processor :as qp]
-            [metabase.models
-             [database :refer [Database]]
-             [field :as field]
-             [table :as table]]
-            [metabase.util.ssh :as ssh]
-            [toucan.db :as db]))
+            [metabase.util
+             [i18n :refer [tru]]
+             [ssh :as ssh]]))
 
 ;;; ### Request helper fns
 
@@ -49,6 +46,7 @@
 ;;; ### Misc. Driver Fns
 
 (defn- can-connect? [details]
+  {:pre [(map? details)]}
   (ssh/with-ssh-tunnel [details-with-tunnel details]
     (= 200 (:status (http/get (details->url details-with-tunnel "/status"))))))
 
@@ -56,20 +54,24 @@
 ;;; ### Query Processing
 
 (defn- do-query [details query]
-  {:pre [(map? query)]}
+  {:pre [(map? details) (map? query)]}
   (ssh/with-ssh-tunnel [details-with-tunnel details]
     (try
       (POST (details->url details-with-tunnel "/druid/v2"), :body query)
       (catch Throwable e
         ;; try to extract the error
         (let [message (or (u/ignore-exceptions
-                            (:error (json/parse-string (:body (:object (ex-data e))) keyword)))
+                            (when-let [body (json/parse-string (:body (:object (ex-data e))) keyword)]
+                              (str (:error body) "\n"
+                                   (:errorMessage body) "\n"
+                                   "Error class:" (:errorClass body))))
                           (.getMessage e))]
           (log/error (u/format-color 'red "Error running query:\n%s" message))
           ;; Re-throw a new exception with `message` set to the extracted message
           (throw (Exception. message e)))))))
 
 (defn- do-query-with-cancellation [details query]
+  {:pre [(map? details) (map? query)]}
   (let [query-id  (get-in query [:context :queryId])
         query-fut (future (do-query details query))]
     (try
@@ -96,6 +98,7 @@
 ;;; ### Sync
 
 (defn- do-segment-metadata-query [details datasource]
+  {:pre [(map? details)]}
   (do-query details {"queryType"     "segmentMetadata"
                      "dataSource"    datasource
                      "intervals"     ["1999-01-01/2114-01-01"]
@@ -142,6 +145,7 @@
 ;;; ### DruidrDriver Class Definition
 
 (defrecord DruidDriver []
+  :load-ns true
   clojure.lang.Named
   (getName [_] "Druid"))
 
@@ -152,13 +156,10 @@
           :describe-database (u/drop-first-arg describe-database)
           :describe-table    (u/drop-first-arg describe-table)
           :details-fields    (constantly (ssh/with-tunnel-config
-                                           [{:name         "host"
-                                             :display-name "Host"
-                                             :default      "http://localhost"}
-                                            {:name         "port"
-                                             :display-name "Broker node port"
-                                             :type         :integer
-                                             :default      8082}]))
+                                           [(assoc driver/default-host-details :default "http://localhost")
+                                            (assoc driver/default-port-details
+                                              :display-name (tru "Broker node port")
+                                              :default      8082)]))
           :execute-query     (fn [_ query] (qp/execute-query do-query-with-cancellation query))
           :features          (constantly #{:basic-aggregations :set-timezone :expression-aggregations})
           :mbql->native      (u/drop-first-arg qp/mbql->native)}))

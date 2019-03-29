@@ -7,7 +7,9 @@
             [metabase.models.database :refer [Database]]
             [metabase.task.sync-databases :as sync-db]
             [metabase.test.util :as tu]
+            [metabase.test.util.log :as tu.log]
             [metabase.util :as u]
+            [metabase.util.date :as du]
             [toucan.db :as db]
             [toucan.util.test :as tt])
   (:import [metabase.task.sync_databases SyncAndAnalyzeDatabase UpdateFieldValues]))
@@ -125,19 +127,21 @@
 (expect
   Exception
   (tt/with-temp Database [database {:engine :postgres}]
-    (db/update! Database (u/get-id database)
-      :metadata_sync_schedule "2 CANS PER DAY")))
+    (tu.log/suppress-output
+      (db/update! Database (u/get-id database)
+        :metadata_sync_schedule "2 CANS PER DAY"))))
 
 (expect
   Exception
   (tt/with-temp Database [database {:engine :postgres}]
-    (db/update! Database (u/get-id database)
-      :cache_field_values_schedule "2 CANS PER DAY")))
+    (tu.log/suppress-output
+      (db/update! Database (u/get-id database)
+        :cache_field_values_schedule "2 CANS PER DAY"))))
 
 
-;;; +------------------------------------------------------------------------------------------------------------------------+
-;;; |                                        CHECKING THAT SYNC TASKS RUN CORRECT FNS                                        |
-;;; +------------------------------------------------------------------------------------------------------------------------+
+;;; +----------------------------------------------------------------------------------------------------------------+
+;;; |                                    CHECKING THAT SYNC TASKS RUN CORRECT FNS                                    |
+;;; +----------------------------------------------------------------------------------------------------------------+
 
 (defn- check-if-sync-processes-ran-for-db {:style/indent 0} [db-info]
   (let [sync-db-metadata-counter    (atom 0)
@@ -155,7 +159,7 @@
            :ran-update-field-values? (not (zero? @update-field-values-counter))})))))
 
 (defn- cron-schedule-for-next-year []
-  (format "0 15 10 * * ? %d" (inc (u/date-extract :year))))
+  (format "0 15 10 * * ? %d" (inc (du/date-extract :year))))
 
 ;; Make sure that a database that *is* marked full sync *will* get analyzed
 (expect

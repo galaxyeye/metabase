@@ -20,7 +20,7 @@ export const AM_PM_OPTIONS = [
 ];
 
 export const DAY_OF_WEEK_OPTIONS = [
-  { name: t`"Sunday`, value: "sun" },
+  { name: t`Sunday`, value: "sun" },
   { name: t`Monday`, value: "mon" },
   { name: t`Tuesday`, value: "tue" },
   { name: t`Wednesday`, value: "wed" },
@@ -205,7 +205,7 @@ export default class SchedulePicker extends Component {
           className="h4 text-bold bg-white"
         />
         {textBeforeSendTime && (
-          <div className="mt2 h4 text-bold text-grey-3 border-top pt2">
+          <div className="mt2 h4 text-bold text-medium border-top pt2">
             {textBeforeSendTime} {hour === 0 ? 12 : hour}:00{" "}
             {amPm ? "PM" : "AM"} {timezone}, {t`your Metabase timezone`}.
           </div>

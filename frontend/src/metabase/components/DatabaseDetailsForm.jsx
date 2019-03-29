@@ -127,8 +127,12 @@ export default class DatabaseDetailsForm extends Component {
     for (let field of engines[engine]["details-fields"]) {
       let val = details[field.name] === "" ? null : details[field.name];
 
-      if (val && field.type === "integer") val = parseInt(val);
-      if (val == null && field.default) val = field.default;
+      if (val && field.type === "integer") {
+        val = parseInt(val);
+      }
+      if (val == null && field.default) {
+        val = field.default;
+      }
 
       request.details[field.name] = val;
     }
@@ -222,6 +226,30 @@ export default class DatabaseDetailsForm extends Component {
     } else if (isTunnelField(field) && !this.state.details["tunnel-enabled"]) {
       // don't show tunnel fields if tunnel isn't enabled
       return null;
+    } else if (field.name === "use-jvm-timezone") {
+      let on =
+        this.state.details["use-jvm-timezone"] == undefined
+          ? false
+          : this.state.details["use-jvm-timezone"];
+      return (
+        <FormField key={field.name} fieldName={field.name}>
+          <div className="flex align-center Form-offset">
+            <div className="Grid-cell--top">
+              <Toggle
+                value={on}
+                onChange={val => this.onChange("use-jvm-timezone", val)}
+              />
+            </div>
+            <div className="px2">
+              <h3>{t`Use the Java Virtual Machine (JVM) timezone`}</h3>
+              <div style={{ maxWidth: "40rem" }} className="pt1">
+                {t`We suggest you leave this off unless you're doing manual timezone casting in
+                                many or most of your queries with this data.`}
+              </div>
+            </div>
+          </div>
+        </FormField>
+      );
     } else if (field.name === "let-user-control-scheduling") {
       let on =
         this.state.details["let-user-control-scheduling"] == undefined
@@ -242,7 +270,7 @@ export default class DatabaseDetailsForm extends Component {
               <h3
               >{t`This is a large database, so let me choose when Metabase syncs and scans`}</h3>
               <div style={{ maxWidth: "40rem" }} className="pt1">
-                {t`By default, Metabase does a lightweight hourly sync, and an intensive daily scan of field values.
+                {t`By default, Metabase does a lightweight hourly sync and an intensive daily scan of field values.
                                 If you have a large database, we recommend turning this on and reviewing when and how often the field value scans happen.`}
               </div>
             </div>
@@ -252,15 +280,15 @@ export default class DatabaseDetailsForm extends Component {
     } else if (field.name === "client-id" && CREDENTIALS_URL_PREFIXES[engine]) {
       let { details } = this.state;
       let projectID = details && details["project-id"];
-      var credentialsURLLink;
+      let credentialsURLLink;
       // if (projectID) {
       let credentialsURL = CREDENTIALS_URL_PREFIXES[engine] + (projectID || "");
       credentialsURLLink = (
         <div className="flex align-center Form-offset">
           <div className="Grid-cell--top">
             {jt`${(
-              <a href={credentialsURL} target="_blank">
-                Click here
+              <a className="link" href={credentialsURL} target="_blank">
+                {t`Click here`}
               </a>
             )} to generate a Client ID and Client Secret for your project.`}
             {t`Choose "Other" as the application type. Name it whatever you'd like.`}
@@ -279,15 +307,15 @@ export default class DatabaseDetailsForm extends Component {
     } else if (field.name === "auth-code" && AUTH_URL_PREFIXES[engine]) {
       let { details } = this.state;
       const clientID = details && details["client-id"];
-      var authURLLink;
+      let authURLLink;
       if (clientID) {
         let authURL = AUTH_URL_PREFIXES[engine] + clientID;
         authURLLink = (
           <div className="flex align-center Form-offset">
             <div className="Grid-cell--top">
               {jt`${(
-                <a href={authURL} target="_blank">
-                  Click here
+                <a className="link" href={authURL} target="_blank">
+                  {t`Click here`}
                 </a>
               )} to get an auth code`}
               {engine === "bigquery" && (
@@ -322,7 +350,7 @@ export default class DatabaseDetailsForm extends Component {
             <div className="Grid-cell--top ml1">
               {jt`${(
                 <a href={enableAPIURL} target="_blank">
-                  Click here
+                  {t`Click here`}
                 </a>
               )} to go to the console if you haven't already done so.`}
             </div>

@@ -205,7 +205,7 @@ export default class AccordianList extends Component {
   renderSectionIcon(section, sectionIndex) {
     if (this.props.renderSectionIcon) {
       return (
-        <span className="List-section-icon mr2">
+        <span className="List-section-icon mr1 flex align-center">
           {this.props.renderSectionIcon(section, sectionIndex)}
         </span>
       );
@@ -243,6 +243,9 @@ export default class AccordianList extends Component {
     const sectionIsTogglable = sectionIndex =>
       alwaysTogglable || sections.length > 1;
 
+    // if any section is searchable just enable a global search
+    let globalSearch = false;
+
     const rows = [];
     for (const [sectionIndex, section] of sections.entries()) {
       const isLastSection = sectionIndex === sections.length - 1;
@@ -265,7 +268,11 @@ export default class AccordianList extends Component {
         section.items &&
         section.items.length > 0
       ) {
-        rows.push({ type: "search", section, sectionIndex, isLastSection });
+        if (alwaysExpanded) {
+          globalSearch = true;
+        } else {
+          rows.push({ type: "search", section, sectionIndex, isLastSection });
+        }
       }
       if (
         sectionIsExpanded(sectionIndex) &&
@@ -295,6 +302,15 @@ export default class AccordianList extends Component {
       }
     }
 
+    if (globalSearch) {
+      rows.unshift({
+        type: "search",
+        section: {},
+        sectionIndex: 0,
+        isLastSection: false,
+      });
+    }
+
     const maxHeight =
       this.props.maxHeight > 0 && this.props.maxHeight < Infinity
         ? this.props.maxHeight
@@ -309,12 +325,18 @@ export default class AccordianList extends Component {
       ),
     );
 
+    const defaultListStyle = {
+      // HACK - Ensure the component can scroll
+      // This is a temporary fix to handle cases where the parent component doesn’t pass in the correct `maxHeight`
+      overflowY: "scroll",
+    };
+
     return (
       <List
         id={id}
         ref={list => (this._list = list)}
         className={this.props.className}
-        style={style}
+        style={{ ...defaultListStyle, ...(style || {}) }}
         width={width}
         height={height}
         rowCount={rows.length}
@@ -352,7 +374,7 @@ export default class AccordianList extends Component {
                 >
                   {type === "header" ? (
                     alwaysExpanded ? (
-                      <div className="px2 pt2 pb1 h6 text-grey-2 text-uppercase text-bold">
+                      <div className="px2 pt2 pb1 h6 text-light text-uppercase text-bold">
                         {section.name}
                       </div>
                     ) : (

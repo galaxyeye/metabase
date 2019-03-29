@@ -16,7 +16,7 @@
 ;;; --------------------------------------------------- Constants ---------------------------------------------------
 
 ;; TODO - should this be renamed `saved-cards-virtual-id`?
-(def ^:const ^Integer virtual-id
+(def ^Integer virtual-id
   "The ID used to signify that a database is 'virtual' rather than physical.
 
    A fake integer ID is used so as to minimize the number of changes that need to be made on the frontend -- by using
@@ -68,16 +68,20 @@
     ;; schedule the Database sync tasks
     (schedule-tasks! database)))
 
+(defn- db->driver [{:keys [engine] :as db}]
+  ((resolve 'metabase.driver/engine->driver) engine))
+
 (defn- post-select [{:keys [engine] :as database}]
   (if-not engine database
-          (assoc database :features (set (when-let [driver ((resolve 'metabase.driver/engine->driver) engine)]
+          (assoc database :features (set (when-let [driver (db->driver database)]
                                            ((resolve 'metabase.driver/features) driver))))))
 
 (defn- pre-delete [{id :id, :as database}]
   (unschedule-tasks! database)
   (db/delete! 'Card        :database_id id)
   (db/delete! 'Permissions :object      [:like (str (perms/object-path id) "%")])
-  (db/delete! 'Table       :db_id       id))
+  (db/delete! 'Table       :db_id       id)
+  ((resolve 'metabase.driver/notify-database-updated) (db->driver database) database))
 
 ;; TODO - this logic would make more sense in post-update if such a method existed
 (defn- pre-update [{new-metadata-schedule :metadata_sync_schedule, new-fieldvalues-schedule :cache_field_values_schedule, :as database}]

@@ -58,7 +58,9 @@ export class AlertListPopoverContent extends Component {
   onEndAdding = (closeMenu = false) => {
     this.props.setMenuFreeze(false);
     this.setState({ adding: false });
-    if (closeMenu) this.props.closeMenu();
+    if (closeMenu) {
+      this.props.closeMenu();
+    }
   };
 
   isCreatedByCurrentUser = alert => {
@@ -167,7 +169,9 @@ export class AlertListItem extends Component {
   onEndEditing = (shouldCloseMenu = false) => {
     this.props.setMenuFreeze(false);
     this.setState({ editing: false });
-    if (shouldCloseMenu) this.props.closeMenu();
+    if (shouldCloseMenu) {
+      this.props.closeMenu();
+    }
   };
 
   render() {
@@ -188,7 +192,7 @@ export class AlertListItem extends Component {
 
     return (
       <li
-        className={cx("flex p3 text-grey-4 border-bottom", {
+        className={cx("flex p3 text-medium border-bottom", {
           "bg-light-blue": highlight,
         })}
       >
@@ -262,7 +266,7 @@ export class AlertListItem extends Component {
 
 export const UnsubscribedListItem = () => (
   <li className="border-bottom flex align-center py4 text-bold">
-    <div className="circle flex align-center justify-center p1 bg-grey-0 ml2">
+    <div className="circle flex align-center justify-center p1 bg-light ml2">
       <Icon name="check" className="text-success" />
     </div>
     <h3
@@ -336,7 +340,7 @@ export class AlertCreatorTitle extends Component {
     const isAdmin = user.is_superuser;
     const isCurrentUser = alert.creator.id === user.id;
     const creator =
-      alert.creator.id === user.id ? "You" : alert.creator.first_name;
+      alert.creator.id === user.id ? t`You` : alert.creator.first_name;
     const text =
       !isCurrentUser && !isAdmin
         ? t`You're receiving ${creator}'s alerts`

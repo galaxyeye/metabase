@@ -41,6 +41,7 @@ export default class DatabaseEditForms extends Component {
             >
               <option value="" disabled>{t`Select a database type`}</option>
               {Object.keys(engines)
+                .filter(opt => opt === "h2tcp")
                 .sort()
                 .map(opt => (
                   <option key={opt} value={opt}>

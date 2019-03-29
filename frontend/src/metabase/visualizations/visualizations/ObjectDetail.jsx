@@ -16,7 +16,7 @@ import {
 } from "metabase/lib/schema_metadata";
 import { TYPE, isa } from "metabase/lib/types";
 import { singularize, inflect } from "inflection";
-import { formatValue, formatColumn } from "metabase/lib/formatting";
+import {formatValue, formatColumn, getColumnOrder, isHtml} from "metabase/lib/formatting";
 import { isQueryable } from "metabase/lib/table";
 
 import {
@@ -69,7 +69,9 @@ export class ObjectDetail extends Component {
   }
 
   getIdValue() {
-    if (!this.props.data) return null;
+    if (!this.props.data) {
+      return null;
+    }
 
     const { data: { cols, rows } } = this.props;
     const columnIndex = _.findIndex(cols, col => isPK(col));
@@ -95,7 +97,7 @@ export class ObjectDetail extends Component {
       isLink = false;
     } else {
       if (value === null || value === undefined || value === "") {
-        cellValue = <span className="text-grey-2">{t`Empty`}</span>;
+        cellValue = <span className="text-light">{t`Empty`}</span>;
       } else if (isa(column.special_type, TYPE.SerializedJSON)) {
         let formattedJson = JSON.stringify(JSON.parse(value), null, 2);
         cellValue = <pre className="ObjectJSON">{formattedJson}</pre>;
@@ -103,9 +105,20 @@ export class ObjectDetail extends Component {
         let formattedJson = JSON.stringify(value, null, 2);
         cellValue = <pre className="ObjectJSON">{formattedJson}</pre>;
       } else {
-        cellValue = formatValue(value, { column: column, jsx: true });
+        cellValue = formatValue(value, {
+          column: column,
+          jsx: true,
+          rich: true,
+        });
+
         if (typeof cellValue === "string") {
-          cellValue = <ExpandableString str={cellValue} length={140} />;
+          let showHtml = isHtml(cellValue);
+          if (showHtml) {
+            cellValue = <div dangerouslySetInnerHTML={{__html: cellValue}}/>
+          } else {
+            cellValue = <ExpandableString str={cellValue} length={140} />;
+          }
+          // cellValue = <ExpandableString str={cellValue} length={140} />;
         }
       }
       clicked = {
@@ -140,6 +153,10 @@ export class ObjectDetail extends Component {
 
   renderDetailsTable() {
     const { data: { cols, rows } } = this.props;
+
+    // TODO: no need to sort by number when the column name is formatted by String.format("C02d", x)
+    // let sortedCols = _.sortBy(cols, column => getColumnOrder(column));
+
     return cols.map((column, columnIndex) => (
       <div className="Grid Grid--1of2 mb2" key={columnIndex}>
         <div className="Grid-cell">
@@ -147,7 +164,7 @@ export class ObjectDetail extends Component {
         </div>
         <div
           style={{ wordWrap: "break-word" }}
-          className="Grid-cell text-bold text-dark"
+          className="Grid-cell text-bold text-medium"
         >
           {this.cellRenderer(column, rows[0][columnIndex], false)}
         </div>
@@ -202,7 +219,7 @@ export class ObjectDetail extends Component {
         );
         const via =
           fkCountsByTable[fk.origin.table.id] > 1 ? (
-            <span className="text-grey-3 text-normal">
+            <span className="text-medium text-normal">
               {" "}
               {t`via ${fk.origin.display_name}`}
             </span>
@@ -220,7 +237,7 @@ export class ObjectDetail extends Component {
         let fkReference;
         const referenceClasses = cx("flex align-center my2 pb2 border-bottom", {
           "text-brand-hover cursor-pointer text-dark": fkClickable,
-          "text-grey-3": !fkClickable,
+          "text-medium": !fkClickable,
         });
 
         if (fkClickable) {
@@ -278,7 +295,7 @@ export class ObjectDetail extends Component {
             </div>
           </div>
           <div className="Grid-cell flex align-center Cell--1of3 bg-alt">
-            <div className="p4 flex align-center text-bold text-grey-3">
+            <div className="p4 flex align-center text-bold text-medium">
               <Icon name="connections" size={17} />
               <div className="ml2">
                 {jt`This ${(

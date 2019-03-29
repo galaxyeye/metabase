@@ -17,8 +17,9 @@ import {
   getVisualizationTransformed,
   extractRemappings,
 } from "metabase/visualizations";
-import { getSettings } from "metabase/visualizations/lib/settings";
+import { getComputedSettingsForSeries } from "metabase/visualizations/lib/settings/visualization";
 import { isSameSeries } from "metabase/visualizations/lib/utils";
+import { performDefaultAction } from "metabase/visualizations/lib/action";
 
 import Utils from "metabase/lib/utils";
 import { datasetContainsNoResults } from "metabase/lib/dataset";
@@ -32,10 +33,8 @@ import { assoc, setIn } from "icepick";
 import _ from "underscore";
 import cx from "classnames";
 
-export const ERROR_MESSAGE_GENERIC =
-  "There was a problem displaying this chart.";
-export const ERROR_MESSAGE_PERMISSION =
-  "Sorry, you don't have permission to see this card.";
+export const ERROR_MESSAGE_GENERIC = t`There was a problem displaying this chart.`;
+export const ERROR_MESSAGE_PERMISSION = t`Sorry, you don't have permission to see this card.`;
 
 import Question from "metabase-lib/lib/Question";
 import type {
@@ -46,18 +45,20 @@ import type {
   HoverObject,
   ClickObject,
   Series,
+  RawSeries,
   OnChangeCardAndRun,
 } from "metabase/meta/types/Visualization";
 import Metadata from "metabase-lib/lib/metadata/Metadata";
 
 type Props = {
-  rawSeries: Series,
+  rawSeries: RawSeries,
 
   className: string,
 
   showTitle: boolean,
   isDashboard: boolean,
   isEditing: boolean,
+  isSettings: boolean,
 
   actionButtons: Element<any>,
 
@@ -79,18 +80,21 @@ type Props = {
   // for click actions
   metadata: Metadata,
   onChangeCardAndRun: OnChangeCardAndRun,
+  dispatch: Function,
 
   // used for showing content in place of visualization, e.x. dashcard filter mapping
   replacementContent: Element<any>,
 
   // misc
   onUpdateWarnings: (string[]) => void,
-  onOpenChartSettings: () => void,
+  onOpenChartSettings: ({ section?: ?string, widget?: ?any }) => void,
 
   // number of grid cells wide and tall
   gridSize?: { width: number, height: number },
   // if gridSize isn't specified, compute using this gridSize (4x width, 3x height)
   gridUnit?: number,
+
+  classNameWidgets?: string,
 };
 
 type State = {
@@ -108,7 +112,8 @@ type State = {
   yAxisSplit: ?(number[][]),
 };
 
-@ExplicitSize
+// NOTE: pass `CardVisualization` so that we don't include header when providing size to child element
+@ExplicitSize("CardVisualization")
 export default class Visualization extends Component {
   state: State;
   props: Props;
@@ -130,9 +135,11 @@ export default class Visualization extends Component {
   }
 
   static defaultProps = {
+    className: "full-height",
     showTitle: false,
     isDashboard: false,
     isEditing: false,
+    isSettings: false,
     onUpdateVisualizationSettings: (...args) =>
       console.warn("onUpdateVisualizationSettings", args),
   };
@@ -160,6 +167,13 @@ export default class Visualization extends Component {
     ) {
       this.updateWarnings();
     }
+  }
+
+  componentDidCatch(error, info) {
+    console.error("Error caught in <Visualization>", error, info);
+    this.setState({
+      error: new Error("An error occurred displaying this visualization."),
+    });
   }
 
   // $FlowFixMe
@@ -260,6 +274,15 @@ export default class Visualization extends Component {
       );
     }
 
+    if (
+      performDefaultAction(this.getClickActions(clicked), {
+        dispatch: this.props.dispatch,
+        onChangeCardAndRun: this.handleOnChangeCardAndRun,
+      })
+    ) {
+      return;
+    }
+
     // needs to be delayed so we don't clear it when switching from one drill through to another
     setTimeout(() => {
       this.setState({ clicked });
@@ -292,7 +315,9 @@ export default class Visualization extends Component {
   };
 
   hideActions = () => {
-    this.setState({ clicked: null });
+    if (this.state.clicked !== null) {
+      this.setState({ clicked: null });
+    }
   };
 
   render() {
@@ -333,7 +358,7 @@ export default class Visualization extends Component {
     let settings = this.props.settings || {};
 
     if (!loading && !error) {
-      settings = this.props.settings || getSettings(series);
+      settings = this.props.settings || getComputedSettingsForSeries(series);
       if (!CardVisualization) {
         error = t`Could not find visualization`;
       } else {
@@ -353,7 +378,7 @@ export default class Visualization extends Component {
                 <div className="mt2">
                   <button
                     className="Button Button--primary Button--medium"
-                    onClick={this.props.onOpenChartSettings}
+                    onClick={() => this.props.onOpenChartSettings(e.initial)}
                   >
                     {e.buttonText}
                   </button>
@@ -391,7 +416,7 @@ export default class Visualization extends Component {
       </span>
     );
 
-    let { gridSize, gridUnit } = this.props;
+    let { gridSize, gridUnit, classNameWidgets } = this.props;
     if (!gridSize && gridUnit) {
       gridSize = {
         width: Math.round(width / (gridUnit * 4)),
@@ -410,6 +435,7 @@ export default class Visualization extends Component {
         replacementContent ? (
           <div className="p1 flex-no-shrink">
             <LegendHeader
+              classNameWidgets={classNameWidgets}
               series={
                 settings["card.title"]
                   ? // if we have a card title set, use it
@@ -473,7 +499,7 @@ export default class Visualization extends Component {
                   </div>
                 ) : (
                   <div>
-                    {t`This is usually pretty fast, but seems to be taking awhile right now.`}
+                    {t`This is usually pretty fast but seems to be taking awhile right now.`}
                   </div>
                 )}
               </div>
@@ -485,7 +511,8 @@ export default class Visualization extends Component {
           // $FlowFixMe
           <CardVisualization
             {...this.props}
-            className="flex-full"
+            // NOTE: CardVisualization class used to target ExplicitSize HOC
+            className="CardVisualization flex-full"
             series={series}
             settings={settings}
             // $FlowFixMe
@@ -507,7 +534,7 @@ export default class Visualization extends Component {
             }
           />
         )}
-        <ChartTooltip series={series} hovered={hovered} />
+        <ChartTooltip series={series} hovered={hovered} settings={settings} />
         {this.props.onChangeCardAndRun && (
           <ChartClickActions
             clicked={clicked}

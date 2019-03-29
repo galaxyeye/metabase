@@ -1,5 +1,5 @@
 (ns metabase.public-settings
-  (:require [clojure.string :as s]
+  (:require [clojure.string :as str]
             [metabase
              [config :as config]
              [types :as types]]
@@ -7,11 +7,11 @@
              [common :as common]
              [setting :as setting :refer [defsetting]]]
             [metabase.public-settings.metastore :as metastore]
-            [metabase.util.i18n :refer [available-locales-with-names set-locale]]
-            [metabase.util.password :as password]
-            [puppetlabs.i18n.core :refer [tru]]
+            [metabase.util
+             [i18n :refer [available-locales-with-names set-locale tru]]
+             [password :as password]]
             [toucan.db :as db])
-  (:import [java.util Locale TimeZone UUID]))
+  (:import [java.util TimeZone UUID]))
 
 (defsetting check-for-updates
   (tru "Identify when new versions of Metabase are available.")
@@ -47,8 +47,8 @@
   (tru "The base URL of this Metabase instance, e.g. \"http://metabase.my-company.com\".")
   :setter (fn [new-value]
             (setting/set-string! :site-url (when new-value
-                                             (cond->> (s/replace new-value #"/$" "")
-                                               (not (s/starts-with? new-value "http")) (str "http://"))))))
+                                             (cond->> (str/replace new-value #"/$" "")
+                                               (not (str/starts-with? new-value "http")) (str "http://"))))))
 
 (defsetting site-locale
   (str  (tru "The default language for this Metabase instance.")
@@ -92,16 +92,30 @@
   :type    :boolean
   :default false)
 
+(def ^:private ^:const global-max-caching-kb
+  "Although depending on the database, we can support much larger cached values (1GB for PG, 2GB for H2 and 4GB for
+  MySQL) we are not curretly setup to deal with data of that size. The datatypes we are using will hold this data in
+  memory and will not truly be streaming. This is a global max in order to prevent our users from setting the caching
+  value so high it becomes a performance issue. The value below represents 200MB"
+  (* 200 1024))
+
 (defsetting query-caching-max-kb
   (tru "The maximum size of the cache, per saved question, in kilobytes:")
   ;; (This size is a measurement of the length of *uncompressed* serialized result *rows*. The actual size of
   ;; the results as stored will vary somewhat, since this measurement doesn't include metadata returned with the
   ;; results, and doesn't consider whether the results are compressed, as the `:db` backend does.)
   :type    :integer
-  :default 1000)
+  :default 1000
+  :setter  (fn [new-value]
+             (when (> new-value global-max-caching-kb)
+               (throw (IllegalArgumentException.
+                       (str
+                        (tru "Failed setting `query-caching-max-kb` to {0}." new-value)
+                        (tru "Values greater than {1} are not allowed." global-max-caching-kb)))))
+             (setting/set-integer! :query-caching-max-kb new-value)))
 
 (defsetting query-caching-max-ttl
-  (tru "The absoulte maximum time to keep any cached query results, in seconds.")
+  (tru "The absolute maximum time to keep any cached query results, in seconds.")
   :type    :integer
   :default (* 60 60 24 100)) ; 100 days
 
@@ -125,6 +139,16 @@
   (tru "When using the default binning strategy for a field of type Coordinate (such as Latitude and Longitude), this number will be used as the default bin width (in degrees).")
   :type :double
   :default 10.0)
+
+(defsetting custom-formatting
+  (tru "Object keyed by type, containing formatting settings")
+  :type    :json
+  :default {})
+
+(defsetting enable-xrays
+  (tru "Allow users to explore data using X-rays")
+  :type    :boolean
+  :default true)
 
 (defn remove-public-uuid-if-public-sharing-is-disabled
   "If public sharing is *disabled* and OBJECT has a `:public_uuid`, remove it so people don't try to use it (since it
@@ -154,11 +178,12 @@
   {:admin_email           (admin-email)
    :anon_tracking_enabled (anon-tracking-enabled)
    :custom_geojson        (setting/get :custom-geojson)
+   :custom_formatting     (setting/get :custom-formatting)
    :email_configured      ((resolve 'metabase.email/email-configured?))
    :embedding             (enable-embedding)
    :enable_query_caching  (enable-query-caching)
    :enable_nested_queries (enable-nested-queries)
-   :enable_xrays          (setting/get :enable-xrays)
+   :enable_xrays          (enable-xrays)
    :engines               ((resolve 'metabase.driver/available-drivers))
    :ga_code               "UA-60817802-1"
    :google_auth_client_id (setting/get :google-auth-client-id)
@@ -177,6 +202,6 @@
    :site_url              (site-url)
    :timezone_short        (short-timezone-name (setting/get :report-timezone))
    :timezones             common/timezones
-   :types                 (types/types->parents)
-   :version               config/mb-version-info
-   :xray_max_cost         (setting/get :xray-max-cost)})
+   :types                 (types/types->parents :type/*)
+   :entities              (types/types->parents :entity/*)
+   :version               config/mb-version-info})

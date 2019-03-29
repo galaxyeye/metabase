@@ -11,7 +11,9 @@
             [metabase.driver.generic-sql.query-processor :as sqlqp]
             [metabase.test.data.interface :as i]
             [metabase.util :as u]
-            [metabase.util.honeysql-extensions :as hx])
+            [metabase.util
+             [date :as du]
+             [honeysql-extensions :as hx]])
   (:import clojure.lang.Keyword
            java.sql.SQLException
            [metabase.test.data.interface DatabaseDefinition FieldDefinition TableDefinition]))
@@ -46,6 +48,18 @@
   (add-fk-sql ^String [this, ^DatabaseDefinition dbdef, ^TableDefinition tabledef, ^FieldDefinition fielddef]
     "*Optional* Return a `ALTER TABLE ADD CONSTRAINT FOREIGN KEY` statement.")
 
+  (inline-column-comment-sql ^String [this, ^String comment]
+    "*Optional* Return an inline `COMMENT` statement for a column.")
+
+  (standalone-column-comment-sql ^String [this, ^DatabaseDefinition dbdef, ^TableDefinition tabledef, ^FieldDefinition fielddef]
+    "*Optional* Return standalone `COMMENT` statement for a column.")
+
+  (inline-table-comment-sql ^String [this, ^String comment]
+    "*Optional* Return an inline `COMMENT` statement for a table.")
+
+  (standalone-table-comment-sql ^String [this, ^DatabaseDefinition dbdef, ^TableDefinition tabledef]
+    "*Optional* Return standalone `COMMENT` statement for a table.")
+
   (prepare-identifier [this, ^String identifier]
     "*OPTIONAL*. Prepare an identifier, such as a Table or Field name, when it is used in a SQL query.
      This is used by drivers like H2 to transform names to upper-case.
@@ -54,6 +68,7 @@
   (pk-field-name ^String [this]
     "*Optional* Name of a PK field. Defaults to `\"id\"`.")
 
+  ;; TODO - WHAT ABOUT SCHEMA NAME???
   (qualified-name-components [this, ^String database-name]
                              [this, ^String database-name, ^String table-name]
                              [this, ^String database-name, ^String table-name, ^String field-name]
@@ -95,20 +110,24 @@
 (defn default-drop-db-if-exists-sql [driver {:keys [database-name]}]
   (format "DROP DATABASE IF EXISTS %s;" (qualify+quote-name driver database-name)))
 
-(defn default-create-table-sql [driver {:keys [database-name], :as dbdef} {:keys [table-name field-definitions]}]
+(defn default-create-table-sql [driver {:keys [database-name], :as dbdef} {:keys [table-name field-definitions table-comment]}]
   (let [quot          (partial quote-name driver)
         pk-field-name (quot (pk-field-name driver))]
-    (format "CREATE TABLE %s (%s, %s %s, PRIMARY KEY (%s));"
+    (format "CREATE TABLE %s (%s, %s %s, PRIMARY KEY (%s)) %s;"
             (qualify+quote-name driver database-name table-name)
             (->> field-definitions
-                 (map (fn [{:keys [field-name base-type]}]
-                        (format "%s %s" (quot field-name) (if (map? base-type)
-                                                            (:native base-type)
-                                                            (field-base-type->sql-type driver base-type)))))
+                 (map (fn [{:keys [field-name base-type field-comment]}]
+                        (format "%s %s %s"
+                                (quot field-name)
+                                (if (map? base-type)
+                                  (:native base-type)
+                                  (field-base-type->sql-type driver base-type))
+                                (or (inline-column-comment-sql driver field-comment) ""))))
                  (interpose ", ")
                  (apply str))
             pk-field-name (pk-sql-type driver)
-            pk-field-name)))
+            pk-field-name
+            (or (inline-table-comment-sql driver table-comment) ""))))
 
 (defn- default-drop-table-if-exists-sql [driver {:keys [database-name]} {:keys [table-name]}]
   (format "DROP TABLE IF EXISTS %s;" (qualify+quote-name driver database-name table-name)))
@@ -129,6 +148,34 @@
             (quot field-name)
             (qualify+quote-name driver database-name dest-table-name)
             (quot (pk-field-name driver)))))
+
+(defn standard-inline-column-comment-sql
+  "Generic inline COMMENT that driver can mixin if supported."
+  [_ field-comment]
+  (when (seq field-comment)
+    (format "COMMENT '%s'" field-comment)))
+
+(defn standard-standalone-column-comment-sql
+  "Generic standalone COMMENT that driver can mixin if supported."
+  [driver {:keys [database-name]} {:keys [table-name]} {:keys [field-name field-comment]}]
+  (when (seq field-comment)
+    (format "COMMENT ON COLUMN %s IS '%s';"
+      (qualify+quote-name driver database-name table-name field-name)
+      field-comment)))
+
+(defn standard-inline-table-comment-sql
+  "Generic inline COMMENT that driver can mixin if supported."
+  [_ table-comment]
+  (when (seq table-comment)
+    (format "COMMENT '%s'" table-comment)))
+
+(defn standard-standalone-table-comment-sql
+  "Generic standalone COMMENT that driver can mixin if supported."
+  [driver {:keys [database-name]} {:keys [table-name table-comment]}]
+  (when (seq table-comment)
+    (format "COMMENT ON TABLE %s IS '%s';"
+      (qualify+quote-name driver database-name table-name)
+      table-comment)))
 
 (defn- default-qualified-name-components
   ([_ db-name]                       [db-name])
@@ -173,16 +220,22 @@
       (zipmap fields-for-insert (for [v row]
                                   (if (and (not (instance? java.sql.Time v))
                                            (instance? java.util.Date v))
-                                    (u/->Timestamp v)
+                                    (du/->Timestamp v du/utc)
                                     v))))))
+
+(defn add-ids
+  "Add an `:id` column to each row in `rows`, for databases that should have data inserted with the ID explicitly
+  specified."
+  [rows]
+  (for [[i row] (m/indexed rows)]
+    (assoc row :id (inc i))))
 
 (defn load-data-add-ids
   "Add IDs to each row, presumabily for doing a parallel insert. This arg should go before `load-data-chunked` or
   `load-data-one-at-a-time`."
   [insert!]
   (fn [rows]
-    (insert! (vec (for [[i row] (m/indexed rows)]
-                    (assoc row :id (inc i)))))))
+    (insert! (vec (add-ids rows)))))
 
 (defn load-data-chunked
   "Insert rows in chunks, which default to 200 rows each."
@@ -206,7 +259,7 @@
                {(sql/escape-field-name k) v}))))
 
 (defn- do-insert!
-  "Insert ROWS-OR-ROWS into TABLE-NAME for the DRIVER database defined by SPEC."
+  "Insert ROW-OR-ROWS into TABLE-NAME for the DRIVER database defined by SPEC."
   [driver spec table-name row-or-rows]
   (let [prepare-key (comp keyword (partial prepare-identifier driver) name)
         rows        (if (sequential? row-or-rows)
@@ -244,11 +297,16 @@
 (def load-data-all-at-once!            "Insert all rows at once."                             (make-load-data-fn))
 (def load-data-chunked!                "Insert rows in chunks of 200 at a time."              (make-load-data-fn load-data-chunked))
 (def load-data-one-at-a-time!          "Insert rows one at a time."                           (make-load-data-fn load-data-one-at-a-time))
+(def load-data-add-ids!                "Insert all rows at once; add IDs."                    (make-load-data-fn load-data-add-ids))
 (def load-data-chunked-parallel!       "Insert rows in chunks of 200 at a time, in parallel." (make-load-data-fn load-data-add-ids (partial load-data-chunked pmap)))
 (def load-data-one-at-a-time-parallel! "Insert rows one at a time, in parallel."              (make-load-data-fn load-data-add-ids (partial load-data-one-at-a-time pmap)))
 ;; ^ the parallel versions aren't neccesarily faster than the sequential versions for all drivers so make sure to do some profiling in order to pick the appropriate implementation
 
-(defn default-execute-sql! [driver context dbdef sql]
+(defn- jdbc-execute! [db-spec sql]
+  (jdbc/execute! db-spec [sql] {:transaction? false, :multi? true}))
+
+(defn default-execute-sql! [driver context dbdef sql & {:keys [execute!]
+                                                        :or   {execute! jdbc-execute!}}]
   (let [sql (some-> sql s/trim)]
     (when (and (seq sql)
                ;; make sure SQL isn't just semicolons
@@ -256,7 +314,7 @@
       ;; Remove excess semicolons, otherwise snippy DBs like Oracle will barf
       (let [sql (s/replace sql #";+" ";")]
         (try
-          (jdbc/execute! (database->spec driver context dbdef) [sql] {:transaction? false, :multi? true})
+          (execute! (database->spec driver context dbdef) sql)
           (catch SQLException e
             (println "Error executing SQL:" sql)
             (printf "Caught SQLException:\n%s\n"
@@ -268,22 +326,25 @@
                     (with-out-str (.printStackTrace e)))
             (throw e)))))))
 
-
 (def DefaultsMixin
   "Default implementations for methods marked *Optional* in `IGenericSQLTestExtensions`."
-  {:add-fk-sql                default-add-fk-sql
-   :create-db-sql             default-create-db-sql
-   :create-table-sql          default-create-table-sql
-   :database->spec            default-database->spec
-   :drop-db-if-exists-sql     default-drop-db-if-exists-sql
-   :drop-table-if-exists-sql  default-drop-table-if-exists-sql
-   :execute-sql!              default-execute-sql!
-   :load-data!                load-data-chunked!
-   :pk-field-name             (constantly "id")
-   :prepare-identifier        (u/drop-first-arg identity)
-   :qualified-name-components default-qualified-name-components
-   :qualify+quote-name        default-qualify+quote-name
-   :quote-name                default-quote-name})
+  {:add-fk-sql                    default-add-fk-sql
+   :inline-column-comment-sql     (constantly nil)
+   :standalone-column-comment-sql (constantly nil)
+   :inline-table-comment-sql      (constantly nil)
+   :standalone-table-comment-sql  (constantly nil)
+   :create-db-sql                 default-create-db-sql
+   :create-table-sql              default-create-table-sql
+   :database->spec                default-database->spec
+   :drop-db-if-exists-sql         default-drop-db-if-exists-sql
+   :drop-table-if-exists-sql      default-drop-table-if-exists-sql
+   :execute-sql!                  default-execute-sql!
+   :load-data!                    load-data-chunked!
+   :pk-field-name                 (constantly "id")
+   :prepare-identifier            (u/drop-first-arg identity)
+   :qualified-name-components     default-qualified-name-components
+   :qualify+quote-name            default-qualify+quote-name
+   :quote-name                    default-quote-name})
 
 
 ;;; ------------------------------------------- IDriverTestExtensions impl -------------------------------------------
@@ -294,38 +355,55 @@
 
   Since there are some cases were you might want to execute compound statements without splitting, an upside-down
   ampersand (`⅋`) is understood as an \"escaped\" semicolon in the resulting SQL statement."
-  [driver context dbdef sql]
+  [driver context dbdef sql  & {:keys [execute!] :or {execute! default-execute-sql!}}]
   (when sql
     (doseq [statement (map s/trim (s/split sql #";+"))]
       (when (seq statement)
-        (default-execute-sql! driver context dbdef (s/replace statement #"⅋" ";"))))))
+        (execute! driver context dbdef (s/replace statement #"⅋" ";"))))))
 
-(defn- create-db! [driver {:keys [table-definitions], :as dbdef}]
-  ;; Exec SQL for creating the DB
-  (execute-sql! driver :server dbdef (str (drop-db-if-exists-sql driver dbdef) ";\n"
-                                          (create-db-sql driver dbdef)))
-  ;; Build combined statement for creating tables + FKs
-  (let [statements (atom [])]
-    ;; Add the SQL for creating each Table
-    (doseq [tabledef table-definitions]
-      (swap! statements conj (drop-table-if-exists-sql driver dbdef tabledef)
-             (create-table-sql driver dbdef tabledef)))
-    ;; Add the SQL for adding FK constraints
-    (doseq [{:keys [field-definitions], :as tabledef} table-definitions]
-      (doseq [{:keys [fk], :as fielddef} field-definitions]
-        (when fk
-          (swap! statements conj (add-fk-sql driver dbdef tabledef fielddef)))))
-    ;; exec the combined statement
-    (execute-sql! driver :db dbdef (s/join ";\n" (map hx/unescape-dots @statements))))
-  ;; Now load the data for each Table
-  (doseq [tabledef table-definitions]
-    (u/profile (format "load-data for %s %s %s" (name driver) (:database-name dbdef) (:table-name tabledef))
-      (load-data! driver dbdef tabledef))))
+(defn default-create-db!
+  "Default implementation of `create-db!` for SQL drivers."
+  ([driver db-def]
+   (default-create-db! driver db-def nil))
+  ([driver {:keys [table-definitions], :as dbdef} {:keys [skip-drop-db?]
+                                                   :or   {skip-drop-db? false}}]
+   (when-not skip-drop-db?
+     ;; Exec SQL for creating the DB
+     (execute-sql! driver :server dbdef (str (drop-db-if-exists-sql driver dbdef) ";\n"
+                                             (create-db-sql driver dbdef))))
+   ;; Build combined statement for creating tables + FKs + comments
+   (let [statements (atom [])]
+     ;; Add the SQL for creating each Table
+     (doseq [tabledef table-definitions]
+       (swap! statements conj (drop-table-if-exists-sql driver dbdef tabledef)
+              (create-table-sql driver dbdef tabledef)))
+
+     ;; Add the SQL for adding FK constraints
+     (doseq [{:keys [field-definitions], :as tabledef} table-definitions]
+       (doseq [{:keys [fk], :as fielddef} field-definitions]
+         (when fk
+           (swap! statements conj (add-fk-sql driver dbdef tabledef fielddef)))))
+     ;; Add the SQL for adding table comments
+     (doseq [{:keys [table-comment], :as tabledef} table-definitions]
+       (when table-comment
+         (swap! statements conj (standalone-table-comment-sql driver dbdef tabledef))))
+     ;; Add the SQL for adding column comments
+     (doseq [{:keys [field-definitions], :as tabledef} table-definitions]
+       (doseq [{:keys [field-comment], :as fielddef} field-definitions]
+         (when field-comment
+           (swap! statements conj (standalone-column-comment-sql driver dbdef tabledef fielddef)))))
+     ;; exec the combined statement
+     (execute-sql! driver :db dbdef (s/join ";\n" (map hx/unescape-dots @statements))))
+   ;; Now load the data for each Table
+   (doseq [tabledef table-definitions]
+     (du/profile (format "load-data for %s %s %s" (name driver) (:database-name dbdef) (:table-name tabledef))
+       (load-data! driver dbdef tabledef)))))
+
 
 (def IDriverTestExtensionsMixin
   "Mixin for `IGenericSQLTestExtensions` types to implement `create-db!` from `IDriverTestExtensions`."
   (merge i/IDriverTestExtensionsDefaultsMixin
-         {:create-db! create-db!}))
+         {:create-db! default-create-db!}))
 
 
 ;;; ## Various Util Fns

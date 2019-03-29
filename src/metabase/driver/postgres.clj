@@ -12,15 +12,14 @@
             [metabase.db.spec :as dbspec]
             [metabase.driver.generic-sql :as sql]
             [metabase.driver.generic-sql.query-processor :as sqlqp]
-            metabase.query-processor.interface
             [metabase.util
              [honeysql-extensions :as hx]
              [ssh :as ssh]])
-  (:import java.util.UUID
-           java.sql.Time
-           metabase.query_processor.interface.Value))
+  (:import java.sql.Time
+           java.util.UUID))
 
 (defrecord PostgresDriver []
+  :load-ns true
   clojure.lang.Named
   (getName [_] "PostgreSQL"))
 
@@ -97,7 +96,7 @@
 
 (defn- column->special-type
   "Attempt to determine the special-type of a Field given its name and Postgres column type."
-  [column-name column-type]
+  [_ column-type]
   ;; this is really, really simple right now.  if its postgres :json type then it's :type/SerializedJSON special-type
   (case column-type
     :json :type/SerializedJSON
@@ -191,17 +190,17 @@
     #".*" ; default
     message))
 
-(defmethod sqlqp/->honeysql [PostgresDriver Value]
-  [driver {value :value, {:keys [base-type database-type]} :field}]
-  (when (some? value)
-    (cond
-      (isa? base-type :type/UUID)         (UUID/fromString value)
-      (isa? base-type :type/IPAddress)    (hx/cast :inet value)
-      (isa? base-type :type/PostgresEnum) (hx/quoted-cast database-type value)
-      :else                               (sqlqp/->honeysql driver value))))
+(defmethod sqlqp/->honeysql [PostgresDriver :value] [driver value]
+  (let [[_ value {base-type :base_type, database-type :database_type}] value]
+    (when (some? value)
+      (cond
+        (isa? base-type :type/UUID)         (UUID/fromString value)
+        (isa? base-type :type/IPAddress)    (hx/cast :inet value)
+        (isa? base-type :type/PostgresEnum) (hx/quoted-cast database-type value)
+        :else                               (sqlqp/->honeysql driver value)))))
 
 (defmethod sqlqp/->honeysql [PostgresDriver Time]
-  [driver time-value]
+  [_ time-value]
   (hx/->time time-value))
 
 (defn- string-length-fn [field-key]
@@ -251,32 +250,14 @@
           :date-interval                     (u/drop-first-arg date-interval)
           :describe-table                    describe-table
           :details-fields                    (constantly (ssh/with-tunnel-config
-                                                           [{:name         "host"
-                                                             :display-name "Host"
-                                                             :default      "localhost"}
-                                                            {:name         "port"
-                                                             :display-name "Port"
-                                                             :type         :integer
-                                                             :default      5432}
-                                                            {:name         "dbname"
-                                                             :display-name "Database name"
-                                                             :placeholder  "birds_of_the_word"
-                                                             :required     true}
-                                                            {:name         "user"
-                                                             :display-name "Database username"
-                                                             :placeholder  "What username do you use to login to the database?"
-                                                             :required     true}
-                                                            {:name         "password"
-                                                             :display-name "Database password"
-                                                             :type         :password
-                                                             :placeholder  "*******"}
-                                                            {:name         "ssl"
-                                                             :display-name "Use a secure connection (SSL)?"
-                                                             :type         :boolean
-                                                             :default      false}
-                                                            {:name         "additional-options"
-                                                             :display-name "Additional JDBC connection string options"
-                                                             :placeholder  "prepareThreshold=0"}]))
+                                                           [driver/default-host-details
+                                                            (assoc driver/default-port-details :default 5432)
+                                                            driver/default-dbname-details
+                                                            driver/default-user-details
+                                                            driver/default-password-details
+                                                            driver/default-ssl-details
+                                                            (assoc driver/default-additional-options-details
+                                                              :placeholder "prepareThreshold=0")]))
           :humanize-connection-error-message (u/drop-first-arg humanize-connection-error-message)})
 
   sql/ISQLDriver PostgresISQLDriverMixin)

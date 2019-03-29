@@ -6,7 +6,8 @@
              [generic-sql :as sql]
              [oracle :as oracle]]
             [metabase.test.data.datasets :refer [expect-with-engine]]
-            [metabase.test.util :as tu])
+            [metabase.test.util :as tu]
+            [metabase.test.util.log :as tu.log])
   (:import metabase.driver.oracle.OracleDriver))
 
 ;; make sure we can connect with an SID
@@ -50,20 +51,21 @@
 
 (expect
   com.jcraft.jsch.JSchException
-  (let [engine :oracle
-        details {:ssl false,
-                 :password "changeme",
-                 :tunnel-host "localhost",
-                 :tunnel-pass "BOGUS-BOGUS-BOGUS",
-                 :port 12345,
-                 :service-name "test",
-                 :sid "asdf",
-                 :host "localhost",
-                 :tunnel-enabled true,
-                 :tunnel-port 22,
-                 :user "postgres",
-                 :tunnel-user "example"}]
-    (#'oracle/can-connect? details)))
+  (let [engine  :oracle
+        details {:ssl            false
+                 :password       "changeme"
+                 :tunnel-host    "localhost"
+                 :tunnel-pass    "BOGUS-BOGUS-BOGUS"
+                 :port           12345
+                 :service-name   "test"
+                 :sid            "asdf"
+                 :host           "localhost"
+                 :tunnel-enabled true
+                 :tunnel-port    22
+                 :user           "postgres"
+                 :tunnel-user    "example"}]
+    (tu.log/suppress-output
+      (#'oracle/can-connect? details))))
 
 (expect-with-engine :oracle
   "UTC"

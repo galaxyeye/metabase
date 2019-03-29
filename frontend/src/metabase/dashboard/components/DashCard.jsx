@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
-
+import { t } from "c-3po";
 import visualizations, { getVisualizationRaw } from "metabase/visualizations";
 import Visualization, {
   ERROR_MESSAGE_GENERIC,
   ERROR_MESSAGE_PERMISSION,
 } from "metabase/visualizations/components/Visualization.jsx";
+import QueryDownloadWidget from "metabase/query_builder/components/QueryDownloadWidget";
 
 import ModalWithTrigger from "metabase/components/ModalWithTrigger.jsx";
 import ChartSettings from "metabase/visualizations/components/ChartSettings.jsx";
@@ -20,6 +21,8 @@ import { IS_EMBED_PREVIEW } from "metabase/lib/embed";
 import cx from "classnames";
 import _ from "underscore";
 import { getIn } from "icepick";
+import { getParametersBySlug } from "metabase/meta/Parameter";
+import Utils from "metabase/lib/utils";
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -61,10 +64,13 @@ export default class DashCard extends Component {
       slowCards,
       isEditing,
       isEditingParameter,
+      isFullscreen,
       onAddSeries,
       onRemove,
       navigateToNewCardFromDashboard,
       metadata,
+      dashboard,
+      parameterValues,
     } = this.props;
 
     const mainCard = {
@@ -75,6 +81,8 @@ export default class DashCard extends Component {
       },
     };
     const cards = [mainCard].concat(dashcard.series || []);
+    const dashboardId = dashcard.dashboard_id;
+    const isEmbed = Utils.isJWT(dashboardId);
     const series = cards.map(card => ({
       ...getIn(dashcardData, [dashcard.id, card.id]),
       card: card,
@@ -108,6 +116,12 @@ export default class DashCard extends Component {
       errorIcon = "warning";
     }
 
+    const params = getParametersBySlug(dashboard.parameters, parameterValues);
+
+    const hideBackground =
+      !isEditing &&
+      mainCard.visualization_settings["dashcard.background"] === false;
+
     return (
       <div
         className={cx(
@@ -117,15 +131,22 @@ export default class DashCard extends Component {
             "Card--slow": isSlow === "usually-slow",
           },
         )}
+        style={
+          hideBackground
+            ? { border: 0, background: "transparent", boxShadow: "none" }
+            : null
+        }
       >
         <Visualization
           className="flex-full"
+          classNameWidgets={isEmbed && "text-light text-medium-hover"}
           error={errorMessage}
           errorIcon={errorIcon}
           isSlow={isSlow}
           expectedDuration={expectedDuration}
           rawSeries={series}
           showTitle
+          isFullscreen={isFullscreen}
           isDashboard
           isEditing={isEditing}
           gridSize={
@@ -142,6 +163,16 @@ export default class DashCard extends Component {
                 onReplaceAllVisualizationSettings={
                   this.props.onReplaceAllVisualizationSettings
                 }
+              />
+            ) : isEmbed ? (
+              <QueryDownloadWidget
+                className="m1 text-brand-hover text-light"
+                classNameClose="hover-child"
+                card={dashcard.card}
+                params={params}
+                dashcardId={dashcard.id}
+                token={dashcard.dashboard_id}
+                icon="download"
               />
             ) : (
               undefined
@@ -205,7 +236,7 @@ const ChartSettingsButton = ({ series, onReplaceAllVisualizationSettings }) => (
     triggerElement={
       <Icon name="gear" size={HEADER_ICON_SIZE} style={HEADER_ACTION_STYLE} />
     }
-    triggerClasses="text-grey-2 text-grey-4-hover cursor-pointer flex align-center flex-no-shrink mr1"
+    triggerClasses="text-light text-medium-hover cursor-pointer flex align-center flex-no-shrink mr1"
   >
     <ChartSettings
       series={series}
@@ -217,7 +248,7 @@ const ChartSettingsButton = ({ series, onReplaceAllVisualizationSettings }) => (
 
 const RemoveButton = ({ onRemove }) => (
   <a
-    className="text-grey-2 text-grey-4-hover "
+    className="text-light text-medium-hover "
     data-metabase-event="Dashboard;Remove Card Modal"
     onClick={onRemove}
     style={HEADER_ACTION_STYLE}
@@ -229,7 +260,7 @@ const RemoveButton = ({ onRemove }) => (
 const AddSeriesButton = ({ series, onAddSeries }) => (
   <a
     data-metabase-event={"Dashboard;Edit Series Modal;open"}
-    className="text-grey-2 text-grey-4-hover cursor-pointer h3 flex-no-shrink relative mr1"
+    className="text-light text-medium-hover cursor-pointer h3 flex-no-shrink relative mr1"
     onClick={onAddSeries}
     style={HEADER_ACTION_STYLE}
   >
@@ -244,7 +275,7 @@ const AddSeriesButton = ({ series, onAddSeries }) => (
         <Icon name={getSeriesIconName(series)} size={HEADER_ICON_SIZE} />
       </span>
       <span className="flex-no-shrink text-bold">
-        &nbsp;{series.length > 1 ? "Edit" : "Add"}
+        &nbsp;{series.length > 1 ? t`Edit` : t`Add`}
       </span>
     </span>
   </a>

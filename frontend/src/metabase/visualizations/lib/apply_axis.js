@@ -10,7 +10,9 @@ import { formatValue } from "metabase/lib/formatting";
 import { parseTimestamp } from "metabase/lib/time";
 
 import { computeTimeseriesTicksInterval } from "./timeseries";
+import { isMultipleOf, getModuloScaleFactor } from "./numeric";
 import { getFriendlyName } from "./utils";
+import { isHistogram } from "./renderer_utils";
 
 // label offset (doesn't increase padding)
 const X_LABEL_PADDING = 10;
@@ -25,7 +27,7 @@ function getNumTicks(axis) {
 
 /// adjust the number of ticks to display on the y Axis based on its height in pixels. Since y axis ticks
 /// are all the same height there's no need to do fancy measurement like we do below for the x axis.
-function adjustYAxisTicksIfNeeded(axis, axisHeightPixels) {
+export function adjustYAxisTicksIfNeeded(axis, axisHeightPixels) {
   const MIN_PIXELS_PER_TICK = 32;
 
   const numTicks = getNumTicks(axis);
@@ -47,7 +49,9 @@ function averageStringLengthOfValues(values) {
   values = values.slice(0, MAX_VALUES_TO_MEASURE);
 
   let totalLength = 0;
-  for (let value of values) totalLength += String(value).length;
+  for (let value of values) {
+    totalLength += String(value).length;
+  }
 
   return Math.round(totalLength / values.length);
 }
@@ -72,12 +76,13 @@ function adjustXAxisTicksIfNeeded(axis, chartWidthPixels, xValues) {
   const maxTicks = Math.floor(chartWidthPixels / tickAverageWidthPixels);
 
   // finally, if the chart is currently showing more ticks than we think it can show, adjust it down
-  if (getNumTicks(axis) > maxTicks) axis.ticks(maxTicks);
+  if (getNumTicks(axis) > maxTicks) {
+    axis.ticks(maxTicks);
+  }
 }
 
 export function applyChartTimeseriesXAxis(
   chart,
-  settings,
   series,
   { xValues, xDomain, xInterval },
 ) {
@@ -98,14 +103,17 @@ export function applyChartTimeseriesXAxis(
   let dataInterval = xInterval;
   let tickInterval = dataInterval;
 
-  if (settings["graph.x_axis.labels_enabled"]) {
+  if (chart.settings["graph.x_axis.labels_enabled"]) {
     chart.xAxisLabel(
-      settings["graph.x_axis.title_text"] || getFriendlyName(dimensionColumn),
+      chart.settings["graph.x_axis.title_text"] ||
+        getFriendlyName(dimensionColumn),
       X_LABEL_PADDING,
     );
   }
-  if (settings["graph.x_axis.axis_enabled"]) {
-    chart.renderVerticalGridLines(settings["graph.x_axis.gridLine_enabled"]);
+  if (chart.settings["graph.x_axis.axis_enabled"]) {
+    chart.renderVerticalGridLines(
+      chart.settings["graph.x_axis.gridLine_enabled"],
+    );
 
     if (dimensionColumn.unit == null) {
       dimensionColumn = { ...dimensionColumn, unit: dataInterval.interval };
@@ -136,8 +144,9 @@ export function applyChartTimeseriesXAxis(
         .utcOffset(dataOffset)
         .format();
       return formatValue(timestampFixed, {
-        column: dimensionColumn,
+        ...chart.settings.column(dimensionColumn),
         type: "axis",
+        compact: chart.settings["graph.x_axis.axis_enabled"] === "compact",
       });
     });
 
@@ -175,7 +184,6 @@ export function applyChartTimeseriesXAxis(
 
 export function applyChartQuantitativeXAxis(
   chart,
-  settings,
   series,
   { xValues, xDomain, xInterval },
 ) {
@@ -187,26 +195,43 @@ export function applyChartQuantitativeXAxis(
   );
   const dimensionColumn = firstSeries.data.cols[0];
 
-  if (settings["graph.x_axis.labels_enabled"]) {
+  if (chart.settings["graph.x_axis.labels_enabled"]) {
     chart.xAxisLabel(
-      settings["graph.x_axis.title_text"] || getFriendlyName(dimensionColumn),
+      chart.settings["graph.x_axis.title_text"] ||
+        getFriendlyName(dimensionColumn),
       X_LABEL_PADDING,
     );
   }
-  if (settings["graph.x_axis.axis_enabled"]) {
-    chart.renderVerticalGridLines(settings["graph.x_axis.gridLine_enabled"]);
+  if (chart.settings["graph.x_axis.axis_enabled"]) {
+    chart.renderVerticalGridLines(
+      chart.settings["graph.x_axis.gridLine_enabled"],
+    );
     adjustXAxisTicksIfNeeded(chart.xAxis(), chart.width(), xValues);
 
-    chart.xAxis().tickFormat(d => formatValue(d, { column: dimensionColumn }));
+    // if xInterval is less than 1 we need to scale the values before doing
+    // modulo comparison. isMultipleOf will compute it for us but we can do it
+    // once here as an optimization
+    const modulorScale = getModuloScaleFactor(xInterval);
+
+    chart.xAxis().tickFormat(d => {
+      // don't show ticks that aren't multiples of xInterval
+      if (isMultipleOf(d, xInterval, modulorScale)) {
+        return formatValue(d, {
+          ...chart.settings.column(dimensionColumn),
+          type: "axis",
+          compact: chart.settings["graph.x_axis.axis_enabled"] === "compact",
+        });
+      }
+    });
   } else {
     chart.xAxis().ticks(0);
     chart.xAxis().tickFormat("");
   }
 
   let scale;
-  if (settings["graph.x_axis.scale"] === "pow") {
+  if (chart.settings["graph.x_axis.scale"] === "pow") {
     scale = d3.scale.pow().exponent(0.5);
-  } else if (settings["graph.x_axis.scale"] === "log") {
+  } else if (chart.settings["graph.x_axis.scale"] === "log") {
     scale = d3.scale.log().base(Math.E);
     if (
       !(
@@ -226,7 +251,11 @@ export function applyChartQuantitativeXAxis(
   chart.x(scale.domain(xDomain)).xUnits(dc.units.fp.precision(xInterval));
 }
 
-export function applyChartOrdinalXAxis(chart, settings, series, { xValues }) {
+export function applyChartOrdinalXAxis(
+  chart,
+  series,
+  { xValues, isHistogramBar },
+) {
   // find the first nonempty single series
   // $FlowFixMe
   const firstSeries: SingleSeries = _.find(
@@ -236,49 +265,56 @@ export function applyChartOrdinalXAxis(chart, settings, series, { xValues }) {
 
   const dimensionColumn = firstSeries.data.cols[0];
 
-  if (settings["graph.x_axis.labels_enabled"]) {
+  if (chart.settings["graph.x_axis.labels_enabled"]) {
     chart.xAxisLabel(
-      settings["graph.x_axis.title_text"] || getFriendlyName(dimensionColumn),
+      chart.settings["graph.x_axis.title_text"] ||
+        getFriendlyName(dimensionColumn),
       X_LABEL_PADDING,
     );
   }
-  if (settings["graph.x_axis.axis_enabled"]) {
-    chart.renderVerticalGridLines(settings["graph.x_axis.gridLine_enabled"]);
+  if (chart.settings["graph.x_axis.axis_enabled"]) {
+    chart.renderVerticalGridLines(
+      chart.settings["graph.x_axis.gridLine_enabled"],
+    );
     chart.xAxis().ticks(xValues.length);
     adjustXAxisTicksIfNeeded(chart.xAxis(), chart.width(), xValues);
 
-    // unfortunately with ordinal axis you can't rely on xAxis.ticks(num) to control the display of labels
-    // so instead if we want to display fewer ticks than our full set we need to calculate visibleTicks()
-    const numTicks = getNumTicks(chart.xAxis());
-    if (numTicks < xValues.length) {
-      let keyInterval = Math.round(xValues.length / numTicks);
-      let visibleKeys = xValues.filter((v, i) => i % keyInterval === 0);
-      chart.xAxis().tickValues(visibleKeys);
-    }
-    chart.xAxis().tickFormat(d => formatValue(d, { column: dimensionColumn }));
+    chart.xAxis().tickFormat(d =>
+      formatValue(d, {
+        ...chart.settings.column(dimensionColumn),
+        type: "axis",
+        compact: chart.settings["graph.x_axis.labels_enabled"] === "compact",
+        noRange: isHistogramBar,
+      }),
+    );
   } else {
     chart.xAxis().ticks(0);
     chart.xAxis().tickFormat("");
   }
 
+  if (isHistogram(chart.settings)) {
+    // reduces x axis padding. see https://stackoverflow.com/a/44320663/113
+    chart._outerRangeBandPadding(0);
+  }
+
   chart.x(d3.scale.ordinal().domain(xValues)).xUnits(dc.units.ordinal);
 }
 
-export function applyChartYAxis(chart, settings, series, yExtent, axisName) {
+export function applyChartYAxis(chart, series, yExtent, axisName) {
   let axis;
   if (axisName !== "right") {
     axis = {
       scale: (...args) => chart.y(...args),
       axis: (...args) => chart.yAxis(...args),
       label: (...args) => chart.yAxisLabel(...args),
-      setting: name => settings["graph.y_axis." + name],
+      setting: name => chart.settings["graph.y_axis." + name],
     };
   } else {
     axis = {
       scale: (...args) => chart.rightY(...args),
       axis: (...args) => chart.rightYAxis(...args),
       label: (...args) => chart.rightYAxisLabel(...args),
-      setting: name => settings["graph.y_axis." + name], // TODO: right axis settings
+      setting: name => chart.settings["graph.y_axis." + name], // TODO: right axis settings
     };
   }
 
@@ -288,7 +324,9 @@ export function applyChartYAxis(chart, settings, series, yExtent, axisName) {
       axis.label(axis.setting("title_text"), Y_LABEL_PADDING);
     } else {
       // only use the column name if all in the series are the same
-      const labels = _.uniq(series.map(s => getFriendlyName(s.data.cols[1])));
+      const labels = _.uniq(
+        series.map(single => chart.settings.series(single).title),
+      );
       if (labels.length === 1) {
         axis.label(labels[0], Y_LABEL_PADDING);
       }
@@ -299,8 +337,15 @@ export function applyChartYAxis(chart, settings, series, yExtent, axisName) {
     // special case for normalized stacked charts
     // for normalized stacked charts the y-axis is a percentage number. In Javascript, 0.07 * 100.0 = 7.000000000000001 (try it) so we
     // round that number to get something nice like "7". Then we append "%" to get a nice tick like "7%"
-    if (settings["stackable.stack_type"] === "normalized") {
+    if (chart.settings["stackable.stack_type"] === "normalized") {
       axis.axis().tickFormat(value => Math.round(value * 100) + "%");
+    } else {
+      let metricColumn = series[0].data.cols[1];
+      axis
+        .axis()
+        .tickFormat(value =>
+          formatValue(value, chart.settings.column(metricColumn)),
+        );
     }
     chart.renderHorizontalGridLines(true);
     adjustYAxisTicksIfNeeded(axis.axis(), chart.height());

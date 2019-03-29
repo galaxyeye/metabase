@@ -5,22 +5,30 @@ import MetabaseSettings from "metabase/lib/settings";
 const PARENTS = MetabaseSettings.get("types");
 
 /// Basically exactly the same as Clojure's isa?
-/// Recurses through the type hierarchy until it can give you an anser.
+/// Recurses through the type hierarchy until it can give you an answer.
 /// isa(TYPE.BigInteger, TYPE.Number) -> true
 /// isa(TYPE.Text, TYPE.Boolean) -> false
 export function isa(child, ancestor) {
-  if (!child || !ancestor) return false;
+  if (!child || !ancestor) {
+    return false;
+  }
 
-  if (child === ancestor) return true;
+  if (child === ancestor) {
+    return true;
+  }
 
   const parents = PARENTS[child];
   if (!parents) {
-    if (child !== "type/*") console.error("Invalid type:", child); // the base type is the only type with no parents, so anything else that gets here is invalid
+    if (child !== "type/*") {
+      console.error("Invalid type:", child);
+    } // the base type is the only type with no parents, so anything else that gets here is invalid
     return false;
   }
 
   for (const parent of parents) {
-    if (isa(parent, ancestor)) return true;
+    if (isa(parent, ancestor)) {
+      return true;
+    }
   }
 
   return false;

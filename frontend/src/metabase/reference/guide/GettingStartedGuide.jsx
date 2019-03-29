@@ -14,10 +14,7 @@ import GuideDetail from "metabase/reference/components/GuideDetail.jsx";
 import * as metadataActions from "metabase/redux/metadata";
 import * as actions from "metabase/reference/reference";
 import { clearRequestState } from "metabase/redux/requests";
-import {
-  createDashboard,
-  updateDashboard,
-} from "metabase/dashboards/dashboards";
+import Dashboards from "metabase/entities/dashboards";
 
 import { updateSetting } from "metabase/admin/settings/settings";
 
@@ -97,8 +94,8 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = {
-  updateDashboard,
-  createDashboard,
+  updateDashboard: Dashboards.actions.update,
+  createDashboard: Dashboards.actions.create,
   updateSetting,
   clearRequestState,
   ...metadataActions,
@@ -138,7 +135,7 @@ export default class GettingStartedGuide extends Component {
     } = this.props;
 
     return (
-      <div className="full relative py4" style={style}>
+      <div className="full relative p3" style={style}>
         <LoadingAndErrorWrapper
           className="full"
           style={style}

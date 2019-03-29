@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router";
-import { t, jt } from "c-3po";
+import { t, jt, ngettext, msgid } from "c-3po";
 import LoadingSpinner from "metabase/components/LoadingSpinner.jsx";
 import Tooltip from "metabase/components/Tooltip";
 import Icon from "metabase/components/Icon";
@@ -18,7 +18,7 @@ import Warnings from "./Warnings.jsx";
 import QueryDownloadWidget from "./QueryDownloadWidget.jsx";
 import QuestionEmbedWidget from "../containers/QuestionEmbedWidget";
 
-import { formatNumber, inflect, duration } from "metabase/lib/formatting";
+import { formatNumber, duration } from "metabase/lib/formatting";
 import Utils from "metabase/lib/utils";
 import MetabaseSettings from "metabase/lib/settings";
 import * as Urls from "metabase/lib/urls";
@@ -137,17 +137,18 @@ export default class QueryVisualization extends Component {
       !isObjectDetail &&
       question.display() === "table"
     ) {
+      const countString = formatNumber(result.row_count);
+      const rowsString = ngettext(msgid`row`, `rows`, result.row_count);
       messages.push({
         icon: "table2",
         message: (
           // class name is included for the sake of making targeting the element in tests easier
           <div className="ShownRowCount">
-            {jt`${
-              result.data.rows_truncated != null ? t`Showing first` : t`Showing`
-            } ${<strong>{formatNumber(result.row_count)}</strong>} ${inflect(
-              "row",
-              result.data.rows.length,
-            )}`}
+            {result.data.rows_truncated != null
+              ? jt`Showing first ${(
+                  <strong>{countString}</strong>
+                )} ${rowsString}`
+              : jt`Showing ${<strong>{countString}</strong>} ${rowsString}`}
           </div>
         ),
       });
@@ -156,13 +157,13 @@ export default class QueryVisualization extends Component {
     const isPublicLinksEnabled = MetabaseSettings.get("public_sharing");
     const isEmbeddingEnabled = MetabaseSettings.get("embedding");
     return (
-      <div className="relative flex align-center flex-no-shrink mt2 mb1 sm-py3">
+      <div className="relative flex align-center flex-no-shrink mt2 mb1 px2 sm-py3">
         <div className="z4 absolute left hide sm-show">
           {!isObjectDetail && (
             <VisualizationSettings ref="settings" {...this.props} />
           )}
         </div>
-        <div className="z3 absolute left right">
+        <div className="z3 sm-absolute left right">
           <Tooltip tooltip={runButtonTooltip}>
             <RunButton
               isRunnable={isRunnable}
@@ -181,7 +182,7 @@ export default class QueryVisualization extends Component {
             className="flex"
             items={messages}
             renderItem={item => (
-              <div className="flex-no-shrink flex align-center mx2 h5 text-grey-4">
+              <div className="flex-no-shrink flex align-center mx2 h5 text-medium">
                 <Icon className="mr1" name={item.icon} size={12} />
                 {item.message}
               </div>
@@ -249,7 +250,7 @@ export default class QueryVisualization extends Component {
           <VisualizationResult
             lastRunDatasetQuery={this.state.lastRunDatasetQuery}
             onUpdateWarnings={warnings => this.setState({ warnings })}
-            onOpenChartSettings={() => this.refs.settings.open()}
+            onOpenChartSettings={initial => this.refs.settings.open(initial)}
             {...this.props}
             className="spread"
           />
@@ -288,7 +289,7 @@ export default class QueryVisualization extends Component {
 }
 
 export const VisualizationEmptyState = ({ showTutorialLink }) => (
-  <div className="flex full layout-centered text-grey-1 flex-column">
+  <div className="flex full layout-centered text-light flex-column">
     <h1
     >{t`If you give me some data I can show you something cool. Run a Query!`}</h1>
     {showTutorialLink && (

@@ -7,7 +7,7 @@
 
 .flex-full,
 :local(.flex-full) {
-  flex: 1;
+  flex: 1 0 auto;
 }
 
 .flex-half,
@@ -79,6 +79,14 @@
   align-self: flex-end;
 }
 
+.align-self-center {
+  align-self: center;
+}
+
+.align-self-stretch {
+  align-self: stretch;
+}
+
 .flex-align-right,
 :local(.flex-align-right) {
   margin-left: auto;
@@ -148,6 +156,12 @@
 .flex-row,
 :local(.flex-row) {
   flex-direction: row;
+}
+
+@media screen and (--breakpoint-min-sm) {
+  .sm-flex-row {
+    flex-direction: row;
+  }
 }
 
 .flex-wrap {

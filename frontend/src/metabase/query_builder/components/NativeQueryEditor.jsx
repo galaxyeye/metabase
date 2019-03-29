@@ -178,7 +178,13 @@ export default class NativeQueryEditor extends Component {
     const { query } = this.props;
 
     let editorElement = ReactDOM.findDOMNode(this.refs.editor);
+
     // $FlowFixMe
+    if (typeof ace === "undefined" || !ace || !ace.edit) {
+      // fail gracefully-ish if ace isn't available, e.x. in integration tests
+      return;
+    }
+
     this._editor = ace.edit(editorElement);
 
     // listen to onChange events
@@ -272,6 +278,13 @@ export default class NativeQueryEditor extends Component {
     }
   };
 
+  setParameterIndex = (parameterId: ParameterId, parameterIndex: number) => {
+    const { query, setDatasetQuery } = this.props;
+    query
+      .setParameterIndex(parameterId, parameterIndex)
+      .update(setDatasetQuery);
+  };
+
   render() {
     const { query, setParameterValue, location } = this.props;
     const database = query.database();
@@ -329,7 +342,7 @@ export default class NativeQueryEditor extends Component {
       }
     } else {
       dataSelectors = (
-        <span className="p2 text-grey-4">{t`This question is written in ${query.nativeQueryLanguage()}.`}</span>
+        <span className="p2 text-medium">{t`This question is written in ${query.nativeQueryLanguage()}.`}</span>
       );
     }
 
@@ -357,7 +370,9 @@ export default class NativeQueryEditor extends Component {
               parameters={parameters}
               query={location.query}
               setParameterValue={setParameterValue}
+              setParameterIndex={this.setParameterIndex}
               syncQueryString
+              isEditing
               isQB
               commitImmediately
             />

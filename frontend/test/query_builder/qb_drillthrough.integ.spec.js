@@ -117,7 +117,7 @@ describe("QueryBuilder", () => {
             database: 1,
             type: "query",
             query: {
-              source_table: 1,
+              "source-table": 1,
               breakout: [["binning-strategy", ["field-id", 6], "num-bins", 50]],
               aggregation: [["count"]],
             },
@@ -169,7 +169,7 @@ describe("QueryBuilder", () => {
             database: 1,
             type: "query",
             query: {
-              source_table: 1,
+              "source-table": 1,
               breakout: [["fk->", 7, 19]],
               aggregation: [["count"]],
             },
@@ -186,10 +186,10 @@ describe("QueryBuilder", () => {
           .find("td");
         expect(firstRowCells.length).toBe(2);
 
-        expect(firstRowCells.first().text()).toBe("AA");
+        expect(firstRowCells.first().text()).toBe("AK");
 
         const countCell = firstRowCells.last();
-        expect(countCell.text()).toBe("233");
+        expect(countCell.text()).toBe("474");
         click(countCell.children().first());
 
         // Drill-through is delayed in handleVisualizationClick of Visualization.jsx by 100ms
@@ -206,13 +206,13 @@ describe("QueryBuilder", () => {
         // Should reset to auto binning
         const breakoutWidgets = qb.find(BreakoutWidget);
         expect(breakoutWidgets.length).toBe(3);
-        expect(breakoutWidgets.at(0).text()).toBe("Latitude: 1°");
-        expect(breakoutWidgets.at(1).text()).toBe("Longitude: 1°");
+        expect(breakoutWidgets.at(0).text()).toBe("UserLatitude: 1°");
+        expect(breakoutWidgets.at(1).text()).toBe("UserLongitude: 1°");
 
         // Should have visualization type set to Pin map (temporary workaround until we have polished heat maps)
         const card = getCard(store.getState());
         expect(card.display).toBe("map");
-        expect(card.visualization_settings).toEqual({ "map.type": "pin" });
+        expect(card.visualization_settings).toEqual({ "map.type": "grid" });
       });
 
       it("works for Count of rows aggregation and FK Latitude Auto binned breakout", async () => {
@@ -222,7 +222,7 @@ describe("QueryBuilder", () => {
             database: 1,
             type: "query",
             query: {
-              source_table: 1,
+              "source-table": 1,
               breakout: [["binning-strategy", ["fk->", 7, 14], "default"]],
               aggregation: [["count"]],
             },
@@ -239,10 +239,10 @@ describe("QueryBuilder", () => {
           .find("td");
         expect(firstRowCells.length).toBe(2);
 
-        expect(firstRowCells.first().text()).toBe("90° S  –  80° S");
+        expect(firstRowCells.first().text()).toBe("20° N  –  30° N");
 
         const countCell = firstRowCells.last();
-        expect(countCell.text()).toBe("701");
+        expect(countCell.text()).toBe("579");
         click(countCell.children().first());
 
         // Drill-through is delayed in handleVisualizationClick of Visualization.jsx by 100ms
@@ -261,7 +261,7 @@ describe("QueryBuilder", () => {
         expect(breakoutWidgets.length).toBe(2);
 
         // Default location binning strategy currently has a bin width of 10° so
-        expect(breakoutWidgets.at(0).text()).toBe("Latitude: 1°");
+        expect(breakoutWidgets.at(0).text()).toBe("UserLatitude: 1°");
 
         // Should have visualization type set to the previous visualization
         const card = getCard(store.getState());

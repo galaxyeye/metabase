@@ -23,6 +23,7 @@ export const ORDERS_TOTAL_FIELD_ID = 6;
 export const MAIN_METRIC_ID = 1;
 
 export const PRODUCT_CATEGORY_FIELD_ID = 21;
+export const PRODUCT_CREATED_AT_FIELD_ID = 22;
 export const PRODUCT_PK_FIELD_ID = 24;
 export const PRODUCT_TILE_FIELD_ID = 27;
 
@@ -31,14 +32,14 @@ export const PEOPLE_LONGITUDE_FIELD_ID = 15;
 export const PEOPLE_STATE_FIELD_ID = 19;
 
 export const state = {
-  metadata: {
+  entities: {
     metrics: {
       "1": {
         description: "Because we want to know the total I ugess",
         table_id: 1,
         definition: {
           aggregation: [["sum", ["field-id", 6]]],
-          source_table: 1,
+          "source-table": 1,
         },
         creator: {
           email: "sameer@metabase.com",
@@ -54,7 +55,7 @@ export const state = {
         database_id: 1,
         show_in_getting_started: false,
         name: "Total Order Value",
-        is_active: true,
+        archived: false,
         caveats: null,
         creator_id: 1,
         updated_at: "2017-06-14T23:32:12.266Z",
@@ -70,7 +71,7 @@ export const state = {
         table_id: 1,
         definition: {
           filter: [">", ["field-id", 6], 30],
-          source_table: 1,
+          "source-table": 1,
         },
         creator: {
           email: "sameer@metabase.com",
@@ -85,7 +86,7 @@ export const state = {
         },
         show_in_getting_started: false,
         name: "Expensive Things",
-        is_active: true,
+        archived: false,
         caveats: null,
         creator_id: 1,
         updated_at: "2017-06-14T23:31:46.480Z",
@@ -171,7 +172,6 @@ export const state = {
         description: "This is a confirmed order for a product from a user.",
         entity_type: null,
         schema: "PUBLIC",
-        raw_table_id: 2,
         show_in_getting_started: false,
         name: "ORDERS",
         caveats: null,
@@ -196,7 +196,6 @@ export const state = {
           "This is a user account. Note that employees and customer support staff will have accounts.",
         entity_type: null,
         schema: "PUBLIC",
-        raw_table_id: 3,
         show_in_getting_started: false,
         name: "PEOPLE",
         caveats: null,
@@ -287,7 +286,6 @@ export const state = {
           "This is our product catalog. It includes all products ever sold by the Sample Company.",
         entity_type: null,
         schema: "PUBLIC",
-        raw_table_id: 1,
         show_in_getting_started: false,
         name: "PRODUCTS",
         caveats: null,
@@ -342,7 +340,6 @@ export const state = {
           "These are reviews our customers have left on products. Note that these are not tied to orders so it is possible people have reviewed products they did not purchase from us.",
         entity_type: null,
         schema: "PUBLIC",
-        raw_table_id: 5,
         show_in_getting_started: false,
         name: "REVIEWS",
         caveats: null,
@@ -373,7 +370,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 1,
-        raw_column_id: 9,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -397,7 +393,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 2,
-        raw_column_id: 10,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -421,7 +416,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 3,
-        raw_column_id: 11,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -445,7 +439,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 4,
-        raw_column_id: 12,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -476,7 +469,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 5,
-        raw_column_id: 13,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -499,7 +491,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 6,
-        raw_column_id: 14,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -510,6 +501,38 @@ export const state = {
         base_type: "type/Float",
         points_of_interest: null,
         values: [],
+        default_dimension_option: {
+          mbql: ["binning-strategy", null, "default"],
+          name: "Auto bin",
+          type: "type/Number",
+        },
+        dimension_options: [
+          {
+            mbql: ["binning-strategy", null, "default"],
+            name: "Auto bin",
+            type: "type/Number",
+          },
+          {
+            mbql: ["binning-strategy", null, "num-bins", 10],
+            name: "10 bins",
+            type: "type/Number",
+          },
+          {
+            mbql: ["binning-strategy", null, "num-bins", 50],
+            name: "50 bins",
+            type: "type/Number",
+          },
+          {
+            mbql: ["binning-strategy", null, "num-bins", 100],
+            name: "100 bins",
+            type: "type/Number",
+          },
+          {
+            mbql: null,
+            name: "Don't bin",
+            type: "type/Number",
+          },
+        ],
       },
       "7": {
         description:
@@ -523,7 +546,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 7,
-        raw_column_id: 15,
         last_analyzed: "2017-06-14T23:22:56.832Z",
         position: 0,
         visibility_type: "normal",
@@ -546,7 +568,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 8,
-        raw_column_id: 16,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -569,7 +590,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 9,
-        raw_column_id: 17,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -592,7 +612,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 10,
-        raw_column_id: 18,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -616,7 +635,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 11,
-        raw_column_id: 19,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -639,7 +657,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 12,
-        raw_column_id: 20,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -662,7 +679,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 13,
-        raw_column_id: 21,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -686,7 +702,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 14,
-        raw_column_id: 22,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -710,7 +725,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 15,
-        raw_column_id: 23,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -733,7 +747,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 16,
-        raw_column_id: 24,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -757,7 +770,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 17,
-        raw_column_id: 25,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -781,7 +793,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 18,
-        raw_column_id: 26,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -811,7 +822,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 19,
-        raw_column_id: 27,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -904,7 +914,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 20,
-        raw_column_id: 28,
         last_analyzed: "2017-06-14T23:22:57.670Z",
         position: 0,
         visibility_type: "normal",
@@ -928,7 +937,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 21,
-        raw_column_id: 1,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -959,7 +967,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 22,
-        raw_column_id: 2,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -983,7 +990,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 23,
-        raw_column_id: 3,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1014,7 +1020,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 24,
-        raw_column_id: 4,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1038,7 +1043,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 25,
-        raw_column_id: 5,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1069,7 +1073,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 26,
-        raw_column_id: 6,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1126,7 +1129,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 27,
-        raw_column_id: 7,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1156,7 +1158,6 @@ export const state = {
         active: true,
         parent_id: null,
         id: 28,
-        raw_column_id: 8,
         last_analyzed: "2017-06-14T23:22:57.771Z",
         position: 0,
         visibility_type: "normal",
@@ -1187,7 +1188,6 @@ export const state = {
         parent_id: null,
         id: 29,
         values: [],
-        raw_column_id: 31,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1210,7 +1210,6 @@ export const state = {
         parent_id: null,
         id: 30,
         values: [],
-        raw_column_id: 32,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1234,7 +1233,6 @@ export const state = {
         parent_id: null,
         id: 31,
         values: [],
-        raw_column_id: 33,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1257,7 +1255,6 @@ export const state = {
         parent_id: null,
         id: 32,
         values: [],
-        raw_column_id: 34,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1287,7 +1284,6 @@ export const state = {
           human_readable_values: {},
           field_id: 33,
         },
-        raw_column_id: 35,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1310,7 +1306,6 @@ export const state = {
         parent_id: null,
         id: 34,
         values: [],
-        raw_column_id: 36,
         last_analyzed: "2017-06-14T23:22:58.030Z",
         position: 0,
         visibility_type: "normal",
@@ -1336,7 +1331,7 @@ export const card = {
     type: "query",
     database: DATABASE_ID,
     query: {
-      source_table: ORDERS_TABLE_ID,
+      "source-table": ORDERS_TABLE_ID,
     },
   },
 };
@@ -1348,7 +1343,7 @@ export const product_card = {
     type: "query",
     database: DATABASE_ID,
     query: {
-      source_table: PRODUCT_TABLE_ID,
+      "source-table": PRODUCT_TABLE_ID,
     },
   },
 };
@@ -1363,7 +1358,7 @@ export const orders_raw_card = {
     type: "query",
     database: DATABASE_ID,
     query: {
-      source_table: ORDERS_TABLE_ID,
+      "source-table": ORDERS_TABLE_ID,
     },
   },
 };
@@ -1378,7 +1373,7 @@ export const orders_count_card = {
     database: DATABASE_ID,
     query: {
       aggregation: [["count"]],
-      source_table: ORDERS_TABLE_ID,
+      "source-table": ORDERS_TABLE_ID,
     },
   },
 };
@@ -1435,7 +1430,7 @@ export const orders_count_by_id_card = {
     database: DATABASE_ID,
     query: {
       aggregation: [["count"]],
-      source_table: ORDERS_TABLE_ID,
+      "source-table": ORDERS_TABLE_ID,
       breakout: [["field-id", ORDERS_PK_FIELD_ID]],
     },
   },
@@ -1443,21 +1438,21 @@ export const orders_count_by_id_card = {
 
 export const clickedFloatHeader = {
   column: {
-    ...metadata.fields[ORDERS_TOTAL_FIELD_ID],
+    ...metadata.field(ORDERS_TOTAL_FIELD_ID),
     source: "fields",
   },
 };
 
 export const clickedCategoryHeader = {
   column: {
-    ...metadata.fields[PRODUCT_CATEGORY_FIELD_ID],
+    ...metadata.field(PRODUCT_CATEGORY_FIELD_ID),
     source: "fields",
   },
 };
 
 export const clickedFloatValue = {
   column: {
-    ...metadata.fields[ORDERS_TOTAL_FIELD_ID],
+    ...metadata.field(ORDERS_TOTAL_FIELD_ID),
     source: "fields",
   },
   value: 1234,
@@ -1465,7 +1460,7 @@ export const clickedFloatValue = {
 
 export const clickedPKValue = {
   column: {
-    ...metadata.fields[ORDERS_PK_FIELD_ID],
+    ...metadata.field(ORDERS_PK_FIELD_ID),
     source: "fields",
   },
   value: 42,
@@ -1473,13 +1468,32 @@ export const clickedPKValue = {
 
 export const clickedFKValue = {
   column: {
-    ...metadata.fields[ORDERS_PRODUCT_FK_FIELD_ID],
+    ...metadata.field(ORDERS_PRODUCT_FK_FIELD_ID),
     source: "fields",
   },
   value: 43,
 };
 
-export const tableMetadata = metadata.tables[ORDERS_TABLE_ID];
+export const clickedDateTimeValue = {
+  column: {
+    ...metadata.field(ORDERS_CREATED_DATE_FIELD_ID),
+    source: "fields",
+  },
+  value: "2018-01-01T00:00:00Z",
+};
+
+export const clickedMetric = {
+  column: {
+    name: "count",
+    display_name: "count",
+    base_type: "type/Integer",
+    special_type: "type/Number",
+    source: "aggregation",
+  },
+  value: 42,
+};
+
+export const tableMetadata = metadata.table(ORDERS_TABLE_ID);
 
 export function makeQuestion(fn = (card, state) => ({ card, state })) {
   const result = fn(card, state);
@@ -1493,7 +1507,7 @@ export const unsavedOrderCountQuestion = new Question(
 );
 export const productQuestion = new Question(metadata, product_card);
 const NoFieldsMetadata = getMetadata(
-  assocIn(state, ["metadata", "tables", ORDERS_TABLE_ID, "fields"], []),
+  assocIn(state, ["entities", "tables", ORDERS_TABLE_ID, "fields"], []),
 );
 export const questionNoFields = new Question(NoFieldsMetadata, card);
 
@@ -1503,7 +1517,7 @@ export const orders_past_300_days_segment = {
   description: "Past 300 days created at",
   table_id: 1,
   definition: {
-    source_table: 1,
+    "source-table": 1,
     filter: ["time-interval", ["field-id", 1], -300, "day"],
   },
 };
@@ -1515,15 +1529,15 @@ export const vendor_count_metric = {
   table_id: 3,
   definition: {
     aggregation: [["distinct", ["field-id", 28]]],
-    source_table: 3,
+    "source-table": 3,
   },
 };
 
-const nopMetadataReducer = (s = state.metadata, a) => s;
+const nopEntitiesReducer = (s = state.entities, a) => s;
 
 // simple provider which only supports static metadata defined above, no actions will take effect
-export const StaticMetadataProvider = ({ children }) => (
-  <Provider store={getStore({ metadata: nopMetadataReducer }, null, state)}>
+export const StaticEntitiesProvider = ({ children }) => (
+  <Provider store={getStore({ entities: nopEntitiesReducer }, null, state)}>
     {children}
   </Provider>
 );

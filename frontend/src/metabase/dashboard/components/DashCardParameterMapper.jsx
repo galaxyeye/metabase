@@ -1,6 +1,9 @@
 import React from "react";
+import { t } from "c-3po";
 
 import DashCardCardParameterMapper from "../containers/DashCardCardParameterMapper.jsx";
+
+import colors from "metabase/lib/colors";
 
 const DashCardParameterMapper = ({ dashcard }) => (
   <div className="relative flex-full flex flex-column layout-centered">
@@ -9,13 +12,12 @@ const DashCardParameterMapper = ({ dashcard }) => (
         <div
           className="mx4 my1 p1 rounded"
           style={{
-            backgroundColor: "#F5F5F5",
-            color: "#8691AC",
+            backgroundColor: colors["bg-light"],
+            color: colors["text-medium"],
             marginTop: -10,
           }}
         >
-          Make sure to make a selection for each series, or the filter won't
-          work on this card.
+          {t`Make sure to make a selection for each series, or the filter won't work on this card.`}
         </div>
       )}
     <div className="flex mx4 z1" style={{ justifyContent: "space-around" }}>

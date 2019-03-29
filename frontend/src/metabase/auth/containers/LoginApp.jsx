@@ -3,10 +3,11 @@ import { findDOMNode } from "react-dom";
 import { Link } from "react-router";
 import { connect } from "react-redux";
 
-import cx from "classnames";
 import { t } from "c-3po";
 import AuthScene from "../components/AuthScene.jsx";
 import SSOLoginButton from "../components/SSOLoginButton.jsx";
+import Button from "metabase/components/Button";
+import CheckBox from "metabase/components/CheckBox";
 import FormField from "metabase/components/form/FormField.jsx";
 import FormLabel from "metabase/components/form/FormLabel.jsx";
 import FormMessage from "metabase/components/form/FormMessage.jsx";
@@ -34,6 +35,7 @@ export default class LoginApp extends Component {
     this.state = {
       credentials: {},
       valid: false,
+      rememberMe: true,
     };
   }
 
@@ -112,7 +114,7 @@ export default class LoginApp extends Component {
     const ldapEnabled = Settings.ldapEnabled();
 
     return (
-      <div className="full-height full bg-white flex flex-column flex-full md-layout-centered">
+      <div className="full bg-white flex flex-column flex-full md-layout-centered">
         <div className="Login-wrapper wrapper Grid Grid--full md-Grid--1of2 relative z2">
           <div className="Grid-cell flex layout-centered text-brand">
             <LogoIcon className="Logo my4 sm-my0" width={66} height={85} />
@@ -133,7 +135,7 @@ export default class LoginApp extends Component {
                     className="mx1 absolute text-centered left right"
                     style={{ bottom: -8 }}
                   >
-                    <span className="text-bold px3 py2 text-grey-3 bg-white">{t`OR`}</span>
+                    <span className="text-bold px3 py2 text-medium bg-white">{t`OR`}</span>
                   </div>
                 </div>
               )}
@@ -158,6 +160,7 @@ export default class LoginApp extends Component {
                   fieldName={"username"}
                   formError={loginError}
                 />
+                <label className="Form-label Form-offset"><span>greeting@platon.ai</span></label>
                 <input
                   className="Form-input Form-offset full py1"
                   name="username"
@@ -187,10 +190,12 @@ export default class LoginApp extends Component {
                   fieldName={"password"}
                   formError={loginError}
                 />
+                <label className="Form-label Form-offset">greeting1</label>
                 <input
                   className="Form-input Form-offset full py1"
                   name="password"
                   placeholder="Shh..."
+                  // placeholder="greeting1"
                   type="password"
                   onChange={e => this.onChange("password", e.target.value)}
                 />
@@ -198,21 +203,22 @@ export default class LoginApp extends Component {
               </FormField>
 
               <div className="Form-field">
-                <ul className="Form-offset">
-                  <input name="remember" type="checkbox" defaultChecked />{" "}
-                  <label className="inline-block">{t`Remember Me:`}</label>
-                </ul>
+                <div className="Form-offset flex align-center">
+                  <CheckBox
+                    name="remember"
+                    checked={this.state.rememberMe}
+                    onChange={() =>
+                      this.setState({ rememberMe: !this.state.rememberMe })
+                    }
+                  />
+                  <span className="ml1">{t`Remember Me`}</span>
+                </div>
               </div>
 
-              <div className="Form-actions p2 Grid Grid--full md-Grid--1of2">
-                <button
-                  className={cx("Button Grid-cell", {
-                    "Button--primary": this.state.valid,
-                  })}
-                  disabled={!this.state.valid}
-                >
-                  Sign in
-                </button>
+              <div className="Form-actions p4">
+                <Button primary={this.state.valid} disabled={!this.state.valid}>
+                  {t`Sign in`}
+                </Button>
                 <Link
                   to={
                     "/auth/forgot_password" +
@@ -220,7 +226,7 @@ export default class LoginApp extends Component {
                       ? "?email=" + this.state.credentials.username
                       : "")
                   }
-                  className="Grid-cell py2 sm-py0 text-grey-3 md-text-right text-centered flex-full link"
+                  className="Grid-cell py2 sm-py0 md-text-right text-centered flex-full link"
                   onClick={e => {
                     window.OSX ? window.OSX.resetPassword() : null;
                   }}

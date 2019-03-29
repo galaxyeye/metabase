@@ -1,10 +1,14 @@
+jest.mock("metabase/hoc/Remapped");
+
 // Important: import of integrated_tests always comes first in tests because of mocked modules
 import {
   createTestStore,
   useSharedAdminLogin,
+  cleanup,
 } from "__support__/integrated_tests";
 
 import React from "react";
+import { Provider } from "react-redux";
 import { mount } from "enzyme";
 
 import FieldList from "../../../src/metabase/query_builder/components/FieldList";
@@ -24,7 +28,7 @@ import {
   fetchTableMetadata,
 } from "metabase/redux/metadata";
 import { TestTooltip, TestTooltipContent } from "metabase/components/Tooltip";
-import FilterWidget from "metabase/query_builder/components/filters/FilterWidget";
+import Filter from "metabase/query_builder/components/Filter";
 
 const getFieldList = (query, fieldOptions, segmentOptions) => (
   <FieldList
@@ -41,6 +45,7 @@ describe("FieldList", () => {
   beforeAll(async () => {
     useSharedAdminLogin();
   });
+  afterAll(cleanup);
 
   it("should allow using expression as aggregation dimension", async () => {
     const store = await createTestStore();
@@ -71,6 +76,7 @@ describe("FieldList", () => {
     // TODO Atte Keinänen 6/27/17: Check why the result is wrapped in a promise that needs to be resolved manually
     const segment = await (await createSegment(orders_past_300_days_segment))
       .payload;
+    cleanup.segment(segment);
 
     const store = await createTestStore();
     await store.dispatch(fetchDatabases());
@@ -84,11 +90,13 @@ describe("FieldList", () => {
       metadata,
     }).query();
     const component = mount(
-      getFieldList(
-        query,
-        query.filterFieldOptions(),
-        query.filterSegmentOptions(),
-      ),
+      <Provider store={store}>
+        {getFieldList(
+          query,
+          query.filterFieldOptions(),
+          query.filterSegmentOptions(),
+        )}
+      </Provider>,
     );
 
     // TODO: This is pretty awkward – each list item could have its own React component for easier traversal
@@ -109,10 +117,10 @@ describe("FieldList", () => {
 
     expect(
       tooltipContent
-        .find(FilterWidget)
+        .find(Filter)
         .last()
         .text(),
       // eslint-disable-next-line no-irregular-whitespace
-    ).toMatch(/Created At -300day/);
+    ).toMatch(/Created AtPast 300 Days/);
   });
 });

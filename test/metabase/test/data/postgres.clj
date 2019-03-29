@@ -7,17 +7,18 @@
   (:import metabase.driver.postgres.PostgresDriver))
 
 (def ^:private ^:const field-base-type->sql-type
-  {:type/BigInteger "BIGINT"
-   :type/Boolean    "BOOL"
-   :type/Date       "DATE"
-   :type/DateTime   "TIMESTAMP"
-   :type/Decimal    "DECIMAL"
-   :type/Float      "FLOAT"
-   :type/Integer    "INTEGER"
-   :type/IPAddress  "INET"
-   :type/Text       "TEXT"
-   :type/Time       "TIME"
-   :type/UUID       "UUID"})
+  {:type/BigInteger     "BIGINT"
+   :type/Boolean        "BOOL"
+   :type/Date           "DATE"
+   :type/DateTime       "TIMESTAMP"
+   :type/DateTimeWithTZ "TIMESTAMP WITH TIME ZONE"
+   :type/Decimal        "DECIMAL"
+   :type/Float          "FLOAT"
+   :type/Integer        "INTEGER"
+   :type/IPAddress      "INET"
+   :type/Text           "TEXT"
+   :type/Time           "TIME"
+   :type/UUID           "UUID"})
 
 (defn- database->connection-details [context {:keys [database-name]}]
   (merge {:host     (i/db-test-env-var-or-throw :postgresql :host "localhost")
@@ -49,15 +50,16 @@
 (u/strict-extend PostgresDriver
   generic/IGenericSQLTestExtensions
   (merge generic/DefaultsMixin
-         {:drop-db-if-exists-sql     drop-db-if-exists-sql
-          :drop-table-if-exists-sql  generic/drop-table-if-exists-cascade-sql
-          :field-base-type->sql-type (u/drop-first-arg field-base-type->sql-type)
-          :load-data!                generic/load-data-all-at-once!
-          :pk-sql-type               (constantly "SERIAL")})
+         {:drop-db-if-exists-sql         drop-db-if-exists-sql
+          :drop-table-if-exists-sql      generic/drop-table-if-exists-cascade-sql
+          :field-base-type->sql-type     (u/drop-first-arg field-base-type->sql-type)
+          :load-data!                    generic/load-data-all-at-once!
+          :pk-sql-type                   (constantly "SERIAL")
+          :standalone-column-comment-sql generic/standard-standalone-column-comment-sql
+          :standalone-table-comment-sql  generic/standard-standalone-table-comment-sql})
   i/IDriverTestExtensions
   (merge generic/IDriverTestExtensionsMixin
          {:database->connection-details       (u/drop-first-arg database->connection-details)
-          :default-schema                     (constantly "public")
           :engine                             (constantly :postgres)
           ;; TODO: this is suspect, but it works
           :has-questionable-timezone-support? (constantly true)}))

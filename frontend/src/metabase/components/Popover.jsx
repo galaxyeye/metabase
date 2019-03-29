@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
-import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import OnClickOutsideWrapper from "./OnClickOutsideWrapper";
 import Tether from "tether";
@@ -11,9 +10,6 @@ import { constrainToScreen } from "metabase/lib/dom";
 import cx from "classnames";
 
 import "./Popover.css";
-
-const POPOVER_TRANSITION_ENTER = 100;
-const POPOVER_TRANSITION_LEAVE = 100;
 
 // space we should leave berween page edge and popover edge
 const PAGE_PADDING = 10;
@@ -36,6 +32,7 @@ export default class Popover extends Component {
     id: PropTypes.string,
     isOpen: PropTypes.bool,
     hasArrow: PropTypes.bool,
+    hasBackground: PropTypes.bool,
     // target: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
     tetherOptions: PropTypes.object,
     // used to prevent popovers from being taller than the screen
@@ -46,17 +43,33 @@ export default class Popover extends Component {
     // noMaxWidth allows that to be overridden in cases where popovers should
     // expand  alongside their contents contents
     autoWidth: PropTypes.bool,
+    // prioritized vertical attachments points on the popover
+    verticalAttachments: PropTypes.array,
+    // prioritized horizontal attachment points on the popover
+    horizontalAttachments: PropTypes.array,
+    // by default we align the top edge of the target to the bottom edge of the
+    // popover or vice versa. This causes the same edges to be aligned
+    alignVerticalEdge: PropTypes.bool,
+    // by default we align the popover to the center of the target. This
+    // causes the edges to be aligned
+    alignHorizontalEdge: PropTypes.bool,
+    // don't wrap the popover in an OnClickOutsideWrapper
+    noOnClickOutsideWrapper: PropTypes.bool,
   };
 
   static defaultProps = {
     isOpen: true,
     hasArrow: true,
+    hasBackground: true,
     verticalAttachments: ["top", "bottom"],
     horizontalAttachments: ["center", "left", "right"],
+    alignVerticalEdge: false,
+    alignHorizontalEdge: false,
     targetOffsetX: 24,
     targetOffsetY: 5,
     sizeToFit: false,
     autoWidth: false,
+    noOnClickOutsideWrapper: false,
   };
 
   _getPopoverElement() {
@@ -89,14 +102,13 @@ export default class Popover extends Component {
     }
     if (this._popoverElement) {
       this._renderPopover(false);
-      setTimeout(() => {
-        ReactDOM.unmountComponentAtNode(this._popoverElement);
-        if (this._popoverElement.parentNode) {
-          this._popoverElement.parentNode.removeChild(this._popoverElement);
-        }
-        clearInterval(this._timer);
-        delete this._popoverElement, this._timer;
-      }, POPOVER_TRANSITION_LEAVE);
+      ReactDOM.unmountComponentAtNode(this._popoverElement);
+      if (this._popoverElement.parentNode) {
+        this._popoverElement.parentNode.removeChild(this._popoverElement);
+      }
+      delete this._popoverElement;
+      clearInterval(this._timer);
+      delete this._timer;
     }
   }
 
@@ -110,36 +122,47 @@ export default class Popover extends Component {
     const childProps = {
       maxHeight: this._getMaxHeight(),
     };
-    return (
-      <OnClickOutsideWrapper
-        handleDismissal={this.handleDismissal}
-        dismissOnEscape={this.props.dismissOnEscape}
-        dismissOnClickOutside={this.props.dismissOnClickOutside}
+    const content = (
+      <div
+        id={this.props.id}
+        className={cx(
+          "PopoverBody",
+          {
+            "PopoverBody--withBackground": this.props.hasBackground,
+            "PopoverBody--withArrow":
+              this.props.hasArrow && this.props.hasBackground,
+            "PopoverBody--autoWidth": this.props.autoWidth,
+          },
+          // TODO kdoh 10/16/2017 we should eventually remove this
+          this.props.className,
+        )}
+        style={this.props.style}
       >
-        <div
-          id={this.props.id}
-          className={cx(
-            "PopoverBody",
-            {
-              "PopoverBody--withArrow": this.props.hasArrow,
-              "PopoverBody--autoWidth": this.props.autoWidth,
-            },
-            // TODO kdoh 10/16/2017 we should eventually remove this
-            this.props.className,
-          )}
-          style={this.props.style}
-        >
-          {typeof this.props.children === "function"
-            ? this.props.children(childProps)
-            : React.Children.count(this.props.children) === 1
-              ? React.cloneElement(
-                  React.Children.only(this.props.children),
-                  childProps,
-                )
-              : this.props.children}
-        </div>
-      </OnClickOutsideWrapper>
+        {typeof this.props.children === "function"
+          ? this.props.children(childProps)
+          : React.Children.count(this.props.children) === 1 &&
+            // NOTE: workaround for https://github.com/facebook/react/issues/12136
+            !Array.isArray(this.props.children)
+            ? React.cloneElement(
+                React.Children.only(this.props.children),
+                childProps,
+              )
+            : this.props.children}
+      </div>
     );
+    if (this.props.noOnClickOutsideWrapper) {
+      return content;
+    } else {
+      return (
+        <OnClickOutsideWrapper
+          handleDismissal={this.handleDismissal}
+          dismissOnEscape={this.props.dismissOnEscape}
+          dismissOnClickOutside={this.props.dismissOnClickOutside}
+        >
+          {content}
+        </OnClickOutsideWrapper>
+      );
+    }
   }
 
   _setTetherOptions(tetherOptions, o) {
@@ -259,22 +282,12 @@ export default class Popover extends Component {
     const popoverElement = this._getPopoverElement();
     ReactDOM.unstable_renderSubtreeIntoContainer(
       this,
-      <ReactCSSTransitionGroup
-        transitionName="Popover"
-        transitionAppear
-        transitionEnter
-        transitionLeave
-        transitionAppearTimeout={POPOVER_TRANSITION_ENTER}
-        transitionEnterTimeout={POPOVER_TRANSITION_ENTER}
-        transitionLeaveTimeout={POPOVER_TRANSITION_LEAVE}
-      >
-        {isOpen ? this._popoverComponent() : null}
-      </ReactCSSTransitionGroup>,
+      <span>{isOpen ? this._popoverComponent() : null}</span>,
       popoverElement,
     );
 
     if (isOpen) {
-      var tetherOptions = {
+      let tetherOptions = {
         element: popoverElement,
         target: this._getTarget(),
       };
@@ -304,7 +317,9 @@ export default class Popover extends Component {
             (best, attachmentX) => ({
               ...best,
               attachmentX: attachmentX,
-              targetAttachmentX: "center",
+              targetAttachmentX: this.props.alignHorizontalEdge
+                ? attachmentX
+                : "center",
               offsetX: {
                 center: 0,
                 left: -this.props.targetOffsetX,
@@ -322,7 +337,11 @@ export default class Popover extends Component {
             (best, attachmentY) => ({
               ...best,
               attachmentY: attachmentY,
-              targetAttachmentY: attachmentY === "top" ? "bottom" : "top",
+              targetAttachmentY: (this.props.alignVerticalEdge
+              ? attachmentY === "bottom"
+              : attachmentY === "top")
+                ? "bottom"
+                : "top",
               offsetY: {
                 top: this.props.targetOffsetY,
                 bottom: -this.props.targetOffsetY,

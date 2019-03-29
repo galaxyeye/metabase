@@ -1,6 +1,9 @@
 (ns metabase.api.embed-test
   "Tests for /api/embed endpoints."
-  (:require [buddy.sign.jwt :as jwt]
+  (:require [buddy.sign
+             [jwt :as jwt]
+             [util :as buddy-util]]
+            [clj-time.core :as time]
             [crypto.random :as crypto-random]
             [dk.ative.docjure.spreadsheet :as spreadsheet]
             [expectations :refer :all]
@@ -19,6 +22,8 @@
             [metabase.test
              [data :as data]
              [util :as tu]]
+            [metabase.test.util.log :as tu.log]
+            [toucan.db :as db]
             [toucan.util.test :as tt])
   (:import java.io.ByteArrayInputStream))
 
@@ -62,11 +67,14 @@
 
 (defn successful-query-results
   ([]
-   {:data       {:columns ["count"]
-                 :cols    [{:description nil, :table_id nil, :special_type "type/Number", :name "count",
-                            :source "aggregation", :extra_info {}, :id nil, :target nil, :display_name "count",
-                            :base_type "type/Integer", :remapped_from nil, :remapped_to nil}]
-                 :rows    [[100]]}
+   {:data       {:columns  ["count"]
+                 :cols     [{:base_type    "type/Integer"
+                             :special_type "type/Number"
+                             :name         "count"
+                             :display_name "count"
+                             :source       "aggregation"}]
+                 :rows     [[100]]
+                 :insights nil}
     :json_query {:parameters nil}
     :status     "completed"})
   ([results-format]
@@ -93,11 +101,13 @@
    :visualization_settings {}
    :dataset_query          {:type "query"}
    :parameters             ()
-   :param_values           nil})
+   :param_values           nil
+   :param_fields           nil})
 
 (def successful-dashboard-info
-  {:description nil, :parameters (), :ordered_cards (), :param_values nil})
+  {:description nil, :parameters (), :ordered_cards (), :param_values nil, :param_fields nil})
 
+(def ^:private yesterday (time/minus (time/now) (time/days 1)))
 
 ;;; ------------------------------------------- GET /api/embed/card/:token -------------------------------------------
 
@@ -110,6 +120,13 @@
     (with-temp-card [card {:enable_embedding true}]
       (dissoc-id-and-name
         (http/client :get 200 (card-url card))))))
+
+;; We should fail when attempting to use an expired token
+(expect
+  #"Token is expired"
+  (with-embedding-enabled-and-new-secret-key
+    (with-temp-card [card {:enable_embedding true}]
+      (http/client :get 400 (card-url card {:exp (buddy-util/to-timestamp yesterday)})))))
 
 ;; check that the endpoint doesn't work if embedding isn't enabled
 (expect
@@ -141,7 +158,7 @@
     (with-temp-card [card {:enable_embedding true
                            :dataset_query    {:database (data/id)
                                               :type     :native
-                                              :native   {:template_tags {:a {:type "date", :name "a", :display_name "a"}
+                                              :native   {:template-tags {:a {:type "date", :name "a", :display_name "a"}
                                                                          :b {:type "date", :name "b", :display_name "b"}
                                                                          :c {:type "date", :name "c", :display_name "c"}
                                                                          :d {:type "date", :name "d", :display_name "d"}}}}
@@ -181,11 +198,12 @@
 ;; query info)
 (expect-for-response-formats [response-format]
   "An error occurred while running the query."
-  (with-embedding-enabled-and-new-secret-key
-    (with-temp-card [card {:enable_embedding true, :dataset_query {:database (data/id)
-                                                                   :type     :native
-                                                                   :native   {:query "SELECT * FROM XYZ"}}}]
-      (http/client :get 400 (card-query-url card response-format)))))
+  (tu.log/suppress-output
+    (with-embedding-enabled-and-new-secret-key
+      (with-temp-card [card {:enable_embedding true, :dataset_query {:database (data/id)
+                                                                     :type     :native
+                                                                     :native   {:query "SELECT * FROM XYZ"}}}]
+        (http/client :get 400 (card-query-url card response-format))))))
 
 ;; check that the endpoint doesn't work if embedding isn't enabled
 (expect-for-response-formats [response-format]
@@ -282,11 +300,11 @@
   {:dataset_query    {:database (data/id)
                       :type     :native
                       :native   {:query         "SELECT COUNT(*) AS \"count\" FROM CHECKINS WHERE {{date}}"
-                                 :template_tags {:date {:name         "date"
-                                                        :display_name "Date"
+                                 :template-tags {:date {:name         "date"
+                                                        :display-name "Date"
                                                         :type         "dimension"
                                                         :dimension    [:field-id (data/id :checkins :date)]
-                                                        :widget_type  "date/quarter-year"}}}}
+                                                        :widget-type  "date/quarter-year"}}}}
    :enable_embedding true
    :embedding_params {:date :enabled}})
 
@@ -318,6 +336,13 @@
     (tt/with-temp Dashboard [dash {:enable_embedding true}]
       (dissoc-id-and-name
         (http/client :get 200 (dashboard-url dash))))))
+
+;; We should fail when attempting to use an expired token
+(expect
+  #"Token is expired"
+  (with-embedding-enabled-and-new-secret-key
+    (tt/with-temp Dashboard [dash {:enable_embedding true}]
+      (http/client :get 400 (dashboard-url dash {:exp (buddy-util/to-timestamp yesterday)})))))
 
 ;; check that the endpoint doesn't work if embedding isn't enabled
 (expect
@@ -373,12 +398,13 @@
 ;; query info)
 (expect
   "An error occurred while running the query."
-  (with-embedding-enabled-and-new-secret-key
-    (with-temp-dashcard [dashcard {:dash {:enable_embedding true}
-                                   :card {:dataset_query {:database (data/id)
-                                                          :type     :native,
-                                                          :native   {:query "SELECT * FROM XYZ"}}}}]
-      (http/client :get 400 (dashcard-url dashcard)))))
+  (tu.log/suppress-output
+    (with-embedding-enabled-and-new-secret-key
+      (with-temp-dashcard [dashcard {:dash {:enable_embedding true}
+                                     :card {:dataset_query {:database (data/id)
+                                                            :type     :native,
+                                                            :native   {:query "SELECT * FROM XYZ"}}}}]
+        (http/client :get 400 (dashcard-url dashcard))))))
 
 ;; check that the endpoint doesn't work if embedding isn't enabled
 (expect
@@ -487,3 +513,275 @@
                                                    :card_id          (u/get-id series-card)
                                                    :position         0}]
           (:status (http/client :get 200 (str (dashcard-url (assoc dashcard :card_id (u/get-id series-card)))))))))))
+
+
+;;; ------------------------------- GET /api/embed/card/:token/field/:field-id/values --------------------------------
+
+(defn- field-values-url [card-or-dashboard field-or-id]
+  (str
+   "embed/"
+   (condp instance? card-or-dashboard
+     (class Card)      (str "card/"      (card-token card-or-dashboard))
+     (class Dashboard) (str "dashboard/" (dash-token card-or-dashboard)))
+   "/field/"
+   (u/get-id field-or-id)
+   "/values"))
+
+(defn- do-with-embedding-enabled-and-temp-card-referencing {:style/indent 2} [table-kw field-kw f]
+  (with-embedding-enabled-and-new-secret-key
+    (tt/with-temp Card [card (assoc (public-test/mbql-card-referencing table-kw field-kw)
+                               :enable_embedding true)]
+      (f card))))
+
+(defmacro ^:private with-embedding-enabled-and-temp-card-referencing
+  {:style/indent 3}
+  [table-kw field-kw [card-binding] & body]
+  `(do-with-embedding-enabled-and-temp-card-referencing ~table-kw ~field-kw
+     (fn [~(or card-binding '_)]
+       ~@body)))
+
+;; should be able to fetch values for a Field referenced by a public Card
+(expect
+  {:values   [["20th Century Cafe"]
+              ["25°"]
+              ["33 Taps"]
+              ["800 Degrees Neapolitan Pizzeria"]
+              ["BCD Tofu House"]]
+   :field_id (data/id :venues :name)}
+  (with-embedding-enabled-and-temp-card-referencing :venues :name [card]
+    (-> (http/client :get 200 (field-values-url card (data/id :venues :name)))
+        (update :values (partial take 5)))))
+
+;; but for Fields that are not referenced we should get an Exception
+(expect
+  "Not found."
+  (with-embedding-enabled-and-temp-card-referencing :venues :name [card]
+    (http/client :get 400 (field-values-url card (data/id :venues :price)))))
+
+;; Endpoint should fail if embedding is disabled
+(expect
+ "Embedding is not enabled."
+ (with-embedding-enabled-and-temp-card-referencing :venues :name [card]
+   (tu/with-temporary-setting-values [enable-embedding false]
+     (http/client :get 400 (field-values-url card (data/id :venues :name))))))
+
+(expect
+ "Embedding is not enabled for this object."
+ (with-embedding-enabled-and-temp-card-referencing :venues :name [card]
+   (db/update! Card (u/get-id card) :enable_embedding false)
+   (http/client :get 400 (field-values-url card (data/id :venues :name)))))
+
+
+;;; ----------------------------- GET /api/embed/dashboard/:token/field/:field-id/values -----------------------------
+
+(defn- do-with-embedding-enabled-and-temp-dashcard-referencing {:style/indent 2} [table-kw field-kw f]
+  (with-embedding-enabled-and-new-secret-key
+    (tt/with-temp* [Dashboard     [dashboard {:enable_embedding true}]
+                    Card          [card      (public-test/mbql-card-referencing table-kw field-kw)]
+                    DashboardCard [dashcard  {:dashboard_id       (u/get-id dashboard)
+                                              :card_id            (u/get-id card)
+                                              :parameter_mappings [{:card_id (u/get-id card)
+                                                                    :target  [:dimension
+                                                                              [:field-id
+                                                                               (data/id table-kw field-kw)]]}]}]]
+      (f dashboard card dashcard))))
+
+
+(defmacro ^:private with-embedding-enabled-and-temp-dashcard-referencing
+  {:style/indent 3}
+  [table-kw field-kw [dash-binding card-binding dashcard-binding] & body]
+  `(do-with-embedding-enabled-and-temp-dashcard-referencing ~table-kw ~field-kw
+     (fn [~(or dash-binding '_) ~(or card-binding '_) ~(or dashcard-binding '_)]
+       ~@body)))
+
+;; should be able to use it when everything is g2g
+(expect
+  {:values   [["20th Century Cafe"]
+              ["25°"]
+              ["33 Taps"]
+              ["800 Degrees Neapolitan Pizzeria"]
+              ["BCD Tofu House"]]
+   :field_id (data/id :venues :name)}
+  (with-embedding-enabled-and-temp-dashcard-referencing :venues :name [dashboard]
+    (-> (http/client :get 200 (field-values-url dashboard (data/id :venues :name)))
+        (update :values (partial take 5)))))
+
+;; shound NOT be able to use the endpoint with a Field not referenced by the Dashboard
+(expect
+  "Not found."
+  (with-embedding-enabled-and-temp-dashcard-referencing :venues :name [dashboard]
+    (http/client :get 400 (field-values-url dashboard (data/id :venues :price)))))
+
+;; Endpoint should fail if embedding is disabled
+(expect
+  "Embedding is not enabled."
+  (with-embedding-enabled-and-temp-dashcard-referencing :venues :name [dashboard]
+    (tu/with-temporary-setting-values [enable-embedding false]
+      (http/client :get 400 (field-values-url dashboard (data/id :venues :name))))))
+
+;; Endpoint should fail if embedding is disabled for the Dashboard
+(expect
+  "Embedding is not enabled for this object."
+  (with-embedding-enabled-and-temp-dashcard-referencing :venues :name [dashboard]
+    (db/update! Dashboard (u/get-id dashboard) :enable_embedding false)
+    (http/client :get 400 (field-values-url dashboard (data/id :venues :name)))))
+
+
+;;; ----------------------- GET /api/embed/card/:token/field/:field-id/search/:search-field-id -----------------------
+
+(defn- field-search-url [card-or-dashboard field-or-id search-field-or-id]
+  (str "embed/"
+       (condp instance? card-or-dashboard
+         (class Card)      (str "card/"      (card-token card-or-dashboard))
+         (class Dashboard) (str "dashboard/" (dash-token card-or-dashboard)))
+       "/field/" (u/get-id field-or-id)
+       "/search/" (u/get-id search-field-or-id)))
+
+(expect
+ [[93 "33 Taps"]]
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (http/client :get 200 (field-search-url card (data/id :venues :id) (data/id :venues :name))
+                :value "33 T")))
+
+;; if search field isn't allowed to be used with the other Field endpoint should return exception
+(expect
+ "Invalid Request."
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (http/client :get 400 (field-search-url card (data/id :venues :id) (data/id :venues :price))
+                :value "33 T")))
+
+;; Endpoint should fail if embedding is disabled
+(expect
+ "Embedding is not enabled."
+  (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+    (tu/with-temporary-setting-values [enable-embedding false]
+      (http/client :get 400 (field-search-url card (data/id :venues :id) (data/id :venues :name))
+                   :value "33 T"))))
+
+;; Endpoint should fail if embedding is disabled for the Card
+(expect
+ "Embedding is not enabled for this object."
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (db/update! Card (u/get-id card) :enable_embedding false)
+   (http/client :get 400 (field-search-url card (data/id :venues :id) (data/id :venues :name))
+                :value "33 T")))
+
+
+;;; -------------------- GET /api/embed/dashboard/:token/field/:field-id/search/:search-field-id ---------------------
+
+(expect
+  [[93 "33 Taps"]]
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (http/client :get (field-search-url dashboard (data/id :venues :id) (data/id :venues :name))
+                :value "33 T")))
+
+;; if search field isn't allowed to be used with the other Field endpoint should return exception
+(expect
+ "Invalid Request."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (http/client :get 400 (field-search-url dashboard (data/id :venues :id) (data/id :venues :price))
+                :value "33 T")))
+
+;; Endpoint should fail if embedding is disabled
+(expect
+ "Embedding is not enabled."
+  (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+    (tu/with-temporary-setting-values [enable-embedding false]
+      (http/client :get 400 (field-search-url dashboard (data/id :venues :name) (data/id :venues :name))
+                   :value "33 T"))))
+
+;; Endpoint should fail if embedding is disabled for the Dashboard
+(expect
+ "Embedding is not enabled for this object."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (db/update! Dashboard (u/get-id dashboard) :enable_embedding false)
+   (http/client :get 400 (field-search-url dashboard (data/id :venues :name) (data/id :venues :name))
+                :value "33 T")))
+
+
+;;; ----------------------- GET /api/embed/card/:token/field/:field-id/remapping/:remapped-id ------------------------
+
+(defn- field-remapping-url [card-or-dashboard field-or-id remapped-field-or-id]
+  (str "embed/"
+       (condp instance? card-or-dashboard
+         (class Card)      (str "card/"      (card-token card-or-dashboard))
+         (class Dashboard) (str "dashboard/" (dash-token card-or-dashboard)))
+       "/field/" (u/get-id field-or-id)
+       "/remapping/" (u/get-id remapped-field-or-id)))
+
+;; we should be able to use the API endpoint and get the same results we get by calling the function above directly
+(expect
+ [10 "Fred 62"]
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (http/client :get 200 (field-remapping-url card (data/id :venues :id) (data/id :venues :name))
+                :value "10")))
+
+;; shouldn't work if Card doesn't reference the Field in question
+(expect
+ "Not found."
+ (with-embedding-enabled-and-temp-card-referencing :venues :price [card]
+   (http/client :get 400 (field-remapping-url card (data/id :venues :id) (data/id :venues :name))
+                :value "10")))
+
+;; ...or if the remapping Field isn't allowed to be used with the other Field
+(expect
+ "Invalid Request."
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (http/client :get 400 (field-remapping-url card (data/id :venues :id) (data/id :venues :price))
+                :value "10")))
+
+;; ...or if embedding is disabled
+(expect
+ "Embedding is not enabled."
+ (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+   (tu/with-temporary-setting-values [enable-embedding false]
+     (http/client :get 400 (field-remapping-url card (data/id :venues :id) (data/id :venues :name))
+                  :value "10"))))
+
+;; ...or if embedding is disabled for the Card
+(expect
+ "Embedding is not enabled for this object."
+  (with-embedding-enabled-and-temp-card-referencing :venues :id [card]
+    (db/update! Card (u/get-id card) :enable_embedding false)
+    (http/client :get 400 (field-remapping-url card (data/id :venues :id) (data/id :venues :name))
+                 :value "10")))
+
+
+;;; --------------------- GET /api/embed/dashboard/:token/field/:field-id/remapping/:remapped-id ---------------------
+
+;; we should be able to use the API endpoint and get the same results we get by calling the function above directly
+(expect
+ [10 "Fred 62"]
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (http/client :get 200 (field-remapping-url dashboard (data/id :venues :id) (data/id :venues :name))
+                :value "10")))
+
+;; shouldn't work if Card doesn't reference the Field in question
+(expect
+ "Not found."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :price [dashboard]
+   (http/client :get 400 (field-remapping-url dashboard (data/id :venues :id) (data/id :venues :name))
+                :value "10")))
+
+;; ...or if the remapping Field isn't allowed to be used with the other Field
+(expect
+ "Invalid Request."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (http/client :get 400 (field-remapping-url dashboard (data/id :venues :id) (data/id :venues :price))
+                :value "10")))
+
+;; ...or if embedding is disabled
+(expect
+ "Embedding is not enabled."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (tu/with-temporary-setting-values [enable-embedding false]
+     (http/client :get 400 (field-remapping-url dashboard (data/id :venues :id) (data/id :venues :name))
+                  :value "10"))))
+
+;; ...or if embedding is disabled for the Dashboard
+(expect
+ "Embedding is not enabled for this object."
+ (with-embedding-enabled-and-temp-dashcard-referencing :venues :id [dashboard]
+   (db/update! Dashboard (u/get-id dashboard) :enable_embedding false)
+   (http/client :get 400 (field-remapping-url dashboard (data/id :venues :id) (data/id :venues :name))
+                :value "10")))

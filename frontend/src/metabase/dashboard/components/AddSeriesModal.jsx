@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { t } from "c-3po";
 
 import Visualization from "metabase/visualizations/components/Visualization.jsx";
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
 import CheckBox from "metabase/components/CheckBox.jsx";
-
 import MetabaseAnalytics from "metabase/lib/analytics";
 import Query from "metabase/lib/query";
+import colors from "metabase/lib/colors";
 
 import { getVisualizationRaw } from "metabase/visualizations";
 
@@ -25,7 +26,7 @@ function getQueryColumns(card, databases) {
   let table =
     databases &&
     databases[dbId] &&
-    databases[dbId].tables_lookup[query.source_table];
+    databases[dbId].tables_lookup[query["source-table"]];
   if (!table) {
     return null;
   }
@@ -262,15 +263,15 @@ export default class AddSeriesModal extends Component {
             {this.state.state && (
               <div
                 className="spred flex layout-centered"
-                style={{ backgroundColor: "rgba(255,255,255,0.80)" }}
+                style={{ backgroundColor: colors["bg-white"] }}
               >
                 {this.state.state === "loading" ? (
                   <div className="h3 rounded bordered p3 bg-white shadowed">
-                    Applying Question
+                    {t`Applying Question`}
                   </div>
                 ) : this.state.state === "incompatible" ? (
                   <div className="h3 rounded bordered p3 bg-error border-error text-white">
-                    That question isn't compatible
+                    {t`That question isn't compatible`}
                   </div>
                 ) : null}
               </div>
@@ -278,14 +279,14 @@ export default class AddSeriesModal extends Component {
           </div>
           <div className="flex-no-shrink pl4 pb4 pt1">
             <button className="Button Button--primary" onClick={this.onDone}>
-              Done
+              {t`Done`}
             </button>
             <button
               data-metabase-event={"Dashboard;Edit Series Modal;cancel"}
               className="Button ml2"
               onClick={this.props.onClose}
             >
-              Cancel
+              {t`Cancel`}
             </button>
           </div>
         </div>
@@ -293,20 +294,20 @@ export default class AddSeriesModal extends Component {
           className="border-left flex flex-column"
           style={{
             width: 370,
-            backgroundColor: "#F8FAFA",
-            borderColor: "#DBE1DF",
+            backgroundColor: colors["bg-light"],
+            borderColor: colors["border"],
           }}
         >
           <div
             className="flex-no-shrink border-bottom flex flex-row align-center"
-            style={{ borderColor: "#DBE1DF" }}
+            style={{ borderColor: colors["border"] }}
           >
             <Icon className="ml2" name="search" size={16} />
             <input
               className="h4 input full pl1"
               style={{ border: "none", backgroundColor: "transparent" }}
               type="search"
-              placeholder="Search for a question"
+              placeholder={t`Search for a question`}
               onFocus={this.onSearchFocus}
               onChange={this.onSearchChange}
             />
@@ -334,9 +335,11 @@ export default class AddSeriesModal extends Component {
                     </span>
                     <span className="px1">{card.name}</span>
                     {card.dataset_query.type !== "query" && (
-                      <Tooltip tooltip="We're not sure if this question is compatible">
+                      <Tooltip
+                        tooltip={t`We're not sure if this question is compatible`}
+                      >
                         <Icon
-                          className="px1 flex-align-right text-grey-2 text-grey-4-hover cursor-pointer flex-no-shrink"
+                          className="px1 flex-align-right text-light text-medium-hover cursor-pointer flex-no-shrink"
                           name="warning"
                           size={20}
                         />

@@ -43,7 +43,7 @@ export default class ExpressionWidget extends Component {
     return (
       <div style={{ maxWidth: "600px" }}>
         <div className="p2">
-          <div className="h5 text-uppercase text-grey-3 text-bold">{t`Field formula`}</div>
+          <div className="h5 text-uppercase text-medium text-bold">{t`Field formula`}</div>
           <div>
             <ExpressionEditorTextfield
               expression={expression}
@@ -53,8 +53,8 @@ export default class ExpressionWidget extends Component {
               }
               onError={errorMessage => this.setState({ error: errorMessage })}
             />
-            <p className="h5 text-grey-5">
-              {t`Think of this as being kind of like writing a formula in a spreadsheet program: you can use numbers, fields in this table, mathematical symbols like +, and some functions. So you could type something like Subtotal &minus; Cost.`}
+            <p className="h5 text-medium">
+              {t`Think of this as being kind of like writing a formula in a spreadsheet program: you can use numbers, fields in this table, mathematical symbols like +, and some functions. So you could type something like Subtotal - Cost.`}
               &nbsp;<a
                 className="link"
                 target="_blank"
@@ -63,7 +63,7 @@ export default class ExpressionWidget extends Component {
             </p>
           </div>
 
-          <div className="mt3 h5 text-uppercase text-grey-3 text-bold">{t`Give it a name`}</div>
+          <div className="mt3 h5 text-uppercase text-medium text-bold">{t`Give it a name`}</div>
           <div>
             <input
               className="my1 input block full"
@@ -99,7 +99,7 @@ export default class ExpressionWidget extends Component {
           <div>
             {this.props.expression ? (
               <a
-                className="pr2 ml2 text-warning link"
+                className="pr2 ml2 text-error link"
                 onClick={() => this.props.onRemoveExpression(this.props.name)}
               >{t`Remove`}</a>
             ) : null}

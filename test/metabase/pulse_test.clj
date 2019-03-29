@@ -1,16 +1,17 @@
 (ns metabase.pulse-test
-  (:require [clojure.string :as str]
-            [clojure.walk :as walk]
+  (:require [clojure
+             [string :as str]
+             [walk :as walk]]
             [expectations :refer :all]
             [medley.core :as m]
-            [metabase.integrations.slack :as slack]
             [metabase
              [email-test :as et]
              [pulse :refer :all]
              [query-processor :as qp]]
+            [metabase.integrations.slack :as slack]
             [metabase.models
              [card :refer [Card]]
-             [pulse :refer [Pulse retrieve-pulse retrieve-pulse-or-alert]]
+             [pulse :refer [Pulse retrieve-notification retrieve-pulse]]
              [pulse-card :refer [PulseCard]]
              [pulse-channel :refer [PulseChannel]]
              [pulse-channel-recipient :refer [PulseChannelRecipient]]]
@@ -24,13 +25,15 @@
             [toucan.db :as db]
             [toucan.util.test :as tt]))
 
+(def ^:private card-name "Test card")
+
 (defn checkins-query
   "Basic query that will return results for an alert"
   [query-map]
-  {:name          "Test card"
+  {:name          card-name
    :dataset_query {:database (data/id)
                    :type     :query
-                   :query    (merge {:source_table (data/id :checkins)
+                   :query    (merge {:source-table (data/id :checkins)
                                      :aggregation  [["count"]]}
                                     query-map)}})
 
@@ -65,10 +68,10 @@
      (pulse-test-fixture (fn [] ~@body))))
 
 (def ^:private png-attachment
-  {:type :inline,
-   :content-id true,
-   :content-type "image/png",
-   :content java.net.URL})
+  {:type         :inline
+   :content-id   true
+   :content-type "image/png"
+   :content      java.net.URL})
 
 (defn- rasta-pulse-email [& [email]]
   (et/email-to :rasta (merge {:subject "Pulse: Pulse Name",
@@ -260,7 +263,7 @@
                   PulseChannelRecipient [_              {:user_id          (rasta-id)
                                                          :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
+     (send-pulse! (retrieve-notification pulse-id))
      @et/inbox)))
 
 (defn- rasta-alert-email
@@ -268,11 +271,13 @@
   (et/email-to :rasta {:subject subject
                        :body email-body}))
 
+(def ^:private test-card-result {card-name true})
+(def ^:private test-card-regex  (re-pattern card-name))
+
 ;; Rows alert with data
 (expect
   (rasta-alert-email "Metabase alert: Test card has results"
-                     [{"Test card.*has results for you to see" true
-                       "More results have been included"       false}, png-attachment])
+                     [(assoc test-card-result "More results have been included" false), png-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:breakout [["datetime-field" (data/id :checkins :date) "hour"]]})]
                   Pulse                 [{pulse-id :id} {:alert_condition  "rows"
                                                          :alert_first_only false}]
@@ -280,20 +285,20 @@
                                                         :card_id  card-id
                                                         :position 0}]
                   PulseChannel          [{pc-id :id}   {:pulse_id pulse-id}]
-                  PulseChannelRecipient [_             {:user_id (rasta-id)
+                  PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has results for you to see" #"More results have been included"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex #"More results have been included"))))
 
 ;; Rows alert with too much data will attach as CSV and include a table
 (expect
   (rasta-alert-email "Metabase alert: Test card has results"
-                     [{"Test card.*has results for you to see" true
-                       "More results have been included"       true
-                       "ID</th>"                               true},
+                     [(merge test-card-result
+                             {"More results have been included" true
+                              "ID</th>"                         true}),
                       csv-attachment])
-  (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:limit 21
+  (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:limit       21
                                                                          :aggregation nil})]
                   Pulse                 [{pulse-id :id} {:alert_condition  "rows"
                                                          :alert_first_only false}]
@@ -301,16 +306,16 @@
                                                         :card_id  card-id
                                                         :position 0}]
                   PulseChannel          [{pc-id :id}   {:pulse_id pulse-id}]
-                  PulseChannelRecipient [_             {:user_id (rasta-id)
+                  PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has results for you to see" #"More results have been included" #"ID</th>"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex #"More results have been included" #"ID</th>"))))
 
 ;; Above goal alert with data
 (expect
   (rasta-alert-email "Metabase alert: Test card has reached its goal"
-                     [{"Test card.*has reached its goal" true}, png-attachment])
+                     [test-card-result, png-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (merge (checkins-query {:filter   ["between",["field-id" (data/id :checkins :date)],"2014-04-01" "2014-06-01"]
                                                                                 :breakout [["datetime-field" (data/id :checkins :date) "day"]]})
                                                                {:display :line
@@ -325,13 +330,13 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has reached its goal"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
 
 ;; Native query with user-specified x and y axis
 (expect
   (rasta-alert-email "Metabase alert: Test card has reached its goal"
-                     [{"Test card.*has reached its goal" true}, png-attachment])
+                     [test-card-result, png-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  {:name          "Test card"
                                                          :dataset_query {:database (data/id)
                                                                          :type     :native
@@ -353,8 +358,8 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has reached its goal"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
 
 ;; Above goal alert, with no data above goal
 (expect
@@ -373,7 +378,7 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
+     (send-pulse! (retrieve-notification pulse-id))
      @et/inbox)))
 
 ;; Below goal alert with no satisfying data
@@ -393,13 +398,13 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
+     (send-pulse! (retrieve-notification pulse-id))
      @et/inbox)))
 
 ;; Below goal alert with data
 (expect
   (rasta-alert-email "Metabase alert: Test card has gone below its goal"
-                     [{"Test card.*has gone below its goal of 1.1" true}, png-attachment])
+                     [test-card-result, png-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (merge (checkins-query {:filter   ["between",["field-id" (data/id :checkins :date)],"2014-02-12" "2014-02-17"]
                                                                                 :breakout [["datetime-field" (data/id :checkins :date) "day"]]})
                                                                {:display                :line
@@ -415,8 +420,8 @@
                                                         :pulse_channel_id pc-id}]]
 
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has gone below its goal of 1.1"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
 
 (defn- thunk->boolean [{:keys [attachments] :as result}]
   (assoc result :attachments (for [attachment-info attachments]
@@ -471,12 +476,12 @@
   {:channel-id "#general",
    :message "Pulse: Pulse Name",
    :attachments
-   [{:title "Test card",
-     :attachment-bytes-thunk true
+   [{:title card-name,
+     :attachment-bytes-thunk true,
      :title_link (str "https://metabase.com/testmb/question/" card-id),
      :attachment-name "image.png",
      :channel-id "FOO",
-     :fallback "Test card"}]}
+     :fallback card-name}]}
   (slack-test-setup
    (-> (send-pulse! (retrieve-pulse pulse-id))
        first
@@ -505,12 +510,12 @@
   [{:channel-id "#general",
      :message    "Pulse: Pulse Name",
      :attachments
-     [{:title                  "Test card",
+     [{:title                  card-name,
        :attachment-bytes-thunk true
        :title_link             (str "https://metabase.com/testmb/question/" card-id),
        :attachment-name        "image.png",
        :channel-id             "FOO",
-       :fallback               "Test card"}]}
+       :fallback               card-name}]}
    1     ;; -> attached-results-text should be invoked exactly once
    [nil] ;; -> attached-results-text should return nil since it's a slack message
    ]
@@ -545,12 +550,12 @@
   [{:channel-id "#general",
     :message "Pulse: Pulse Name",
     :attachments
-    [{:title "Test card",
-      :attachment-bytes-thunk true
+    [{:title card-name,
+      :attachment-bytes-thunk true,
       :title_link (str "https://metabase.com/testmb/question/" card-id-1),
       :attachment-name "image.png",
       :channel-id "FOO",
-      :fallback "Test card"}
+      :fallback card-name}
      {:title "Test card 2",
       :attachment-bytes-thunk true
       :title_link (str "https://metabase.com/testmb/question/" card-id-2),
@@ -590,10 +595,10 @@
                                                              :pulse_channel_id pc-id-2}]]
   [{:channel-id "#general",
      :message "Pulse: Pulse Name",
-     :attachments [{:title "Test card", :attachment-bytes-thunk true
+     :attachments [{:title card-name, :attachment-bytes-thunk true
                     :title_link (str "https://metabase.com/testmb/question/" card-id),
                     :attachment-name "image.png", :channel-id "FOO",
-                    :fallback "Test card"}]}
+                    :fallback card-name}]}
    true
    {:subject "Pulse: Pulse Name",
     :recipients ["rasta@metabase.com"],
@@ -624,27 +629,27 @@
                                                    :details {:channel "#general"}}]]
   [{:channel-id "#general",
     :message "Alert: Test card",
-    :attachments [{:title "Test card", :attachment-bytes-thunk true,
+    :attachments [{:title card-name, :attachment-bytes-thunk true,
                    :title_link (str "https://metabase.com/testmb/question/" card-id)
                    :attachment-name "image.png", :channel-id "FOO",
-                   :fallback "Test card"}]}
+                   :fallback card-name}]}
    true]
   (slack-test-setup
-   (let [[result] (send-pulse! (retrieve-pulse-or-alert pulse-id))]
+   (let [[result] (send-pulse! (retrieve-notification pulse-id))]
      [(thunk->boolean result)
       (every? produces-bytes? (:attachments result))])))
 
 (defn- venues-query [aggregation-op]
-  {:name          "Test card"
+  {:name          card-name
    :dataset_query {:database (data/id)
                    :type     :query
-                   :query    {:source_table (data/id :venues)
+                   :query    {:source-table (data/id :venues)
                               :aggregation  [[aggregation-op (data/id :venues :price)]]}}})
 
 ;; Above goal alert with a progress bar
 (expect
   (rasta-alert-email "Metabase alert: Test card has reached its goal"
-                     [{"Test card.*has reached its goal of 3" true}])
+                     [test-card-result])
   (tt/with-temp* [Card                 [{card-id :id}  (merge (venues-query "max")
                                                               {:display                :progress
                                                                :visualization_settings {:progress.goal 3}})]
@@ -658,13 +663,13 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has reached its goal of 3"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
 
 ;; Below goal alert with progress bar
 (expect
   (rasta-alert-email "Metabase alert: Test card has gone below its goal"
-                     [{"Test card.*has gone below its goal of 2" true}])
+                     [test-card-result])
   (tt/with-temp* [Card                 [{card-id :id}  (merge (venues-query "min")
                                                               {:display                :progress
                                                                :visualization_settings {:progress.goal 2}})]
@@ -678,14 +683,13 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has gone below its goal of 2"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
 
 ;; Rows alert, first run only with data
 (expect
   (rasta-alert-email "Metabase alert: Test card has results"
-                     [{"Test card.*has results for you to see" true
-                       "stop sending you alerts"               true}
+                     [(assoc test-card-result "stop sending you alerts" true)
                       png-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:breakout [["datetime-field" (data/id :checkins :date) "hour"]]})]
                   Pulse                 [{pulse-id :id} {:alert_condition  "rows"
@@ -697,8 +701,8 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has results for you to see"
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex
                                    #"stop sending you alerts"))))
 
 ;; First run alert with no data
@@ -715,7 +719,7 @@
                   PulseChannelRecipient [_              {:user_id          (rasta-id)
                                                          :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
+     (send-pulse! (retrieve-notification pulse-id))
      [@et/inbox
       (db/exists? Pulse :id pulse-id)])))
 
@@ -745,7 +749,7 @@
 ;; Basic alert test, 1 card, 1 recipient, with CSV attachment
 (expect
   (rasta-alert-email "Metabase alert: Test card has results"
-                     [{"Test card.*has results for you to see" true}, png-attachment, csv-attachment])
+                     [test-card-result, png-attachment, csv-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:breakout [["datetime-field" (data/id :checkins :date) "hour"]]})]
                   Pulse                 [{pulse-id :id} {:alert_condition  "rows"
                                                          :alert_first_only false}]
@@ -757,8 +761,55 @@
                   PulseChannelRecipient [_              {:user_id          (rasta-id)
                                                          :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has results for you to see"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
+
+;; With a "rows" type of pulse (table visualization) we should include the CSV by default
+(expect
+  (-> (rasta-pulse-email)
+      ;; There's no PNG with a table visualization, remove it from the expected results
+      (update-in ["rasta@metabase.com" 0 :body] (comp vector first))
+      (add-rasta-attachment csv-attachment))
+
+  (tt/with-temp* [Card                 [{card-id :id}    {:name          card-name
+                                                          :dataset_query {:database (data/id)
+                                                                          :type     :query
+                                                                          :query    {:source-table (data/id :checkins)}}}]
+                  Pulse                [{pulse-id :id} {:name          "Pulse Name"
+                                                        :skip_if_empty false}]
+                  PulseCard             [_             {:pulse_id    pulse-id
+                                                        :card_id     card-id
+                                                        :position    0}]
+                  PulseChannel          [{pc-id :id}   {:pulse_id pulse-id}]
+                  PulseChannelRecipient [_             {:user_id          (rasta-id)
+                                                        :pulse_channel_id pc-id}]]
+    (email-test-setup
+     (send-pulse! (retrieve-pulse pulse-id))
+     (et/summarize-multipart-email #"Pulse Name"))))
+
+;; If the pulse is already configured to send an XLS, no need to include a CSV
+(expect
+  (-> (rasta-pulse-email)
+      ;; There's no PNG with a table visualization, remove it from the expected results
+      (update-in ["rasta@metabase.com" 0 :body] (comp vector first))
+      (add-rasta-attachment xls-attachment))
+
+  (tt/with-temp* [Card                 [{card-id :id}    {:name          card-name
+                                                          :dataset_query {:database (data/id)
+                                                                          :type     :query
+                                                                          :query    {:source-table (data/id :checkins)}}}]
+                  Pulse                [{pulse-id :id} {:name          "Pulse Name"
+                                                        :skip_if_empty false}]
+                  PulseCard             [_             {:pulse_id    pulse-id
+                                                        :card_id     card-id
+                                                        :position    0
+                                                        :include_xls true}]
+                  PulseChannel          [{pc-id :id}   {:pulse_id pulse-id}]
+                  PulseChannelRecipient [_             {:user_id          (rasta-id)
+                                                        :pulse_channel_id pc-id}]]
+    (email-test-setup
+     (send-pulse! (retrieve-pulse pulse-id))
+     (et/summarize-multipart-email #"Pulse Name"))))
 
 ;; Basic test of card with CSV and XLS attachments, but no data. Should not include an attachment
 (expect
@@ -801,7 +852,7 @@
 ;; Rows alert with data and a CSV + XLS attachment
 (expect
   (rasta-alert-email "Metabase alert: Test card has results"
-                     [{"Test card.*has results for you to see" true}, png-attachment, csv-attachment, xls-attachment])
+                     [test-card-result, png-attachment, csv-attachment, xls-attachment])
   (tt/with-temp* [Card                  [{card-id :id}  (checkins-query {:breakout [["datetime-field" (data/id :checkins :date) "hour"]]})]
                   Pulse                 [{pulse-id :id} {:alert_condition  "rows"
                                                          :alert_first_only false}]
@@ -814,5 +865,5 @@
                   PulseChannelRecipient [_             {:user_id          (rasta-id)
                                                         :pulse_channel_id pc-id}]]
     (email-test-setup
-     (send-pulse! (retrieve-pulse-or-alert pulse-id))
-     (et/summarize-multipart-email #"Test card.*has results for you to see"))))
+     (send-pulse! (retrieve-notification pulse-id))
+     (et/summarize-multipart-email test-card-regex))))
