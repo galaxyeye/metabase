@@ -1,5 +1,7 @@
-# Metabase
+# Metabase for X-SQL
 Metabase is the easy, open source way for everyone in your company to ask questions and learn from data.
+
+Metabase X-SQL edition runs on [Pulsar](https://github.com/platonai/pulsar) to do Web harvest jobs using SQLs.
 
 ![Metabase Product Screenshot](docs/metabase-product-screenshot.png)
 
