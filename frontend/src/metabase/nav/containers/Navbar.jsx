@@ -127,6 +127,7 @@ class SearchBar extends React.Component {
             pr={2}
             pl={1}
             value={searchText}
+            // placeholder={t`Enter an url to turn the web site into data, index page is preferred` + "…"}
             placeholder={t`Search` + "…"}
             onClick={() => this.setState({ active: true })}
             onChange={e => this.setState({ searchText: e.target.value })}
@@ -378,6 +379,7 @@ export default class Navbar extends Component {
       case "setup":
         return null;
       default:
+        // return this.renderEmptyNav();
         return this.renderMainNav();
     }
   }

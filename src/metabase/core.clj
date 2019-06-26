@@ -72,6 +72,13 @@
           (rr/content-type json-response "application/json; charset=utf-8"))
         response))))
 
+;(defn- start-pulsar!
+;  "Start pulsar server"
+;  []
+;  (System/setProperty "h2.sessionFactory", "ai.platon.pulsar.ql.h2.H2SessionFactory")
+;  (.ensureEnv PulsarEnv/INSTANCE)
+;  (.runTool (Console.) *command-line-args*))
+
 (def ^:private jetty-instance
   (atom nil))
 
@@ -109,7 +116,6 @@
       wrap-gzip))                        ; GZIP response if client can handle it
 ;; ▲▲▲ PRE-PROCESSING ▲▲▲ happens from BOTTOM-TO-TOP
 
-
 ;;; --------------------------------------------------- Lifecycle ----------------------------------------------------
 
 (defn- -init-create-setup-token
@@ -135,7 +141,6 @@
   (task/stop-scheduler!)
   (log/info (trs "Metabase Shutdown COMPLETE")))
 
-
 (defn init!
   "General application initialization function which should be run once at application startup."
   []
@@ -146,6 +151,8 @@
   ;; First of all, lets register a shutdown hook that will tidy things up for us on app exit
   (.addShutdownHook (Runtime/getRuntime) (Thread. ^Runnable destroy!))
   (init-status/set-progress! 0.2)
+  ;(start-pulsar!)
+  ;(init-status/set-progress! 0.25)
 
   ;; load any plugins as needed
   (plugins/load-plugins!)

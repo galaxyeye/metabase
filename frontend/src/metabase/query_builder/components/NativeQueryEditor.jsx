@@ -77,6 +77,7 @@ type State = {
 };
 
 export default class NativeQueryEditor extends Component {
+  mode: String = "demo";
   props: Props;
   state: State;
 
@@ -92,7 +93,7 @@ export default class NativeQueryEditor extends Component {
     );
 
     this.state = {
-      showEditor: !props.question || !props.question.isSaved(),
+      showEditor: this.mode == "demo" || !props.question || !props.question.isSaved(),
       initialHeight: getEditorLineHeight(lines),
     };
 
