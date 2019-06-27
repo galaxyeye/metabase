@@ -4,6 +4,7 @@
             [honeysql.helpers :as h]
             [metabase.api.common :refer [*current-user-id* *current-user-permissions-set* check-403 defendpoint
                                          define-routes]]
+            [metabase.query-processor :as qp]
             [metabase.models
              [card :refer [Card]]
              [card-favorite :refer [CardFavorite]]
@@ -132,7 +133,24 @@
       (merge-search-select search-type projected-columns)
       (h/merge-from [entity (keyword search-type)])))
 
+(defn- harvest-from-portal-url
+  "Call harvest function to do the Auto Web Mining"
+  [portal-url]
+  (println :query {:query  (format "SELECT * FROM harvest('%s')" portal-url)
+                   :params nil})
+  (qp/process-query
+    {:database   2
+     :type       "native"
+     :native     {:query         (format "SELECT * FROM harvest('%s')" portal-url)}})
+  )
+
 (defmulti ^:private create-search-query (fn [entity search-context] entity))
+
+(s/defmethod ^:private create-search-query :www
+             [_ search-ctx :- SearchContext]
+             (-> (harvest-from-portal-url (search-ctx :query-string))
+                 (merge-name-and-archived-search search-ctx)
+                 (add-collection-criteria :id search-ctx)))
 
 (s/defmethod ^:private create-search-query :card
   [_ search-ctx :- SearchContext]
@@ -196,6 +214,18 @@
                                    :when query-map]
                                query-map)})))
 
+(s/defn ^:private harvest
+  "Builds a search query that includes all of the searchable entities and runs it"
+  [portal-url]
+  (map favorited->boolean
+       (harvest-from-portal-url portal-url)))
+
+(defn- ^:private harvest-or-search
+  "Do the harvest or do the search"
+  [search-ctx]
+  (if (.startsWith (search-ctx :search-string) "http") (harvest (search-ctx :search-string)) (search search-ctx))
+  )
+
 (s/defn ^:private make-search-context :- SearchContext
   [search-string :- (s/maybe su/NonBlankString)
    archived-string :- (s/maybe su/BooleanString)]
@@ -204,7 +234,7 @@
    :visible-collections (coll/permissions-set->visible-collection-ids @*current-user-permissions-set*)})
 
 (defendpoint GET "/"
-  "Search Cards, Dashboards, Collections and Pulses for the substring `q`."
+  "Search Web Pages, Cards, Dashboards, Collections and Pulses for the substring `q`."
   [q archived]
   {q             (s/maybe su/NonBlankString)
    archived      (s/maybe su/BooleanString)}
@@ -212,6 +242,6 @@
     ;; Throw if the user doesn't have access to any collections
     (check-403 (or (= :all visible-collections)
                    (seq visible-collections)))
-    (search search-ctx)))
+    (harvest-or-search search-ctx)))
 
 (define-routes)

@@ -142,16 +142,6 @@ export class NewQueryOptions extends Component {
                 />
               </li>
             )}
-            {showMetricOption && (
-              <li className="Grid-cell">
-                <NewQueryOption
-                  image="app/img/questions_illustration"
-                  title={t`Metrics`}
-                  description={t`See data over time, as a map, or pivoted to help you understand trends or changes.`}
-                  to={metricSearchUrl}
-                />
-              </li>
-            )}
             <li className="Grid-cell">
               {/*TODO: Move illustrations to the new location in file hierarchy. At the same time put an end to the equal-size-@2x ridicule. */}
               <NewQueryOption
@@ -166,6 +156,16 @@ export class NewQueryOptions extends Component {
                 to={this.getGuiQueryUrl}
               />
             </li>
+            {showMetricOption && (
+              <li className="Grid-cell">
+                <NewQueryOption
+                  image="app/img/questions_illustration"
+                  title={t`Metrics`}
+                  description={t`See data over time, as a map, or pivoted to help you understand trends or changes.`}
+                  to={metricSearchUrl}
+                />
+              </li>
+            )}
           </ol>
         </div>
       </div>

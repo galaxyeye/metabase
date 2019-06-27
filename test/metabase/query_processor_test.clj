@@ -23,7 +23,6 @@
       (catch Throwable e
         (log/warn (format "Error loading %s: %s" test-ns (.getMessage e)))))))
 
-
 ;;; ---------------------------------------------- Helper Fns + Macros -----------------------------------------------
 
 ;; Event-Based DBs aren't tested here, but in `event-query-processor-test` instead.

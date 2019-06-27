@@ -54,19 +54,26 @@ const AdminNavItem = ({ name, path, currentPath }) => (
   </li>
 );
 
-const DefaultSearchColor = color(colors.brand)
+// const DefaultSearchColor = color(colors.brand)
+//   .lighten(0.07)
+//   .string();
+// const ActiveSearchColor = color(colors.brand)
+//   .lighten(0.1)
+//   .string();
+
+const DefaultSearchColor = color(colors.white)
   .lighten(0.07)
   .string();
-const ActiveSearchColor = color(colors.brand)
+const ActiveSearchColor = color(colors.white)
   .lighten(0.1)
   .string();
 
 const SearchWrapper = Flex.extend`
   ${width} background-color: ${props =>
       props.active ? ActiveSearchColor : DefaultSearchColor};
-  border-radius: 6px;
   align-items: center;
-  color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   transition: background 300ms ease-in;
   &:hover {
     background-color: ${ActiveSearchColor};
@@ -76,14 +83,14 @@ const SearchWrapper = Flex.extend`
 const SearchInput = styled.input`
   ${space} ${width} background-color: transparent;
   border: none;
-  color: white;
+  color: ${colors["text-medium"]};
   font-size: 1em;
   font-weight: 700;
   &:focus {
     outline: none;
   }
   &::placeholder {
-    color: ${colors["text-white"]};
+    color: ${colors["text-light"]};
   }
 `;
 
@@ -127,8 +134,8 @@ class SearchBar extends React.Component {
             pr={2}
             pl={1}
             value={searchText}
-            // placeholder={t`Enter an url to turn the web site into data, index page is preferred` + "…"}
-            placeholder={t`Search` + "…"}
+            placeholder={t`Enter an url to scraping, index pages are preferred`}
+            // placeholder={t`Search` + "…"}
             onClick={() => this.setState({ active: true })}
             onChange={e => this.setState({ searchText: e.target.value })}
             onKeyPress={e => {
@@ -264,7 +271,8 @@ export default class Navbar extends Component {
       <Flex
         // NOTE: DO NOT REMOVE `Nav` CLASS FOR NOW, USED BY MODALS, FULLSCREEN DASHBOARD, ETC
         // TODO: hide nav using state in redux instead?
-        className="Nav relative bg-brand text-white z3"
+        // className="Nav relative text-white z3"
+        className="Nav relative bg-white z3"
         align="center"
         py={1}
         pr={2}

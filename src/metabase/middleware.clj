@@ -54,7 +54,6 @@
 (def ^:const response-unauthentic "Generic `401 (Unauthenticated)` Ring response map." {:status 401, :body "Unauthenticated"})
 (def ^:const response-forbidden   "Generic `403 (Forbidden)` Ring response map."       {:status 403, :body "Forbidden"})
 
-
 (defn wrap-session-id
   "Middleware that sets the `:metabase-session-id` keyword on the request if a session id can be found.
 
