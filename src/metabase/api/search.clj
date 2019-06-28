@@ -136,8 +136,6 @@
 (defn- harvest-from-portal-url
   "Call harvest function to do the Auto Web Mining"
   [portal-url]
-  (println :query {:query  (format "SELECT * FROM harvest('%s')" portal-url)
-                   :params nil})
   (qp/process-query
     {:database   2
      :type       "native"
@@ -145,12 +143,6 @@
   )
 
 (defmulti ^:private create-search-query (fn [entity search-context] entity))
-
-(s/defmethod ^:private create-search-query :www
-             [_ search-ctx :- SearchContext]
-             (-> (harvest-from-portal-url (search-ctx :query-string))
-                 (merge-name-and-archived-search search-ctx)
-                 (add-collection-criteria :id search-ctx)))
 
 (s/defmethod ^:private create-search-query :card
   [_ search-ctx :- SearchContext]
@@ -217,8 +209,8 @@
 (s/defn ^:private harvest
   "Builds a search query that includes all of the searchable entities and runs it"
   [portal-url]
-  (map favorited->boolean
-       (harvest-from-portal-url portal-url)))
+  (let [result (harvest-from-portal-url portal-url)]
+    (assoc result :model "harvest")))
 
 (defn- ^:private harvest-or-search
   "Do the harvest or do the search"
@@ -234,11 +226,12 @@
    :visible-collections (coll/permissions-set->visible-collection-ids @*current-user-permissions-set*)})
 
 (defendpoint GET "/"
-  "Search Web Pages, Cards, Dashboards, Collections and Pulses for the substring `q`."
+  "Perform harvest if q is an url, or search Cards, Dashboards, Collections and Pulses for the substring `q`."
   [q archived]
   {q             (s/maybe su/NonBlankString)
    archived      (s/maybe su/BooleanString)}
   (let [{:keys [visible-collections] :as search-ctx} (make-search-context q archived)]
+    (println search-ctx)
     ;; Throw if the user doesn't have access to any collections
     (check-403 (or (= :all visible-collections)
                    (seq visible-collections)))

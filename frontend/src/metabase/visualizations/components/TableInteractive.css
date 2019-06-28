@@ -33,7 +33,6 @@
 
 .TableInteractive .TableInteractive-cellWrapper {
   padding: 0 0.75em;
-  max-width: 40em;
   overflow: hidden;
   text-overflow: ellipsis;
   display: flex;
