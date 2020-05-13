@@ -58,7 +58,7 @@
                    "v2-rev387-1.23.0"]
                  [com.jcraft/jsch "0.1.54"]                           ; SSH client for tunnels
                  ; [com.h2database/h2 "1.4.197"]                      ; embedded SQL database
-                 [ai.platon.pulsar/pulsar-ql-common "1.2.0"]           ; X-SQL engine
+                 [ai.platon.pulsar/pulsar-ql-common "1.5.1"]          ; X-SQL engine
                  [com.mattbertolini/liquibase-slf4j "2.0.0"]          ; Java Migrations lib
                  [com.mchange/c3p0 "0.9.5.2"]                         ; connection pooling library
                  [com.microsoft.sqlserver/mssql-jdbc "6.4.0.jre8"]    ; SQLServer JDBC driver
@@ -120,7 +120,6 @@
   :target-path "target/%s"
   :jvm-opts ["-XX:+IgnoreUnrecognizedVMOptions"                       ; ignore things not recognized for our Java version instead of refusing to start
              "-Xverify:none"                                          ; disable bytecode verification when running in dev so it starts slightly faster
-             "--add-modules=java.xml.bind"                            ; tell Java 9 (Oracle VM only) to add java.xml.bind to classpath. No longer on it by default. See https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
              "-Djava.awt.headless=true"]                              ; prevent Java icon from randomly popping up in dock when running `lein ring server`
   :javac-options ["-target" "1.8", "-source" "1.8"]
   :uberjar-name "metabase.jar"
