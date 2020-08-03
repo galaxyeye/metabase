@@ -120,7 +120,6 @@
              expr
              (hsql/raw "timestamp '1970-01-01T00:00:00Z'")))
 
-
 (defn- check-native-query-not-using-default-user [{query-type :type, database-id :database, :as query}]
   {:pre [(integer? database-id)]}
   (u/prog1 query
