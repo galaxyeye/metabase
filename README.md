@@ -1,3 +1,5 @@
+# Deprecated, use pulsar-metabase instead
+
 # Metabase for X-SQL
 
 Metabase X-SQL edition runs on [Pulsar](https://github.com/platonai/pulsar) to do Web harvest jobs using SQLs.
